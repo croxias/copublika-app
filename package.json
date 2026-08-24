@@ -1,0 +1,14 @@
+{
+  "name": "app-copublika",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @copublika/frontend dev",
+    "build": "pnpm --filter @copublika/frontend build",
+    "lint": "pnpm --filter @copublika/frontend lint",
+    "typecheck": "pnpm --filter @copublika/frontend typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@9.15.4"
+}

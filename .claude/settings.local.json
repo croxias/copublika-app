@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(mkdir -p \"/tmp/design-extract\")",
+      "Bash(cp \"C:\\\\Users\\\\Athifa\\\\.claude\\\\projects\\\\D--Data---Alieja-Web-app-copublika\\\\f24465f0-b1bb-41a3-913b-6b6661387e9a\\\\tool-results\\\\webfetch-1779424633176-xatafz.bin\" \"/tmp/design-extract/design.bin\")",
+      "Read(//tmp/**)",
+      "Bash(mkdir -p extracted)",
+      "Bash(tar -xf design.tar -C extracted)",
+      "Bash(cp \"C:\\\\Users\\\\Athifa\\\\.claude\\\\projects\\\\D--Data---Alieja-Web-app-copublika\\\\f24465f0-b1bb-41a3-913b-6b6661387e9a\\\\tool-results\\\\webfetch-1779431627357-zhkuuq.bin\" /tmp/design2.bin)",
+      "Bash(mkdir -p /tmp/design2-extract)",
+      "Bash(gunzip -k -c /tmp/design2.bin)",
+      "Bash(tar -xf /tmp/design2.tar -C /tmp/design2-extract)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(npx next *)",
+      "Bash(file \"D:\\\\Data - Alieja Web\\\\app-copublika\\\\copublika-logo\"/*.png)",
+      "Bash(file \"D:\\\\Data - Alieja Web\\\\app-copublika\\\\apps\\\\frontend\\\\public\"/*.png)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/siap-tembus-scopus)",
+      "mcp__playwright__browser_resize",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_navigate",
+      "Bash(awk 'NR<=4034 || NR>=4869' \"D:\\\\Data - Alieja Web\\\\app-copublika\\\\apps\\\\frontend\\\\src\\\\app\\\\globals.css\")",
+      "Bash(mv /tmp/globals-clean.css \"D:\\\\Data - Alieja Web\\\\app-copublika\\\\apps\\\\frontend\\\\src\\\\app\\\\globals.css\")",
+      "mcp__playwright__browser_close",
+      "Bash(rm -f \"D:\\\\Data - Alieja Web\\\\app-copublika\"/stsz-*.png 2>&1 *)",
+      "Bash(node -e \"const l = require\\('lucide-react'\\); console.log\\(Object.keys\\(l\\).filter\\(k => k.toLowerCase\\(\\).includes\\('twit'\\) || k.toLowerCase\\(\\).includes\\('linke'\\)\\)\\)\")",
+      "Bash(node -e \"const l = require\\('lucide-react'\\); console.log\\(Object.keys\\(l\\).filter\\(k => k[0]==='T'\\).slice\\(0,15\\)\\); console.log\\(Object.keys\\(l\\).filter\\(k => k[0]==='L'\\).slice\\(0,15\\)\\)\")"
+    ]
+  }
+}

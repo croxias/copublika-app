@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog CMS — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .post-row {
+    display: grid;
+    grid-template-columns: 64px 1fr 140px 90px 100px 36px;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .post-row:hover { background: var(--bg-alt); }
+  .post-row:last-child { border-bottom: 0; }
+  .post-row .cover {
+    width: 64px; height: 64px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #fcefe2, #f7f5f1);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent-ink);
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+  }
+  .post-row .cover.b2 { background: linear-gradient(135deg, #e7ecf5, #f0f3fb); color: #2a4a90; }
+  .post-row .cover.b3 { background: linear-gradient(135deg, #eaf6ed, #f0faf3); color: #1f7a36; }
+  .post-row .cover.b4 { background: linear-gradient(135deg, #fef3c7, #fef9e0); color: #92400e; }
+  .post-row .cover.b5 { background: linear-gradient(135deg, #f0e9f7, #f7f3fa); color: #5a2a90; }
+  .post-row .pinfo .pt { font-size: 14.5px; font-weight: 500; line-height: 1.3; margin-bottom: 4px; text-wrap: pretty; letter-spacing: -0.005em; }
+  .post-row .pinfo .pa { font-size: 11.5px; color: var(--ink-3); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .post-row .pinfo .pa .cat { font-family: var(--mono); color: var(--accent); letter-spacing: 0.04em; text-transform: uppercase; font-size: 10.5px; }
+  .post-row .mt { font-family: var(--mono); font-size: 10.5px; color: var(--ink-2); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+  .post-row .arr { color: var(--ink-3); justify-self: end; }
+  .post-row:hover .arr { color: var(--ink); }
+  @media (max-width: 900px) {
+    .post-row { grid-template-columns: 48px 1fr auto; gap: 8px 14px; }
+    .post-row .cover { width: 48px; height: 48px; font-size: 16px; }
+    .post-row > .mt, .post-row > div:nth-child(5) { grid-column: 2; font-size: 11px; }
+  }
+</style>
+</head>
+<body data-page="blog" data-search="Cari artikel, penulis, kategori…">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Content</a> <span class="sep">/</span> <span>Blog</span></div>
+      <h1>Blog <em>CMS.</em></h1>
+      <p>Editor markdown · scheduled publish · status real-time di blog publik.</p>
+    </div>
+    <div class="head-cta">
+      <button class="vbtn ghost">Lihat di publik</button>
+      <a class="vbtn approve" href="blog-editor.html">+ Tulis Artikel Baru</a>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <section class="kpis">
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Artikel publik</div></div><div class="kbig sm">94</div><div class="ksub">42.8K visit (30d)</div></div>
+    <div class="kpi span3 accent reveal"><div class="ktop"><div class="klabel">Scheduled</div></div><div class="kbig sm">4</div><div class="ksub">Tayang 7 hari ke depan</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Draft</div></div><div class="kbig sm" style="color: var(--muted);">12</div><div class="ksub">3 menunggu review</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Avg. baca</div></div><div class="kbig sm">4m 18d</div><div class="ksub">Top: <strong>9m 12d</strong></div></div>
+  </section>
+
+  <!-- Filter -->
+  <div class="filter-bar reveal">
+    <div class="filter-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Cari artikel, penulis, kategori…">
+    </div>
+    <div class="filter-select"><label>Status</label><select><option>Semua</option><option>Published</option><option>Scheduled</option><option>Draft</option><option>Archived</option></select></div>
+    <div class="filter-select"><label>Kategori</label><select><option>Semua</option><option>Manuskrip</option><option>Publikasi</option><option>Strategi</option><option>Workshop</option></select></div>
+    <div class="filter-select"><label>Urutkan</label><select><option>Terbaru</option><option>Visit ↓</option><option>Konversi ↓</option></select></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs reveal" style="align-self: flex-start;">
+    <button class="tab active">Semua <span class="ct">94</span></button>
+    <button class="tab">Published <span class="ct">78</span></button>
+    <button class="tab">Scheduled <span class="ct">4</span></button>
+    <button class="tab">Draft <span class="ct">12</span></button>
+  </div>
+
+  <!-- Post list (full width) -->
+  <section class="card tbl-card reveal" style="padding: 0;">
+    <div class="card-head" style="padding: 16px 20px; margin: 0; border-bottom: 1px solid var(--line);">
+      <h3>Artikel</h3>
+      <span class="meta">94 artikel · diurutkan terbaru</span>
+    </div>
+
+    <a class="post-row" href="blog-editor.html?id=1">
+      <div class="cover">A</div>
+      <div class="pinfo">
+        <div class="pt">Anatomy of an Accepted Paper: 5 Kebiasaan Penulis Q1</div>
+        <div class="pa"><span class="cat">/ Strategi</span><span>· Anwar Putranto</span><span>· 8.420 visit</span><span>· 5.4% konv.</span></div>
+      </div>
+      <div class="mt">22 Mei 2025</div>
+      <div class="mt">SEO 92</div>
+      <div><span class="pill active">Published</span></div>
+      <span class="arr">→</span>
+    </a>
+
+    <a class="post-row" href="blog-editor.html?id=2">
+      <div class="cover b2">M</div>
+      <div class="pinfo">
+        <div class="pt">Mengapa Reviewer 2 Selalu Galak? Membaca Antara Baris Komentar</div>
+        <div class="pa"><span class="cat">/ Manuskrip</span><span>· Hadi Suryanto</span><span>· Draft 70%</span></div>
+      </div>
+      <div class="mt">04 Jun 2025 · 10:00</div>
+      <div class="mt">SEO 78</div>
+      <div><span class="pill warn">Scheduled</span></div>
+      <span class="arr">→</span>
+    </a>
+
+    <a class="post-row" href="blog-editor.html?id=3">
+      <div class="cover b3">7</div>
+      <div class="pinfo">
+        <div class="pt">7 Heuristik Memilih Reviewer yang Tidak Akan Galak</div>
+        <div class="pa"><span class="cat">/ Manuskrip</span><span>· Sari Nurhaliza</span><span>· 6.180 visit</span><span>· 3.2% konv.</span></div>
+      </div>
+      <div class="mt">15 Mei 2025</div>
+      <div class="mt">SEO 88</div>
+      <div><span class="pill active">Published</span></div>
+      <span class="arr">→</span>
+    </a>
+
+    <a class="post-row" href="blog-editor.html?id=4">
+      <div class="cover b4">D</div>
+      <div class="pinfo">
+        <div class="pt">Daftar Jurnal Q1 yang Bersahabat untuk Author Indonesia</div>
+        <div class="pa"><span class="cat">/ Publikasi</span><span>· Bayu Nugroho</span><span>· 4.220 visit</span><span>· 6.8% konv.</span></div>
+      </div>
+      <div class="mt">08 Mei 2025</div>
+      <div class="mt">SEO 94</div>
+      <div><span class="pill active">Published</span></div>
+      <span class="arr">→</span>
+    </a>
+
+    <a class="post-row" href="blog-editor.html?id=5">
+      <div class="cover">G</div>
+      <div class="pinfo">
+        <div class="pt">Generative AI dalam Penulisan: Etika &amp; Best Practice</div>
+        <div class="pa"><span class="cat">/ Strategi</span><span>· Anwar Putranto</span><span>· Draft 45%</span></div>
+      </div>
+      <div class="mt">Belum dijadwalkan</div>
+      <div class="mt">SEO —</div>
+      <div><span class="pill draft">Draft</span></div>
+      <span class="arr">→</span>
+    </a>
+
+    <a class="post-row" href="blog-editor.html?id=6">
+      <div class="cover b2">R</div>
+      <div class="pinfo">
+        <div class="pt">Revision Letter yang Tidak Bikin Editor Bosan</div>
+        <div class="pa"><span class="cat">/ Manuskrip</span><span>· Hadi Suryanto</span><span>· 3.840 visit</span><span>· 4.1% konv.</span></div>
+      </div>
+      <div class="mt">02 Mei 2025</div>
+      <div class="mt">SEO 86</div>
+      <div><span class="pill active">Published</span></div>
+      <span class="arr">→</span>
+    </a>
+
+    <a class="post-row" href="blog-editor.html?id=7">
+      <div class="cover b5">L</div>
+      <div class="pinfo">
+        <div class="pt">Literature Review: Dari Daftar Paper ke Argumen Kohesif</div>
+        <div class="pa"><span class="cat">/ Manuskrip</span><span>· Sari Nurhaliza</span><span>· 5.240 visit</span><span>· 4.6% konv.</span></div>
+      </div>
+      <div class="mt">25 Apr 2025</div>
+      <div class="mt">SEO 90</div>
+      <div><span class="pill active">Published</span></div>
+      <span class="arr">→</span>
+    </a>
+
+    <a class="post-row" href="blog-editor.html?id=8">
+      <div class="cover b3">C</div>
+      <div class="pinfo">
+        <div class="pt">Cara Memilih Co-Author yang Realistis</div>
+        <div class="pa"><span class="cat">/ Strategi</span><span>· Hadi Suryanto</span><span>· 2.840 visit</span><span>· 3.8% konv.</span></div>
+      </div>
+      <div class="mt">18 Apr 2025</div>
+      <div class="mt">SEO 84</div>
+      <div><span class="pill active">Published</span></div>
+      <span class="arr">→</span>
+    </a>
+
+    <div class="pagination">
+      <div class="info">Menampilkan <strong>1–8</strong> dari <strong>94</strong> artikel</div>
+      <div class="pages">
+        <button disabled>←</button>
+        <button class="active">1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>…</button>
+        <button>12</button>
+        <button>→</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

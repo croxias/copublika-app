@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Riset & Proyek — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .review-card {
+    border: 1px solid var(--accent);
+    background: linear-gradient(180deg, #fff 0%, #fffaf4 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .review-card::before {
+    content: ""; position: absolute; top: -30%; right: -10%;
+    width: 380px; height: 380px;
+    background: radial-gradient(circle, rgba(233, 113, 28, 0.14), transparent 60%);
+    pointer-events: none;
+  }
+  .rev-head {
+    display: flex; justify-content: space-between; gap: 14px;
+    align-items: flex-start; margin-bottom: 18px;
+  }
+  .rev-head .lab {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--accent); letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .rev-head .lab::before { content: ""; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+  .rev-head .pid { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+  .rev-head h2 {
+    font-size: 24px; font-weight: 600; letter-spacing: -0.02em;
+    line-height: 1.15; text-wrap: balance; margin-top: 4px;
+  }
+  .rev-meta {
+    display: flex; gap: 8px 16px; flex-wrap: wrap;
+    font-size: 12.5px; color: var(--ink-3); margin-top: 8px;
+    font-style: italic;
+  }
+  .rev-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin: 14px 0;
+  }
+  @media (max-width: 800px) { .rev-grid { grid-template-columns: 1fr 1fr; } }
+  .rev-cell { padding: 14px 0; border-right: 1px solid var(--line); padding-right: 16px; }
+  .rev-cell:last-child { border-right: 0; }
+  .rev-cell:not(:first-child) { padding-left: 16px; }
+  @media (max-width: 800px) {
+    .rev-cell:nth-child(2n) { border-right: 0; padding-right: 0; }
+    .rev-cell:nth-child(n+3) { border-top: 1px solid var(--line); }
+  }
+  .rev-cell .l { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  .rev-cell .v { font-size: 15px; font-weight: 500; letter-spacing: -0.01em; }
+  .rev-cell .v .acc { color: var(--accent); }
+  .rev-abs {
+    font-size: 13.5px; line-height: 1.55; color: var(--ink-2);
+    background: white; padding: 16px; border-radius: 8px;
+    border: 1px solid var(--line); margin-top: 6px;
+    text-wrap: pretty;
+  }
+  .rev-cta { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 16px; }
+
+  /* Project rows */
+  .pj-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 180px 110px 110px 36px;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+  .pj-row:hover { background: var(--bg-alt); }
+  .pj-row:last-child { border-bottom: 0; }
+  .pj-row .pid { font-family: var(--mono); font-size: 11.5px; color: var(--accent); letter-spacing: 0.06em; }
+  .pj-row .pinfo .pt { font-size: 14px; font-weight: 500; line-height: 1.3; margin-bottom: 4px; text-wrap: pretty; letter-spacing: -0.005em; }
+  .pj-row .pinfo .pa { font-size: 11.5px; color: var(--ink-3); font-style: italic; }
+  .pj-row .pfield { font-family: var(--mono); font-size: 10.5px; color: var(--ink-2); letter-spacing: 0.04em; }
+  .pj-row .pjr { font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: 0.04em; }
+  .pj-row .pcta {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1px solid var(--line); background: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ink-3); transition: all 0.2s;
+  }
+  .pj-row:hover .pcta { border-color: var(--ink); color: var(--ink); }
+  @media (max-width: 900px) {
+    .pj-row { grid-template-columns: 60px 1fr auto; gap: 8px 14px; }
+    .pj-row .pfield, .pj-row .pjr, .pj-row > div:nth-child(5) { grid-column: 2; }
+  }
+</style>
+</head>
+<body data-page="projects" data-search="Cari proyek, lead, atau jurnal target…">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Project Governance</a> <span class="sep">/</span> <span>Riset & Proyek</span></div>
+      <h1>Riset &amp; <em>proyek.</em></h1>
+      <p>Antrian persetujuan dari member — Draft → Pending → Review → Published → Archived.</p>
+    </div>
+    <div class="head-cta">
+      <a class="vbtn ghost" href="clusters.html">Cluster Riset</a>
+      <button class="vbtn dark">Buat Proyek Internal</button>
+    </div>
+  </div>
+
+  <!-- Status overview -->
+  <section class="kpis">
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Draft</div></div>
+      <div class="kbig sm" style="color: var(--muted);">14</div>
+      <div class="ksub">Belum disubmit oleh member</div>
+    </div>
+    <div class="kpi span3 accent reveal">
+      <div class="ktop"><div class="klabel">Pending review</div></div>
+      <div class="kbig sm">8 <span class="kdelta">+3</span></div>
+      <div class="ksub">SLA: <strong>3 hari</strong></div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Under review</div></div>
+      <div class="kbig sm" style="color: #1e40af;">12</div>
+      <div class="ksub">Curation Council</div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Published</div></div>
+      <div class="kbig sm" style="color: #2f8a40;">62</div>
+      <div class="ksub">Aktif berjalan</div>
+    </div>
+  </section>
+
+  <!-- Filter bar -->
+  <div class="filter-bar reveal">
+    <div class="filter-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Cari proyek, lead, atau jurnal target…">
+    </div>
+    <div class="filter-select"><label>Cluster</label><select><option>Semua</option><option>Pendidikan &amp; EdTech</option><option>Kesehatan</option><option>Ekonomi Sirkular</option><option>AI &amp; Etika</option></select></div>
+    <div class="filter-select"><label>Target</label><select><option>Semua</option><option>Scopus Q1</option><option>Scopus Q2</option><option>Sinta 1–2</option></select></div>
+    <div class="filter-select"><label>Visibility</label><select><option>Semua</option><option>Public (gallery)</option><option>Private</option></select></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs reveal" style="align-self: flex-start;">
+    <button class="tab active">Pending <span class="ct">8</span></button>
+    <button class="tab">Draft <span class="ct">14</span></button>
+    <button class="tab">Under Review <span class="ct">12</span></button>
+    <button class="tab">Published <span class="ct">62</span></button>
+    <button class="tab">Archived <span class="ct">18</span></button>
+  </div>
+
+  <!-- Featured review card -->
+  <section class="card review-card reveal">
+    <div class="rev-head">
+      <div>
+        <div class="lab">Antrian teratas · butuh keputusan hari ini</div>
+        <div class="pid">RP-052</div>
+        <h2>Doctoral Supervision in the Online Modality: Voices from 60 Indonesian PhD Candidates</h2>
+        <div class="rev-meta">
+          <span>Lead: <strong style="color:var(--ink); font-style:normal;">Dr. Hadi Suryanto, M.Si.</strong></span>
+          <span>3 co-author</span>
+          <span>UNS · UGM · UM</span>
+          <span>Diajukan 18 menit lalu</span>
+        </div>
+      </div>
+      <span class="pill warn">Pending</span>
+    </div>
+
+    <div class="rev-grid">
+      <div class="rev-cell">
+        <div class="l">Cluster</div>
+        <div class="v">Pendidikan &amp; EdTech</div>
+      </div>
+      <div class="rev-cell">
+        <div class="l">Jurnal target</div>
+        <div class="v">Studies in Higher Ed. <span class="acc">Q1</span></div>
+      </div>
+      <div class="rev-cell">
+        <div class="l">Metodologi</div>
+        <div class="v">Mixed-methods · n=60</div>
+      </div>
+      <div class="rev-cell">
+        <div class="l">Visibility</div>
+        <div class="v">Public (Gallery)</div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px;">Abstrak</div>
+      <div class="rev-abs">Pandemi memaksa supervisi doktoral berpindah ke modalitas online — namun praktik baik masih sangat tersebar. Studi ini menyintesis pengalaman 60 kandidat PhD Indonesia dari 5 universitas melalui survei terstruktur (n=60) dan wawancara mendalam (n=12). Temuan utama: (a) kualitas hubungan tetap menjadi prediktor terkuat kepuasan, jauh di atas frekuensi pertemuan; (b) tiga arketipe supervisi muncul: "Strategic Guide", "Co-Researcher", dan "Hands-off Mentor"; (c) ketiganya bekerja, tetapi mismatched ekspektasi adalah sumber utama disonansi.</div>
+    </div>
+
+    <div class="rev-cta">
+      <button class="vbtn ghost danger">Tolak</button>
+      <button class="vbtn ghost">Minta Revisi</button>
+      <button class="vbtn ghost">Edit Metadata</button>
+      <button class="vbtn approve lg"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Approve &amp; Publish</button>
+    </div>
+  </section>
+
+  <!-- Queue -->
+  <section class="card tbl-card reveal">
+    <div class="card-head">
+      <h3>7 proyek pending lainnya</h3>
+      <div class="meta">Urut: tanggal pengajuan ↓</div>
+    </div>
+
+    <div>
+      <a class="pj-row" href="#">
+        <span class="pid">RP-051</span>
+        <div class="pinfo">
+          <div class="pt">Industrial Symbiosis in Indonesian Manufacturing Clusters: Barriers and Enablers</div>
+          <div class="pa">Lead: Dr. Nirmala D. · 4 co-author</div>
+        </div>
+        <div class="pfield">Ekonomi Sirkular</div>
+        <div class="pjr">J. Cleaner Production · Q1</div>
+        <div><span class="pill review">Review</span></div>
+        <span class="pcta">→</span>
+      </a>
+      <a class="pj-row" href="#">
+        <span class="pid">RP-050</span>
+        <div class="pinfo">
+          <div class="pt">Federated Learning for Clinical NLP in Low-Resource Languages: An Indonesian Case</div>
+          <div class="pa">Lead: Dr. Anastasia L. · 5 co-author</div>
+        </div>
+        <div class="pfield">AI &amp; Etika</div>
+        <div class="pjr">npj Digital Med · Q1</div>
+        <div><span class="pill warn">Pending</span></div>
+        <span class="pcta">→</span>
+      </a>
+      <a class="pj-row" href="#">
+        <span class="pid">RP-049</span>
+        <div class="pinfo">
+          <div class="pt">Translanguaging in EMI Classrooms: Engineering &amp; Humanities Faculty</div>
+          <div class="pa">Lead: Dr. Sari Nurhaliza · 6 co-author</div>
+        </div>
+        <div class="pfield">Linguistik Terapan</div>
+        <div class="pjr">System · Q1</div>
+        <div><span class="pill draft">Draft</span></div>
+        <span class="pcta">→</span>
+      </a>
+      <a class="pj-row" href="#">
+        <span class="pid">RP-048</span>
+        <div class="pinfo">
+          <div class="pt">Vaccine Hesitancy in Indonesian Urban Mothers: A Mixed-Methods Replication</div>
+          <div class="pa">Lead: Dr. Rahmawati M. · 3 co-author</div>
+        </div>
+        <div class="pfield">Kesehatan</div>
+        <div class="pjr">Vaccine · Q2</div>
+        <div><span class="pill warn">Pending</span></div>
+        <span class="pcta">→</span>
+      </a>
+      <a class="pj-row" href="#">
+        <span class="pid">RP-047</span>
+        <div class="pinfo">
+          <div class="pt">LMS Engagement Patterns and Dropout Risk: A Learning Analytics Study</div>
+          <div class="pa">Lead: Dr. Bayu Nugroho · 4 co-author</div>
+        </div>
+        <div class="pfield">Pendidikan &amp; EdTech</div>
+        <div class="pjr">Internet &amp; HE · Q1</div>
+        <div><span class="pill review">Review</span></div>
+        <span class="pcta">→</span>
+      </a>
+      <a class="pj-row" href="#">
+        <span class="pid">RP-046</span>
+        <div class="pinfo">
+          <div class="pt">Code-Switching in University Lectures: A Corpus Study from 5 Indonesian Universities</div>
+          <div class="pa">Lead: Dr. Sari Nurhaliza · 2 co-author</div>
+        </div>
+        <div class="pfield">Linguistik Terapan</div>
+        <div class="pjr">World Englishes · Q2</div>
+        <div><span class="pill warn">Pending</span></div>
+        <span class="pcta">→</span>
+      </a>
+    </div>
+
+    <div class="pagination">
+      <div class="info">Menampilkan <strong>1–6</strong> dari <strong>8</strong> pending</div>
+      <div class="pages">
+        <button disabled>←</button>
+        <button class="active">1</button>
+        <button>2</button>
+        <button>→</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

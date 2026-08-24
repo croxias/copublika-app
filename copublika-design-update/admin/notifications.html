@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notification Center — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .notif-shell { display: grid; grid-template-columns: 240px 1fr; gap: 14px; align-items: start; }
+  @media (max-width: 980px) { .notif-shell { grid-template-columns: 1fr; } }
+
+  .notif-rail {
+    position: sticky; top: 90px;
+    display: flex; flex-direction: column;
+    background: white; border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 8px;
+  }
+  .notif-rail a {
+    display: flex; gap: 10px; align-items: center; justify-content: space-between;
+    padding: 9px 12px; border-radius: 8px;
+    color: var(--ink-3); font-size: 13px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .notif-rail a:hover { background: var(--bg-alt); color: var(--ink); }
+  .notif-rail a.active { background: var(--ink); color: white; }
+  .notif-rail a .ct {
+    font-family: var(--mono); font-size: 10.5px;
+    background: var(--bg-alt); color: var(--ink-2);
+    padding: 1px 7px; border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .notif-rail a.active .ct { background: rgba(255,255,255,0.15); color: white; }
+  .notif-rail a.unread .ct { background: var(--accent); color: white; }
+  .notif-rail .left { display: flex; gap: 10px; align-items: center; }
+  .notif-rail .left .ico { width: 16px; height: 16px; }
+
+  /* Group head */
+  .grp-head {
+    font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 0;
+    position: sticky; top: 75px;
+    background: var(--bg-alt);
+    z-index: 5;
+  }
+
+  /* Notification rows */
+  .notif {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+    background: white;
+    transition: background 0.2s;
+    cursor: pointer;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+  }
+  .notif:last-child { border-bottom: 0; }
+  .notif:hover { background: var(--bg-alt); }
+  .notif.unread { background: #fffaf4; }
+  .notif.unread:hover { background: #fef4e8; }
+  .notif.unread::before {
+    content: ""; position: absolute;
+    left: 8px; top: 24px;
+    width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%;
+    box-shadow: 0 0 6px 0 rgba(233, 113, 28, 0.5);
+  }
+  .notif .ico-c {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--bg-alt); color: var(--ink-3);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .notif.cat-verify .ico-c { background: var(--accent-soft); color: var(--accent-ink); }
+  .notif.cat-project .ico-c { background: #e7ecf5; color: #2a4a90; }
+  .notif.cat-content .ico-c { background: #eaf6ed; color: #1f7a36; }
+  .notif.cat-system .ico-c { background: #fef3c7; color: #92400e; }
+  .notif.cat-security .ico-c { background: #fdebea; color: #a3201b; }
+
+  .notif .body { min-width: 0; }
+  .notif .body .ti {
+    font-size: 14px; font-weight: 500;
+    letter-spacing: -0.005em; line-height: 1.3;
+    margin-bottom: 4px; text-wrap: pretty;
+  }
+  .notif .body .ti strong { color: var(--ink); font-weight: 600; }
+  .notif.unread .body .ti { color: var(--ink); }
+  .notif .body .meta {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); letter-spacing: 0.04em;
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    text-transform: uppercase;
+  }
+  .notif .body .meta .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--bg-alt); color: var(--ink-2);
+    text-transform: uppercase;
+  }
+  .notif.cat-verify .body .meta .cat { background: var(--accent-soft); color: var(--accent-ink); }
+  .notif.cat-project .body .meta .cat { background: #e7ecf5; color: #2a4a90; }
+  .notif.cat-content .body .meta .cat { background: #eaf6ed; color: #1f7a36; }
+  .notif.cat-security .body .meta .cat { background: #fdebea; color: #a3201b; }
+  .notif .body .desc {
+    font-size: 12.5px; color: var(--ink-3);
+    line-height: 1.5; margin-top: 6px;
+  }
+  .notif .actions {
+    display: flex; flex-direction: column; gap: 6px;
+    align-items: flex-end;
+  }
+  .notif .actions .ts {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .notif .actions .qa {
+    display: flex; gap: 6px; opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .notif:hover .actions .qa { opacity: 1; }
+  .notif .actions .qa .vbtn { height: 28px; font-size: 11.5px; padding: 0 10px; }
+
+  /* Toolbar */
+  .notif-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+    padding: 12px 20px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    margin-bottom: 14px;
+  }
+  .notif-toolbar .left {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-3); letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .notif-toolbar .left strong { color: var(--ink); font-weight: 500; }
+  .notif-toolbar .right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .notif-toolbar .right .vbtn { height: 32px; font-size: 11.5px; padding: 0 12px; }
+</style>
+</head>
+<body data-page="">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Akun</a> <span class="sep">/</span> <span>Notifikasi</span></div>
+      <h1>Notification <em>center.</em></h1>
+      <p>42 notifikasi · 14 belum dibaca. Atur preferensi di <a class="link-mono" href="account.html#notifications">Account → Notifikasi</a>.</p>
+    </div>
+  </div>
+
+  <div class="notif-shell">
+    <!-- Rail -->
+    <aside class="notif-rail reveal">
+      <a class="active unread" href="#">
+        <span class="left">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          Semua
+        </span>
+        <span class="ct">14</span>
+      </a>
+      <a href="#" class="unread">
+        <span class="left">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+          Verifikasi
+        </span>
+        <span class="ct">6</span>
+      </a>
+      <a href="#" class="unread">
+        <span class="left">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+          Proyek
+        </span>
+        <span class="ct">4</span>
+      </a>
+      <a href="#">
+        <span class="left">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Konten
+        </span>
+        <span class="ct">2</span>
+      </a>
+      <a href="#" class="unread">
+        <span class="left">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg>
+          Batch &amp; Sistem
+        </span>
+        <span class="ct">1</span>
+      </a>
+      <a href="#" class="unread">
+        <span class="left">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Keamanan
+        </span>
+        <span class="ct">1</span>
+      </a>
+    </aside>
+
+    <!-- Notification list -->
+    <div>
+      <!-- Toolbar -->
+      <div class="notif-toolbar reveal">
+        <div class="left">Menampilkan <strong>1–9</strong> dari <strong>42</strong> · <strong style="color:var(--accent);">14 belum dibaca</strong></div>
+        <div class="right">
+          <div class="filter-select" style="height: 32px; padding: 0 12px;">
+            <label>Periode</label>
+            <select><option>24 jam</option><option>7 hari</option><option>30 hari</option><option>Semua</option></select>
+          </div>
+          <button class="vbtn ghost">Tandai semua sebagai dibaca</button>
+          <button class="vbtn ghost danger">Hapus yang sudah dibaca</button>
+        </div>
+      </div>
+
+      <!-- Today -->
+      <div class="grp-head reveal">Hari ini · 28 Mei</div>
+      <section class="card tbl-card reveal" style="padding: 0;">
+
+        <a class="notif unread cat-project" href="projects.html">
+          <div class="ico-c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+          <div class="body">
+            <div class="ti"><strong>Dr. Hadi Suryanto</strong> mengajukan proyek baru: "Doctoral Supervision in the Online Modality"</div>
+            <div class="meta"><span class="cat">Proyek</span><span>RP-052</span><span>Pendidikan &amp; EdTech</span><span>Target: Studies in HE · Q1</span></div>
+            <div class="desc">Antrian review CoPublika · butuh keputusan dalam 3 hari sesuai SLA.</div>
+          </div>
+          <div class="actions">
+            <span class="ts">18m lalu</span>
+            <div class="qa">
+              <button class="vbtn approve">Review</button>
+              <button class="vbtn ghost">Tandai dibaca</button>
+            </div>
+          </div>
+        </a>
+
+        <a class="notif unread cat-verify" href="verifications.html">
+          <div class="ico-c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></div>
+          <div class="body">
+            <div class="ti">3 pendaftar dengan skor kecocokan ≥ 95% siap di-approve one-click</div>
+            <div class="meta"><span class="cat">Verifikasi</span><span>Batch #4</span><span>Auto-match</span></div>
+            <div class="desc">Dr. Reza Dwianto (96%), Bayu Hermawan (98%), Dr. Wira Kusuma (93%) — Scholar metadata sudah tervalidasi otomatis.</div>
+          </div>
+          <div class="actions">
+            <span class="ts">2j lalu</span>
+            <div class="qa">
+              <button class="vbtn approve">Buka antrian</button>
+              <button class="vbtn ghost">Tandai dibaca</button>
+            </div>
+          </div>
+        </a>
+
+        <a class="notif unread cat-system" href="batches.html">
+          <div class="ico-c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+          <div class="body">
+            <div class="ti">Batch #4 mencapai <strong>68% kuota terisi</strong> — milestone tercapai</div>
+            <div class="meta"><span class="cat" style="background: #fef3c7; color: #92400e;">Batch</span><span>204 / 300 pendaftar</span><span>ETA penuh: 8 hari</span></div>
+            <div class="desc">Pendaftaran masih dibuka sampai 14 Juni 2025. Bila tren bertahan, kuota penuh sebelum deadline.</div>
+          </div>
+          <div class="actions">
+            <span class="ts">3j lalu</span>
+            <div class="qa">
+              <button class="vbtn ghost">Tandai dibaca</button>
+            </div>
+          </div>
+        </a>
+
+        <a class="notif unread cat-security" href="audit.html">
+          <div class="ico-c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="body">
+            <div class="ti">IP <strong>103.245.x.x</strong> diblok sementara setelah 12 percobaan login gagal</div>
+            <div class="meta"><span class="cat">Keamanan</span><span>Rate limit triggered</span><span>Block expires: 02:44</span></div>
+            <div class="desc">Pola brute-force terdeteksi · target email: tidak ada akun valid yang cocok. Tidak ada tindakan tambahan dibutuhkan.</div>
+          </div>
+          <div class="actions">
+            <span class="ts">7j lalu</span>
+            <div class="qa">
+              <button class="vbtn ghost">Detail audit</button>
+              <button class="vbtn ghost">Tandai dibaca</button>
+            </div>
+          </div>
+        </a>
+
+        <a class="notif unread cat-content" href="blog.html">
+          <div class="ico-c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></div>
+          <div class="body">
+            <div class="ti">Artikel <strong>"7 Heuristik Memilih Reviewer"</strong> dipublikasi otomatis (autoschedule)</div>
+            <div class="meta"><span class="cat">Konten</span><span>Blog</span><span>1.240 visit dalam 8 jam pertama</span></div>
+          </div>
+          <div class="actions">
+            <span class="ts">8j lalu</span>
+            <div class="qa">
+              <button class="vbtn ghost">Tandai dibaca</button>
+            </div>
+          </div>
+        </a>
+
+      </section>
+
+      <!-- Yesterday -->
+      <div class="grp-head reveal" style="margin-top: 18px;">Kemarin · 27 Mei</div>
+      <section class="card tbl-card reveal" style="padding: 0;">
+
+        <a class="notif cat-project" href="projects.html">
+          <div class="ico-c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="body">
+            <div class="ti">Proyek RP-047 <strong>"LMS Engagement Patterns"</strong> Anda approve. Status pindah ke <em>Under Review</em>.</div>
+            <div class="meta"><span class="cat">Proyek</span><span>Curation Council</span></div>
+          </div>
+          <div class="actions">
+            <span class="ts">Kemarin · 16:22</span>
+          </div>
+        </a>
+
+        <a class="notif cat-verify" href="verifications.html">
+          <div class="ico-c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="body">
+            <div class="ti">8 pendaftar disetujui dalam 1 sesi verifikasi (one-click batch approve)</div>
+            <div class="meta"><span class="cat">Verifikasi</span><span>Batch #4</span><span>Avg skor: 92%</span></div>
+          </div>
+          <div class="actions">
+            <span class="ts">Kemarin · 14:08</span>
+          </div>
+        </a>
+
+        <a class="notif cat-content" href="events.html">
+          <div class="ico-c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <div class="body">
+            <div class="ti">Event <strong>"Webinar Q1 di Era GenAI"</strong> mencapai 400 registran (target)</div>
+            <div class="meta"><span class="cat" style="background: #eaf6ed; color: #1f7a36;">Event</span><span>+ 80 dari target</span></div>
+          </div>
+          <div class="actions">
+            <span class="ts">Kemarin · 09:14</span>
+          </div>
+        </a>
+      </section>
+
+      <!-- Earlier -->
+      <div class="grp-head reveal" style="margin-top: 18px;">Lebih awal pekan ini</div>
+      <section class="card tbl-card reveal" style="padding: 0;">
+        <a class="notif cat-system" href="audit.html">
+          <div class="ico-c"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+          <div class="body">
+            <div class="ti">Template <strong>"Cover Letter Computers &amp; Education"</strong> menjadi template paling banyak diunduh minggu ini (284 unduhan)</div>
+            <div class="meta"><span class="cat" style="background: #fef3c7; color: #92400e;">Sistem</span><span>Watermark applied</span></div>
+          </div>
+          <div class="actions">
+            <span class="ts">26 Mei · 11:24</span>
+          </div>
+        </a>
+      </section>
+
+      <!-- Footer pagination -->
+      <div class="pagination" style="background: transparent; border: 0; padding: 24px 4px 0;">
+        <div class="info">Halaman <strong>1</strong> dari <strong>5</strong></div>
+        <div class="pages">
+          <button disabled>← Sebelumnya</button>
+          <button class="active">1</button>
+          <button>2</button>
+          <button>3</button>
+          <button>4</button>
+          <button>5</button>
+          <button>Berikutnya →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

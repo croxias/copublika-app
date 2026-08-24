@@ -1,0 +1,517 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - strong [ref=e6]: "Cohort #07"
+      - text: — pendaftaran dibuka, 24 kursi tersisa.
+    - link "Daftar sekarang →" [ref=e7] [cursor=pointer]:
+      - /url: /siap-tembus-scopus
+    - button "Tutup pengumuman" [ref=e8] [cursor=pointer]: ×
+  - banner [ref=e9]:
+    - generic [ref=e10]:
+      - link "CoPublika" [ref=e11] [cursor=pointer]:
+        - /url: /
+        - img "CoPublika" [ref=e12]
+      - navigation "Primary" [ref=e13]:
+        - link "Home" [ref=e14] [cursor=pointer]:
+          - /url: /
+        - link "About" [ref=e15] [cursor=pointer]:
+          - /url: /about
+        - link "Research Project" [ref=e16] [cursor=pointer]:
+          - /url: /research
+        - generic [ref=e17]:
+          - button "Program" [ref=e18] [cursor=pointer]:
+            - generic [ref=e19]: Program
+          - generic:
+            - link "Siap Tembus Scopus Flagship Bootcamp 12 minggu untuk publikasi terindeks Scopus Q1–Q3.":
+              - /url: /siap-tembus-scopus
+              - generic:
+                - img
+              - generic:
+                - generic:
+                  - text: Siap Tembus Scopus
+                  - generic: Flagship
+                - generic: Bootcamp 12 minggu untuk publikasi terindeks Scopus Q1–Q3.
+              - generic: →
+        - link "Blog" [ref=e21] [cursor=pointer]:
+          - /url: /blog
+        - link "Event" [ref=e22] [cursor=pointer]:
+          - /url: /event
+        - link "Contact" [ref=e23] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - button "Pilih bahasa" [ref=e26] [cursor=pointer]:
+            - img [ref=e28]
+            - generic [ref=e31]: ID
+          - generic:
+            - button "Bahasa Indonesia ✓":
+              - generic:
+                - img
+              - generic: Bahasa Indonesia
+              - text: ✓
+            - button "English":
+              - generic:
+                - img
+              - generic: English
+        - link "Log In" [ref=e33] [cursor=pointer]:
+          - /url: /login
+        - link "Join Batch" [ref=e34] [cursor=pointer]:
+          - /url: /register
+          - generic [ref=e35]: Join Batch
+          - img [ref=e36]
+  - main [ref=e38]:
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - img [ref=e45]
+          - generic [ref=e48]: Blog · 17 tulisan akademik
+        - heading "Cerita, panduan, dan esai riset." [level=1] [ref=e49]:
+          - generic [ref=e50]: Cerita, panduan,
+          - generic [ref=e51]: dan esai riset.
+        - paragraph [ref=e52]: Temukan panduan praktis dan cerita inspiratif dari mentor, editor, dan alumni CoPublika mengenai siklus riset, publikasi Scopus, dan karir akademik Anda.
+        - generic [ref=e53]:
+          - img [ref=e55]
+          - textbox "Cari topik atau nama penulis..." [ref=e58]
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - img [ref=e64]
+          - generic [ref=e66]:
+            - heading "CoPublika Hub" [level=4] [ref=e67]
+            - paragraph [ref=e68]: Curated Academic Network
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - generic [ref=e71]: Total Publikasi
+            - generic [ref=e72]: 386+ Papers
+          - generic [ref=e73]:
+            - generic [ref=e74]: Response Editor
+            - generic [ref=e75]: 7 Hari Kerja
+          - generic [ref=e76]:
+            - generic [ref=e77]: Tingkat Kelulusan
+            - generic [ref=e78]: 89.4% Scopus
+        - generic [ref=e79]:
+          - generic [ref=e80]: Akademisi Aktif
+          - generic [ref=e81]: 1,240+ Dosen
+    - generic [ref=e83]:
+      - generic [ref=e84]:
+        - generic [ref=e85]: Editor Choice
+        - heading "Artikel Pilihan" [level=3] [ref=e86]
+      - generic [ref=e87]:
+        - generic [ref=e88]:
+          - generic [ref=e89]: Sorotan
+          - 'img "Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance" [ref=e90]'
+        - generic [ref=e91]:
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - generic [ref=e94]: Panduan
+              - generic [ref=e96]: 12 min read
+            - 'link "Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance" [ref=e97] [cursor=pointer]':
+              - /url: /blog/anatomi-naskah-q1
+              - 'heading "Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance" [level=2] [ref=e98]'
+            - paragraph [ref=e99]: "Tiga naskah peserta cohort #05 berhasil diterima di jurnal Q1 dalam 6 bulan terakhir. Kami membedah pola umum, kesalahan yang dihindari, dan kerangka berpikir di balik revisi-revisi penting."
+          - generic [ref=e100]:
+            - generic [ref=e101]:
+              - generic [ref=e102]: AP
+              - generic [ref=e103]:
+                - generic [ref=e104]: Dr. Ade Putranto
+                - generic [ref=e105]: Mei 2025
+            - link "Baca Selengkapnya" [ref=e106] [cursor=pointer]:
+              - /url: /blog/anatomi-naskah-q1
+              - generic [ref=e107]: Baca Selengkapnya
+              - img [ref=e108]
+    - generic [ref=e112]:
+      - generic [ref=e113]:
+        - generic [ref=e114]:
+          - generic [ref=e115]: Semua Tulisan
+          - heading "Eksplor seluruh arsip" [level=3] [ref=e116]
+        - generic [ref=e117]: 16 tulisan
+      - tablist "Kategori" [ref=e119]:
+        - tab "Semua 17" [selected] [ref=e120] [cursor=pointer]:
+          - generic [ref=e122]:
+            - text: Semua
+            - generic [ref=e123]: "17"
+        - tab "Panduan 6" [ref=e124] [cursor=pointer]:
+          - generic [ref=e125]:
+            - text: Panduan
+            - generic [ref=e126]: "6"
+        - tab "Interview 3" [ref=e127] [cursor=pointer]:
+          - generic [ref=e128]:
+            - text: Interview
+            - generic [ref=e129]: "3"
+        - tab "Esai 3" [ref=e130] [cursor=pointer]:
+          - generic [ref=e131]:
+            - text: Esai
+            - generic [ref=e132]: "3"
+        - tab "Berita 2" [ref=e133] [cursor=pointer]:
+          - generic [ref=e134]:
+            - text: Berita
+            - generic [ref=e135]: "2"
+        - tab "Studi Kasus 3" [ref=e136] [cursor=pointer]:
+          - generic [ref=e137]:
+            - text: Studi Kasus
+            - generic [ref=e138]: "3"
+      - generic [ref=e139]:
+        - link "Panduan 7 Kesalahan Umum Saat Memilih Jurnal Target 4 min read • Mei 2025 7 Kesalahan Umum Saat Memilih Jurnal Target Daftar kesalahan paling umum di tahap journal selection yang membuat naskah anda di-desk-reject sebelum dibaca reviewer. Tips dari editor jurnal Q1. MR Dr. Maya Rahmawati" [ref=e141] [cursor=pointer]:
+          - /url: /blog/7-kesalahan-jurnal-target
+          - generic [ref=e142]:
+            - generic [ref=e143]:
+              - generic [ref=e144]: Panduan
+              - img "7 Kesalahan Umum Saat Memilih Jurnal Target" [ref=e145]
+            - generic [ref=e146]:
+              - generic [ref=e147]:
+                - generic [ref=e148]: 4 min read
+                - generic [ref=e149]: •
+                - generic [ref=e150]: Mei 2025
+              - heading "7 Kesalahan Umum Saat Memilih Jurnal Target" [level=3] [ref=e151]
+              - paragraph [ref=e152]: Daftar kesalahan paling umum di tahap journal selection yang membuat naskah anda di-desk-reject sebelum dibaca reviewer. Tips dari editor jurnal Q1.
+          - generic [ref=e154]:
+            - generic [ref=e155]: MR
+            - generic [ref=e156]: Dr. Maya Rahmawati
+        - 'link "Interview Wawancara: Membaca Reviewer Comments Tanpa Patah Semangat 8 min read • Apr 2025 Wawancara: Membaca Reviewer Comments Tanpa Patah Semangat Dr. Ade Putranto — reviewer aktif di 4 jurnal Q1 — berbagi cara membaca komentar reviewer sebagai data, bukan serangan personal. AP Dr. Ade Putranto" [ref=e158] [cursor=pointer]':
+          - /url: /blog/interview-reviewer-comments
+          - generic [ref=e159]:
+            - generic [ref=e160]:
+              - generic [ref=e161]: Interview
+              - 'img "Wawancara: Membaca Reviewer Comments Tanpa Patah Semangat" [ref=e162]'
+            - generic [ref=e163]:
+              - generic [ref=e164]:
+                - generic [ref=e165]: 8 min read
+                - generic [ref=e166]: •
+                - generic [ref=e167]: Apr 2025
+              - 'heading "Wawancara: Membaca Reviewer Comments Tanpa Patah Semangat" [level=3] [ref=e168]'
+              - paragraph [ref=e169]: Dr. Ade Putranto — reviewer aktif di 4 jurnal Q1 — berbagi cara membaca komentar reviewer sebagai data, bukan serangan personal.
+          - generic [ref=e171]:
+            - generic [ref=e172]: AP
+            - generic [ref=e173]: Dr. Ade Putranto
+        - link "Esai Mengapa Publikasi Internasional Penting Bagi Dosen Pemula 12 min read • Mar 2025 Mengapa Publikasi Internasional Penting Bagi Dosen Pemula Argumen panjang tentang kapital akademik, transferabilitas reputasi lintas batas, dan kenapa publikasi internasional adalah pintu, bukan piala. LK Dr. Lina Kartika" [ref=e175] [cursor=pointer]:
+          - /url: /blog/publikasi-internasional-dosen-pemula
+          - generic [ref=e176]:
+            - generic [ref=e177]:
+              - generic [ref=e178]: Esai
+              - img "Mengapa Publikasi Internasional Penting Bagi Dosen Pemula" [ref=e179]
+            - generic [ref=e180]:
+              - generic [ref=e181]:
+                - generic [ref=e182]: 12 min read
+                - generic [ref=e183]: •
+                - generic [ref=e184]: Mar 2025
+              - heading "Mengapa Publikasi Internasional Penting Bagi Dosen Pemula" [level=3] [ref=e185]
+              - paragraph [ref=e186]: Argumen panjang tentang kapital akademik, transferabilitas reputasi lintas batas, dan kenapa publikasi internasional adalah pintu, bukan piala.
+          - generic [ref=e188]:
+            - generic [ref=e189]: LK
+            - generic [ref=e190]: Dr. Lina Kartika
+        - 'link "Panduan Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin 6 min read • Mar 2025 Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin IMRaD bukan kerangka kaku — IMRaD adalah perjanjian baca antara penulis dan reviewer. Panduan praktis menyusun naskah dengan ritme yang familiar. BS Dr. Bayu Setiawan" [ref=e192] [cursor=pointer]':
+          - /url: /blog/imrad-disiplin-reviewer
+          - generic [ref=e193]:
+            - generic [ref=e194]:
+              - generic [ref=e195]: Panduan
+              - 'img "Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin" [ref=e196]'
+            - generic [ref=e197]:
+              - generic [ref=e198]:
+                - generic [ref=e199]: 6 min read
+                - generic [ref=e200]: •
+                - generic [ref=e201]: Mar 2025
+              - 'heading "Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin" [level=3] [ref=e202]'
+              - paragraph [ref=e203]: IMRaD bukan kerangka kaku — IMRaD adalah perjanjian baca antara penulis dan reviewer. Panduan praktis menyusun naskah dengan ritme yang familiar.
+          - generic [ref=e205]:
+            - generic [ref=e206]: BS
+            - generic [ref=e207]: Dr. Bayu Setiawan
+        - 'link "Studi Kasus Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission 15 min read • Feb 2025 Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission Kronologi sembilan bulan satu naskah peserta cohort #04 — dari pertama kali di-desk-reject hingga akhirnya diterima di Q2 dengan strategi pemilihan jurnal yang berbeda. FR Fajar Ramadhan" [ref=e209] [cursor=pointer]':
+          - /url: /blog/case-reject-q3-accept-q2
+          - generic [ref=e210]:
+            - generic [ref=e211]:
+              - generic [ref=e212]: Studi Kasus
+              - 'img "Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission" [ref=e213]'
+            - generic [ref=e214]:
+              - generic [ref=e215]:
+                - generic [ref=e216]: 15 min read
+                - generic [ref=e217]: •
+                - generic [ref=e218]: Feb 2025
+              - 'heading "Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission" [level=3] [ref=e219]'
+              - paragraph [ref=e220]: "Kronologi sembilan bulan satu naskah peserta cohort #04 — dari pertama kali di-desk-reject hingga akhirnya diterima di Q2 dengan strategi pemilihan jurnal yang berbeda."
+          - generic [ref=e222]:
+            - generic [ref=e223]: FR
+            - generic [ref=e224]: Fajar Ramadhan
+        - link "Panduan Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda 9 min read • Feb 2025 Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda Abstract adalah pintu — bukan ringkasan. Pola 4 kalimat sederhana yang membuat editor melanjutkan membaca naskah anda, lengkap dengan contoh sebelum/sesudah. MR Dr. Maya Rahmawati" [ref=e226] [cursor=pointer]:
+          - /url: /blog/abstract-yang-membuat-reviewer-membuka
+          - generic [ref=e227]:
+            - generic [ref=e228]:
+              - generic [ref=e229]: Panduan
+              - img "Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda" [ref=e230]
+            - generic [ref=e231]:
+              - generic [ref=e232]:
+                - generic [ref=e233]: 9 min read
+                - generic [ref=e234]: •
+                - generic [ref=e235]: Feb 2025
+              - heading "Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda" [level=3] [ref=e236]
+              - paragraph [ref=e237]: Abstract adalah pintu — bukan ringkasan. Pola 4 kalimat sederhana yang membuat editor melanjutkan membaca naskah anda, lengkap dengan contoh sebelum/sesudah.
+          - generic [ref=e239]:
+            - generic [ref=e240]: MR
+            - generic [ref=e241]: Dr. Maya Rahmawati
+        - link "Berita CoPublika Berkolaborasi dengan 5 Universitas Baru untuk Beasiswa Cohort 2025 3 min read • Jan 2025 CoPublika Berkolaborasi dengan 5 Universitas Baru untuk Beasiswa Cohort 2025 Pengumuman kemitraan baru dengan UNY, UB, ITS, UNAIR, dan UI untuk menyediakan beasiswa cohort 2025 bagi 50 akademisi pemula terpilih. CP CoPublika Team" [ref=e243] [cursor=pointer]:
+          - /url: /blog/kolaborasi-5-universitas-baru
+          - generic [ref=e244]:
+            - generic [ref=e245]:
+              - generic [ref=e246]: Berita
+              - img "CoPublika Berkolaborasi dengan 5 Universitas Baru untuk Beasiswa Cohort 2025" [ref=e247]
+            - generic [ref=e248]:
+              - generic [ref=e249]:
+                - generic [ref=e250]: 3 min read
+                - generic [ref=e251]: •
+                - generic [ref=e252]: Jan 2025
+              - heading "CoPublika Berkolaborasi dengan 5 Universitas Baru untuk Beasiswa Cohort 2025" [level=3] [ref=e253]
+              - paragraph [ref=e254]: Pengumuman kemitraan baru dengan UNY, UB, ITS, UNAIR, dan UI untuk menyediakan beasiswa cohort 2025 bagi 50 akademisi pemula terpilih.
+          - generic [ref=e256]:
+            - generic [ref=e257]: CP
+            - generic [ref=e258]: CoPublika Team
+        - 'link "Esai Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa 10 min read • Jan 2025 Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa Esai panjang tentang etos kerja akademik, ritme yang berkelanjutan, dan kenapa kuantitas publikasi tidak selalu berbanding lurus dengan dampak. DN Dr. Dewi Nirmala" [ref=e260] [cursor=pointer]':
+          - /url: /blog/slow-scholarship
+          - generic [ref=e261]:
+            - generic [ref=e262]:
+              - generic [ref=e263]: Esai
+              - 'img "Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa" [ref=e264]'
+            - generic [ref=e265]:
+              - generic [ref=e266]:
+                - generic [ref=e267]: 10 min read
+                - generic [ref=e268]: •
+                - generic [ref=e269]: Jan 2025
+              - 'heading "Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa" [level=3] [ref=e270]'
+              - paragraph [ref=e271]: Esai panjang tentang etos kerja akademik, ritme yang berkelanjutan, dan kenapa kuantitas publikasi tidak selalu berbanding lurus dengan dampak.
+          - generic [ref=e273]:
+            - generic [ref=e274]: DN
+            - generic [ref=e275]: Dr. Dewi Nirmala
+        - link "Panduan Menggunakan AI sebagai Asisten Riset — Tanpa Melanggar Etika Akademik 7 min read • Des 2024 Menggunakan AI sebagai Asisten Riset — Tanpa Melanggar Etika Akademik Garis tipis antara AI sebagai asisten produktif dan AI sebagai pelanggar integritas. Panduan praktis penggunaan AI dalam siklus riset. FR Fajar Ramadhan" [ref=e277] [cursor=pointer]:
+          - /url: /blog/ai-asisten-riset-etika
+          - generic [ref=e278]:
+            - generic [ref=e279]:
+              - generic [ref=e280]: Panduan
+              - img "Menggunakan AI sebagai Asisten Riset — Tanpa Melanggar Etika Akademik" [ref=e281]
+            - generic [ref=e282]:
+              - generic [ref=e283]:
+                - generic [ref=e284]: 7 min read
+                - generic [ref=e285]: •
+                - generic [ref=e286]: Des 2024
+              - heading "Menggunakan AI sebagai Asisten Riset — Tanpa Melanggar Etika Akademik" [level=3] [ref=e287]
+              - paragraph [ref=e288]: Garis tipis antara AI sebagai asisten produktif dan AI sebagai pelanggar integritas. Panduan praktis penggunaan AI dalam siklus riset.
+          - generic [ref=e290]:
+            - generic [ref=e291]: FR
+            - generic [ref=e292]: Fajar Ramadhan
+        - 'link "Interview Kolaborasi Internasional: Mencari Co-Author yang Sefrekuensi 6 min read • Des 2024 Kolaborasi Internasional: Mencari Co-Author yang Sefrekuensi Dr. Lina Kartika berbagi pengalaman membangun jaringan co-author lintas negara — dari kenalan di konferensi hingga submission bersama. LK Dr. Lina Kartika" [ref=e294] [cursor=pointer]':
+          - /url: /blog/interview-co-author-internasional
+          - generic [ref=e295]:
+            - generic [ref=e296]:
+              - generic [ref=e297]: Interview
+              - 'img "Kolaborasi Internasional: Mencari Co-Author yang Sefrekuensi" [ref=e298]'
+            - generic [ref=e299]:
+              - generic [ref=e300]:
+                - generic [ref=e301]: 6 min read
+                - generic [ref=e302]: •
+                - generic [ref=e303]: Des 2024
+              - 'heading "Kolaborasi Internasional: Mencari Co-Author yang Sefrekuensi" [level=3] [ref=e304]'
+              - paragraph [ref=e305]: Dr. Lina Kartika berbagi pengalaman membangun jaringan co-author lintas negara — dari kenalan di konferensi hingga submission bersama.
+          - generic [ref=e307]:
+            - generic [ref=e308]: LK
+            - generic [ref=e309]: Dr. Lina Kartika
+        - 'link "Studi Kasus Studi Kasus: Beasiswa S3 Luar Negeri — Sharing Alumni LPDP & Chevening 11 min read • Nov 2024 Studi Kasus: Beasiswa S3 Luar Negeri — Sharing Alumni LPDP & Chevening 4 alumni CoPublika berbagi perjalanan mereka dari publikasi pertama hingga lolos beasiswa S3. Persiapan, timeline, dan kerangka strategis. HS Dr. Hadi Suryanto" [ref=e311] [cursor=pointer]':
+          - /url: /blog/case-beasiswa-s3-luar-negeri
+          - generic [ref=e312]:
+            - generic [ref=e313]:
+              - generic [ref=e314]: Studi Kasus
+              - 'img "Studi Kasus: Beasiswa S3 Luar Negeri — Sharing Alumni LPDP & Chevening" [ref=e315]'
+            - generic [ref=e316]:
+              - generic [ref=e317]:
+                - generic [ref=e318]: 11 min read
+                - generic [ref=e319]: •
+                - generic [ref=e320]: Nov 2024
+              - 'heading "Studi Kasus: Beasiswa S3 Luar Negeri — Sharing Alumni LPDP & Chevening" [level=3] [ref=e321]'
+              - paragraph [ref=e322]: 4 alumni CoPublika berbagi perjalanan mereka dari publikasi pertama hingga lolos beasiswa S3. Persiapan, timeline, dan kerangka strategis.
+          - generic [ref=e324]:
+            - generic [ref=e325]: HS
+            - generic [ref=e326]: Dr. Hadi Suryanto
+        - link "Panduan Strategi Penulisan Cover Letter Berbasis Editor Persona 8 min read • Nov 2024 Strategi Penulisan Cover Letter Berbasis Editor Persona Cover letter yang baik bukan formalitas — itu hadiah untuk editor. Pendekatan persona-based untuk menulis cover letter yang dibaca penuh. HS Dr. Hadi Suryanto" [ref=e328] [cursor=pointer]:
+          - /url: /blog/cover-letter-editor-persona
+          - generic [ref=e329]:
+            - generic [ref=e330]:
+              - generic [ref=e331]: Panduan
+              - img "Strategi Penulisan Cover Letter Berbasis Editor Persona" [ref=e332]
+            - generic [ref=e333]:
+              - generic [ref=e334]:
+                - generic [ref=e335]: 8 min read
+                - generic [ref=e336]: •
+                - generic [ref=e337]: Nov 2024
+              - heading "Strategi Penulisan Cover Letter Berbasis Editor Persona" [level=3] [ref=e338]
+              - paragraph [ref=e339]: Cover letter yang baik bukan formalitas — itu hadiah untuk editor. Pendekatan persona-based untuk menulis cover letter yang dibaca penuh.
+          - generic [ref=e341]:
+            - generic [ref=e342]: HS
+            - generic [ref=e343]: Dr. Hadi Suryanto
+        - 'link "Esai Esai: Bertahan di Tahap Revisi yang Terasa Berat 9 min read • Okt 2024 Esai: Bertahan di Tahap Revisi yang Terasa Berat Refleksi panjang tentang fase paling rapuh dalam proses publikasi — saat reviewer komentar pedas dan motivasi mulai retak. Bagaimana cara bertahan. DN Dr. Dewi Nirmala" [ref=e345] [cursor=pointer]':
+          - /url: /blog/essay-bekerja-saat-revisi-berat
+          - generic [ref=e346]:
+            - generic [ref=e347]:
+              - generic [ref=e348]: Esai
+              - 'img "Esai: Bertahan di Tahap Revisi yang Terasa Berat" [ref=e349]'
+            - generic [ref=e350]:
+              - generic [ref=e351]:
+                - generic [ref=e352]: 9 min read
+                - generic [ref=e353]: •
+                - generic [ref=e354]: Okt 2024
+              - 'heading "Esai: Bertahan di Tahap Revisi yang Terasa Berat" [level=3] [ref=e355]'
+              - paragraph [ref=e356]: Refleksi panjang tentang fase paling rapuh dalam proses publikasi — saat reviewer komentar pedas dan motivasi mulai retak. Bagaimana cara bertahan.
+          - generic [ref=e358]:
+            - generic [ref=e359]: DN
+            - generic [ref=e360]: Dr. Dewi Nirmala
+        - 'link "Berita Cohort #07 Resmi Dibuka — 24 Kursi untuk Bootcamp Siap Tembus Scopus 3 min read • Okt 2024 Cohort #07 Resmi Dibuka — 24 Kursi untuk Bootcamp Siap Tembus Scopus Pendaftaran Cohort #07 program Siap Tembus Scopus telah dibuka. 24 kursi tersedia, format hybrid (online + 2x luring di Yogyakarta). CP CoPublika Team" [ref=e362] [cursor=pointer]':
+          - /url: /blog/news-batch-07-resmi-dibuka
+          - generic [ref=e363]:
+            - generic [ref=e364]:
+              - generic [ref=e365]: Berita
+              - 'img "Cohort #07 Resmi Dibuka — 24 Kursi untuk Bootcamp Siap Tembus Scopus" [ref=e366]'
+            - generic [ref=e367]:
+              - generic [ref=e368]:
+                - generic [ref=e369]: 3 min read
+                - generic [ref=e370]: •
+                - generic [ref=e371]: Okt 2024
+              - 'heading "Cohort #07 Resmi Dibuka — 24 Kursi untuk Bootcamp Siap Tembus Scopus" [level=3] [ref=e372]'
+              - paragraph [ref=e373]: "Pendaftaran Cohort #07 program Siap Tembus Scopus telah dibuka. 24 kursi tersedia, format hybrid (online + 2x luring di Yogyakarta)."
+          - generic [ref=e375]:
+            - generic [ref=e376]: CP
+            - generic [ref=e377]: CoPublika Team
+        - 'link "Studi Kasus Studi Kasus: Naskah Pertama Dosen Baru — Dari Tesis ke Q3 13 min read • Sep 2024 Studi Kasus: Naskah Pertama Dosen Baru — Dari Tesis ke Q3 Bagaimana mengubah bab tesis menjadi naskah jurnal yang publication-ready. Langkah by langkah dari seorang dosen UNS yang baru lulus S2. RP Rini Puspita" [ref=e379] [cursor=pointer]':
+          - /url: /blog/case-naskah-pertama-dosen-baru
+          - generic [ref=e380]:
+            - generic [ref=e381]:
+              - generic [ref=e382]: Studi Kasus
+              - 'img "Studi Kasus: Naskah Pertama Dosen Baru — Dari Tesis ke Q3" [ref=e383]'
+            - generic [ref=e384]:
+              - generic [ref=e385]:
+                - generic [ref=e386]: 13 min read
+                - generic [ref=e387]: •
+                - generic [ref=e388]: Sep 2024
+              - 'heading "Studi Kasus: Naskah Pertama Dosen Baru — Dari Tesis ke Q3" [level=3] [ref=e389]'
+              - paragraph [ref=e390]: Bagaimana mengubah bab tesis menjadi naskah jurnal yang publication-ready. Langkah by langkah dari seorang dosen UNS yang baru lulus S2.
+          - generic [ref=e392]:
+            - generic [ref=e393]: RP
+            - generic [ref=e394]: Rini Puspita
+        - 'link "Interview Interview: Apa yang Editor Lihat di 60 Detik Pertama 10 min read • Sep 2024 Interview: Apa yang Editor Lihat di 60 Detik Pertama Wawancara editor tenured: bagaimana mereka memutuskan desk-reject vs send to review dalam waktu kurang dari satu menit. Pola yang sering muncul. BS Dr. Bayu Setiawan" [ref=e396] [cursor=pointer]':
+          - /url: /blog/interview-editor-tenured
+          - generic [ref=e397]:
+            - generic [ref=e398]:
+              - generic [ref=e399]: Interview
+              - 'img "Interview: Apa yang Editor Lihat di 60 Detik Pertama" [ref=e400]'
+            - generic [ref=e401]:
+              - generic [ref=e402]:
+                - generic [ref=e403]: 10 min read
+                - generic [ref=e404]: •
+                - generic [ref=e405]: Sep 2024
+              - 'heading "Interview: Apa yang Editor Lihat di 60 Detik Pertama" [level=3] [ref=e406]'
+              - paragraph [ref=e407]: "Wawancara editor tenured: bagaimana mereka memutuskan desk-reject vs send to review dalam waktu kurang dari satu menit. Pola yang sering muncul."
+          - generic [ref=e409]:
+            - generic [ref=e410]: BS
+            - generic [ref=e411]: Dr. Bayu Setiawan
+    - generic [ref=e413]:
+      - generic [ref=e414]: Open for submissions
+      - heading "Mau menulis di blog kami?" [level=2] [ref=e416]:
+        - text: Mau
+        - emphasis [ref=e417]: menulis
+        - text: di blog kami?
+      - paragraph [ref=e418]: Kami terbuka untuk tulisan tamu dari peneliti, editor, dan akademisi. Kirim outline anda — tim editor kami akan membaca dan memberi catatan dalam 7 hari kerja.
+      - generic [ref=e419]:
+        - link "Hubungi Editor" [ref=e420] [cursor=pointer]:
+          - /url: /contact
+          - text: Hubungi Editor
+          - img [ref=e421]
+        - link "Pedoman penulis" [ref=e423] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=e424]:
+        - generic [ref=e425]:
+          - generic [ref=e426]: 18+
+          - generic [ref=e427]: Tulisan
+        - generic [ref=e429]:
+          - generic [ref=e430]: 7 hari
+          - generic [ref=e431]: Respons editor
+        - generic [ref=e433]:
+          - generic [ref=e434]: 12+
+          - generic [ref=e435]: Penulis tamu
+  - contentinfo [ref=e436]:
+    - generic [ref=e437]:
+      - generic [ref=e438]:
+        - generic [ref=e439]:
+          - link "CoPublika" [ref=e440] [cursor=pointer]:
+            - /url: /
+            - img "CoPublika" [ref=e441]
+          - paragraph [ref=e442]: Digital Research Engine & Exclusive Community. Platform kolaborasi akademik terkurasi untuk menerbitkan publikasi berkualitas tinggi.
+        - generic [ref=e444]:
+          - generic [ref=e445]: Dapatkan notifikasi batch terbaru
+          - generic [ref=e447]:
+            - textbox "Email untuk newsletter" [ref=e448]:
+              - /placeholder: Email anda
+            - button "Subscribe" [ref=e449] [cursor=pointer]:
+              - text: Subscribe
+              - img [ref=e450]
+      - generic [ref=e453]:
+        - generic [ref=e454]:
+          - generic [ref=e455]: Menu
+          - list [ref=e456]:
+            - listitem [ref=e457]:
+              - link "Home" [ref=e458] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e459]:
+              - link "About" [ref=e460] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e461]:
+              - link "Research Project" [ref=e462] [cursor=pointer]:
+                - /url: /research
+            - listitem [ref=e463]:
+              - link "Blog" [ref=e464] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e465]:
+              - link "Event" [ref=e466] [cursor=pointer]:
+                - /url: /event
+        - generic [ref=e467]:
+          - generic [ref=e468]: Program
+          - list [ref=e469]:
+            - listitem [ref=e470]:
+              - link "Siap Tembus Scopus" [ref=e471] [cursor=pointer]:
+                - /url: /siap-tembus-scopus
+        - generic [ref=e472]:
+          - generic [ref=e473]: Contact
+          - list [ref=e474]:
+            - listitem [ref=e475]:
+              - link "hello@copublika.id" [ref=e476] [cursor=pointer]:
+                - /url: mailto:hello@copublika.id
+            - listitem [ref=e477]:
+              - link "Contact Form" [ref=e478] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e479]:
+              - link "Press" [ref=e480] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e481]:
+          - generic [ref=e482]: Legal
+          - list [ref=e483]:
+            - listitem [ref=e484]:
+              - link "Terms" [ref=e485] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e486]:
+              - link "Privacy" [ref=e487] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e488]:
+              - link "Council Charter" [ref=e489] [cursor=pointer]:
+                - /url: /curation-process
+        - generic [ref=e490]:
+          - generic [ref=e491]: Connect
+          - generic [ref=e492]:
+            - link "LinkedIn" [ref=e493] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e494]
+            - link "Twitter / X" [ref=e496] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e497]
+            - link "Instagram" [ref=e499] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e500]
+            - link "YouTube" [ref=e502] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e503]
+      - generic [ref=e506]:
+        - generic [ref=e507]: © 2026 CoPublika. All rights reserved.
+        - generic [ref=e508]: "Batch #04: Open — Jakarta · Singapore · Zürich"
+  - button "Open Next.js Dev Tools" [ref=e515] [cursor=pointer]:
+    - img [ref=e516]

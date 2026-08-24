@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Join Batch — CoPublika</title>
+<link rel="icon" href="assets/favicon-black.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .cp-apply { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; max-width: var(--max); margin: 64px auto 120px; padding: 0 var(--pad); }
+  @media (max-width: 880px) { .cp-apply { grid-template-columns: 1fr; gap: 40px; } }
+  .cp-apply__progress { display: flex; gap: 8px; margin-bottom: 32px; }
+  .cp-apply__step { flex: 1; height: 4px; background: var(--bone); border-radius: 999px; }
+  .cp-apply__step--active { background: var(--ink); }
+  .cp-apply__step-lbl { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); margin-bottom: 12px; }
+  .cp-apply__form { display: flex; flex-direction: column; gap: 16px; }
+  .cp-apply__nav { display: flex; justify-content: space-between; gap: 16px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="components/Nav.jsx"></script>
+<script type="text/babel" src="components/Footer.jsx"></script>
+
+<script type="text/babel">
+const STEPS = ['Identity', 'Background', 'Intent', 'Review'];
+
+function App() {
+  const [step, setStep] = React.useState(0);
+  const [data, setData] = React.useState({
+    name: '', email: '', orcid: '',
+    institution: '', role: '', hIndex: '',
+    intent: '', target: 'Q1',
+  });
+  const [done, setDone] = React.useState(false);
+
+  const set = (k, v) => setData({ ...data, [k]: v });
+
+  if (done) {
+    return (
+      <div className="cp-app">
+        <Nav active="join" />
+        <main style={{ maxWidth: 640, margin: '120px auto', padding: '0 var(--pad)', textAlign: 'center' }}>
+          <h1 className="cp-page__title">Application received.</h1>
+          <p className="cp-page__deck" style={{ margin: '28px auto 40px' }}>
+            Thank you, {data.name || 'researcher'}. The Curation Council will respond
+            within ten working days.
+          </p>
+          <a href="index.html" className="cp-btn cp-btn--solid cp-btn--lg">Back to home <span className="cp-btn__arrow">→</span></a>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="cp-app">
+      <Nav active="join" />
+      <main className="cp-apply">
+        <div>
+          <a href="index.html" className="cp-page__back">← Back to home</a>
+          <div className="cp-mono" style={{ marginTop: 16, marginBottom: 8, color: 'var(--mute)' }}>§ Application · Batch 04</div>
+          <h1 className="cp-page__title" style={{ fontSize: 'clamp(40px, 6vw, 72px)' }}>
+            The application is short.<br/>
+            <span className="cp-page__title-mute">The standard is not.</span>
+          </h1>
+          <p className="cp-page__deck" style={{ fontSize: 17 }}>
+            Four short sections. Most applicants finish in 12 minutes.
+            All decisions are issued in writing within ten working days.
+          </p>
+          <div style={{ marginTop: 48, padding: '20px 24px', background: 'var(--bone)', borderRadius: 16, fontSize: 14 }}>
+            <div className="cp-mono" style={{ color: 'var(--mute)', marginBottom: 8 }}>Closes</div>
+            <div style={{ fontWeight: 600 }}>14 June 2026 · 23:59 UTC</div>
+            <div style={{ marginTop: 12, color: 'var(--mute)' }}>5 of 24 seats remaining</div>
+          </div>
+        </div>
+
+        <div>
+          <div className="cp-apply__progress">
+            {STEPS.map((s, i) => (
+              <div key={s} className={`cp-apply__step ${i <= step ? 'cp-apply__step--active' : ''}`}></div>
+            ))}
+          </div>
+          <div className="cp-apply__step-lbl">Step {step + 1} of {STEPS.length} · {STEPS[step]}</div>
+
+          <div className="cp-login__card" style={{ padding: 32 }}>
+            {step === 0 && (
+              <div className="cp-apply__form">
+                <h2 className="cp-login__title" style={{ fontSize: 28 }}>Identity</h2>
+                <div className="cp-login__field">
+                  <label className="cp-login__label">Full name</label>
+                  <input className="cp-login__input" value={data.name} onChange={(e) => set('name', e.target.value)} placeholder="Dr. Aisyah Pradipta" />
+                </div>
+                <div className="cp-login__field">
+                  <label className="cp-login__label">Institutional email</label>
+                  <input className="cp-login__input" type="email" value={data.email} onChange={(e) => set('email', e.target.value)} placeholder="name@institution.edu" />
+                </div>
+                <div className="cp-login__field">
+                  <label className="cp-login__label">ORCID iD</label>
+                  <input className="cp-login__input" value={data.orcid} onChange={(e) => set('orcid', e.target.value)} placeholder="0000-0000-0000-0000" />
+                </div>
+              </div>
+            )}
+            {step === 1 && (
+              <div className="cp-apply__form">
+                <h2 className="cp-login__title" style={{ fontSize: 28 }}>Background</h2>
+                <div className="cp-login__field">
+                  <label className="cp-login__label">Institution</label>
+                  <input className="cp-login__input" value={data.institution} onChange={(e) => set('institution', e.target.value)} placeholder="Universitas Gadjah Mada" />
+                </div>
+                <div className="cp-login__field">
+                  <label className="cp-login__label">Role / title</label>
+                  <input className="cp-login__input" value={data.role} onChange={(e) => set('role', e.target.value)} placeholder="Associate Professor" />
+                </div>
+                <div className="cp-login__field">
+                  <label className="cp-login__label">Current h-index</label>
+                  <input className="cp-login__input" type="number" value={data.hIndex} onChange={(e) => set('hIndex', e.target.value)} placeholder="14" />
+                </div>
+              </div>
+            )}
+            {step === 2 && (
+              <div className="cp-apply__form">
+                <h2 className="cp-login__title" style={{ fontSize: 28 }}>Intent</h2>
+                <div className="cp-login__field">
+                  <label className="cp-login__label">Statement of intent</label>
+                  <textarea className="cp-login__input" rows="6" value={data.intent} onChange={(e) => set('intent', e.target.value)} placeholder="In two paragraphs: what you are working on, and why this batch." style={{ resize: 'vertical', fontFamily: 'inherit' }}></textarea>
+                </div>
+                <div className="cp-login__field">
+                  <label className="cp-login__label">Target tier</label>
+                  <select className="cp-login__input" value={data.target} onChange={(e) => set('target', e.target.value)}>
+                    <option>Q1</option><option>Q2</option><option>Open / Pre-print</option>
+                  </select>
+                </div>
+              </div>
+            )}
+            {step === 3 && (
+              <div className="cp-apply__form">
+                <h2 className="cp-login__title" style={{ fontSize: 28 }}>Review</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '12px 24px', fontSize: 14 }}>
+                  {Object.entries(data).map(([k, v]) => (
+                    <React.Fragment key={k}>
+                      <div className="cp-mono" style={{ color: 'var(--mute)' }}>{k}</div>
+                      <div style={{ fontWeight: 500 }}>{v || <span style={{ color: 'var(--mute)' }}>—</span>}</div>
+                    </React.Fragment>
+                  ))}
+                </div>
+                <p style={{ marginTop: 16, color: 'var(--mute)', fontSize: 13 }}>
+                  By submitting, you confirm the information is accurate. The
+                  Curation Council will respond in writing within ten working days.
+                </p>
+              </div>
+            )}
+
+            <div className="cp-apply__nav">
+              <button className="cp-btn cp-login__alt" disabled={step === 0} onClick={() => setStep(step - 1)} style={{ width: 'auto', opacity: step === 0 ? 0.4 : 1 }}>← Back</button>
+              {step < STEPS.length - 1 ? (
+                <button className="cp-btn cp-btn--solid" onClick={() => setStep(step + 1)}>Continue <span className="cp-btn__arrow">→</span></button>
+              ) : (
+                <button className="cp-btn cp-btn--solid" onClick={() => setDone(true)}>Submit application <span className="cp-btn__arrow">→</span></button>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

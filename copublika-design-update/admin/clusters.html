@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cluster Riset — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .cl-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 980px) { .cl-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 700px) { .cl-grid { grid-template-columns: 1fr; } }
+  .cl {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex; flex-direction: column; gap: 14px;
+    transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+    position: relative; overflow: hidden;
+    text-decoration: none; color: inherit;
+  }
+  .cl:hover { border-color: var(--ink); transform: translateY(-2px); }
+  .cl.flag { background: var(--ink); color: white; border-color: var(--ink); grid-column: span 2; }
+  @media (max-width: 700px) { .cl.flag { grid-column: span 1; } }
+  .cl.flag::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 90% 10%, rgba(233, 113, 28, 0.2), transparent 60%);
+    pointer-events: none;
+  }
+  .cl.flag > * { position: relative; z-index: 1; }
+  .cl-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .cl-top .num { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
+  .cl.flag .cl-top .num { color: rgba(255,255,255,0.5); }
+  .cl-top .papers {
+    font-family: var(--mono); font-size: 10.5px;
+    background: var(--accent-soft); color: var(--accent-ink);
+    padding: 4px 10px; border-radius: 999px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .cl.flag .cl-top .papers { background: var(--accent); color: white; }
+  .cl h4 { font-size: 20px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.15; text-wrap: balance; }
+  .cl.flag h4 { font-size: 28px; }
+  .cl p { font-size: 13px; color: var(--ink-3); line-height: 1.5; text-wrap: pretty; }
+  .cl.flag p { color: #c8c8c8; }
+  .cl-stats {
+    display: flex; gap: 18px;
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto;
+  }
+  .cl.flag .cl-stats { border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.55); }
+  .cl-stats .it strong { color: var(--ink); font-family: var(--sans); font-size: 15px; font-weight: 500; display: block; letter-spacing: -0.01em; margin-bottom: 2px; }
+  .cl.flag .cl-stats .it strong { color: white; }
+  .cl-cta {
+    display: flex; gap: 6px;
+    justify-content: space-between; align-items: center;
+  }
+  .cl .lead { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); }
+  .cl.flag .lead { color: rgba(255,255,255,0.7); }
+  .cl .lead .av { width: 24px; height: 24px; font-size: 11px; }
+  .cl .arrow {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1px solid var(--line); display: flex; align-items: center; justify-content: center;
+    color: var(--ink-3); transition: all 0.3s var(--ease);
+  }
+  .cl.flag .arrow { border-color: rgba(255,255,255,0.15); color: white; }
+  .cl:hover .arrow { background: var(--accent); border-color: var(--accent); color: white; transform: rotate(-45deg); }
+</style>
+</head>
+<body data-page="clusters" data-search="Cari cluster, cluster lead, atau bidang…">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Project Governance</a> <span class="sep">/</span> <span>Cluster Riset</span></div>
+      <h1>24 cluster <em>aktif.</em></h1>
+      <p>Atur cluster lead, target jurnal, dan tampil/tidaknya di galeri publik.</p>
+    </div>
+    <div class="head-cta">
+      <button class="vbtn ghost">Ekspor daftar</button>
+      <button class="vbtn approve">+ Cluster Baru</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <section class="kpis">
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Cluster aktif</div></div><div class="kbig sm">24</div><div class="ksub">Lintas 9 rumpun ilmu</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Total publikasi</div></div><div class="kbig sm">318<span class="acc">+</span></div><div class="ksub">Akumulasi 24 cluster</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Cluster lead</div></div><div class="kbig sm">24</div><div class="ksub">+ 47 co-lead &amp; mentor</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Visibilitas publik</div></div><div class="kbig sm">22 <span style="color: var(--muted); font-size: 18px;">/ 24</span></div><div class="ksub">2 cluster baru masih draft</div></div>
+  </section>
+
+  <!-- Filter bar -->
+  <div class="filter-bar reveal">
+    <div class="filter-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Cari cluster, cluster lead, atau bidang…">
+    </div>
+    <div class="filter-select"><label>Rumpun</label><select><option>Semua</option><option>Pendidikan</option><option>Kesehatan</option><option>Ekonomi</option><option>Teknik</option><option>Sosial-Humaniora</option></select></div>
+    <div class="filter-select"><label>Status</label><select><option>Semua</option><option>Live</option><option>Draft</option></select></div>
+    <div class="filter-select"><label>Urutkan</label><select><option>Publikasi ↓</option><option>Anggota ↓</option><option>Terbaru</option></select></div>
+  </div>
+
+  <!-- Cluster grid -->
+  <section class="cl-grid">
+    <a class="cl flag reveal" href="../cluster-detail.html?id=01">
+      <div class="cl-top">
+        <span class="num">/ 01 — Flagship</span>
+        <span class="papers">68 papers</span>
+      </div>
+      <h4>Pendidikan &amp; Teknologi Pembelajaran</h4>
+      <p>AI dalam kelas, asesmen autentik, dan kebijakan pendidikan tinggi Indonesia. Cluster terbesar dengan 4 riset payung aktif.</p>
+      <div class="cl-stats">
+        <div class="it"><strong>142</strong> Anggota</div>
+        <div class="it"><strong>11</strong> Riset aktif</div>
+        <div class="it"><strong>96%</strong> Akseptasi</div>
+      </div>
+      <div class="cl-cta">
+        <div class="lead"><span class="av sm">AP</span> Prof. Anwar Putranto</div>
+        <span class="arrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+
+    <a class="cl reveal" data-delay="1" href="../cluster-detail.html?id=02">
+      <div class="cl-top"><span class="num">/ 02</span><span class="papers">42 papers</span></div>
+      <h4>Kesehatan Masyarakat</h4>
+      <p>Literasi kesehatan digital, intervensi komunitas, pasca-pandemi.</p>
+      <div class="cl-stats">
+        <div class="it"><strong>96</strong> Anggota</div>
+        <div class="it"><strong>7</strong> Riset</div>
+      </div>
+      <div class="cl-cta">
+        <div class="lead"><span class="av sm">RM</span> Dr. Rahmawati M.</div>
+        <span class="arrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+
+    <a class="cl reveal" href="../cluster-detail.html?id=03">
+      <div class="cl-top"><span class="num">/ 03</span><span class="papers">28 papers</span></div>
+      <h4>Ekonomi Sirkular</h4>
+      <p>Industrial symbiosis, MSME tekstil, sustainability.</p>
+      <div class="cl-stats">
+        <div class="it"><strong>64</strong> Anggota</div>
+        <div class="it"><strong>5</strong> Riset</div>
+      </div>
+      <div class="cl-cta">
+        <div class="lead"><span class="av sm">ND</span> Dr. Nirmala D.</div>
+        <span class="arrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+
+    <a class="cl reveal" href="../cluster-detail.html?id=04">
+      <div class="cl-top"><span class="num">/ 04</span><span class="papers">19 papers</span></div>
+      <h4>AI &amp; Etika</h4>
+      <p>Algorithmic accountability, fairness audits, LLM clinical NLP.</p>
+      <div class="cl-stats">
+        <div class="it"><strong>48</strong> Anggota</div>
+        <div class="it"><strong>4</strong> Riset</div>
+      </div>
+      <div class="cl-cta">
+        <div class="lead"><span class="av sm">BH</span> Bayu Hermawan, Ph.D.</div>
+        <span class="arrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+
+    <a class="cl reveal" href="../cluster-detail.html?id=05">
+      <div class="cl-top"><span class="num">/ 05</span><span class="papers">34 papers</span></div>
+      <h4>Kebijakan Publik</h4>
+      <p>Desentralisasi, public trust, open data Indonesia.</p>
+      <div class="cl-stats">
+        <div class="it"><strong>81</strong> Anggota</div>
+        <div class="it"><strong>6</strong> Riset</div>
+      </div>
+      <div class="cl-cta">
+        <div class="lead"><span class="av sm">RD</span> Dr. Reza Dwianto</div>
+        <span class="arrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+
+    <a class="cl reveal" href="../cluster-detail.html?id=06">
+      <div class="cl-top"><span class="num">/ 06</span><span class="papers">23 papers</span></div>
+      <h4>Linguistik Terapan</h4>
+      <p>L2 academic writing, EMI, translanguaging.</p>
+      <div class="cl-stats">
+        <div class="it"><strong>57</strong> Anggota</div>
+        <div class="it"><strong>4</strong> Riset</div>
+      </div>
+      <div class="cl-cta">
+        <div class="lead"><span class="av sm">SN</span> Dr. Sari Nurhaliza</div>
+        <span class="arrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+
+    <a class="cl reveal" href="../cluster-detail.html?id=07">
+      <div class="cl-top"><span class="num">/ 07</span><span class="papers">17 papers</span></div>
+      <h4>Sustainability</h4>
+      <p>Pengelolaan limbah, energi terbarukan, lingkungan.</p>
+      <div class="cl-stats">
+        <div class="it"><strong>42</strong> Anggota</div>
+        <div class="it"><strong>3</strong> Riset</div>
+      </div>
+      <div class="cl-cta">
+        <div class="lead"><span class="av sm">WK</span> Dr. Wira Kusuma</div>
+        <span class="arrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+
+    <a class="cl reveal" href="../cluster-detail.html?id=08">
+      <div class="cl-top"><span class="num">/ 08</span><span class="papers">21 papers</span></div>
+      <h4>Manajemen &amp; Bisnis</h4>
+      <p>Strategi UMKM, consumer behavior, corporate sustainability.</p>
+      <div class="cl-stats">
+        <div class="it"><strong>53</strong> Anggota</div>
+        <div class="it"><strong>4</strong> Riset</div>
+      </div>
+      <div class="cl-cta">
+        <div class="lead"><span class="av sm">SY</span> Dr. Sintha Yulianti</div>
+        <span class="arrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+
+    <a class="cl reveal" href="../cluster-detail.html?id=09">
+      <div class="cl-top"><span class="num">/ 09</span><span class="papers">15 papers</span></div>
+      <h4>Hukum &amp; Tata Kelola</h4>
+      <p>Open data adoption, public administration, governance.</p>
+      <div class="cl-stats">
+        <div class="it"><strong>38</strong> Anggota</div>
+        <div class="it"><strong>3</strong> Riset</div>
+      </div>
+      <div class="cl-cta">
+        <div class="lead"><span class="av sm">NH</span> Nurdin Hidayat</div>
+        <span class="arrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+  </section>
+
+  <div style="display: flex; justify-content: center; padding: 8px 0;">
+    <button class="vbtn ghost">Tampilkan 15 cluster lainnya</button>
+  </div>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

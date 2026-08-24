@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMS — Siap Tembus Scopus · CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  /* Roadmap rail */
+  .roadmap {
+    position: relative;
+    display: flex; flex-direction: column;
+    gap: 14px;
+    padding-left: 22px;
+  }
+  .roadmap::before {
+    content: ""; position: absolute;
+    left: 7px; top: 14px; bottom: 14px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 35%, var(--line) 35%, var(--line) 100%);
+    box-shadow: 0 0 8px 0 rgba(233, 113, 28, 0.4);
+  }
+  .mod {
+    position: relative;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    display: grid;
+    grid-template-columns: 60px 1fr 220px auto;
+    gap: 18px;
+    align-items: center;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .mod:hover { border-color: var(--ink); }
+  .mod::before {
+    content: ""; position: absolute;
+    left: -22px; top: 50%;
+    width: 16px; height: 16px;
+    border-radius: 50%; background: white;
+    border: 2px solid var(--line);
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+  .mod.done::before { background: var(--ink); border-color: var(--ink); }
+  .mod.done::after {
+    content: "✓"; position: absolute;
+    left: -17px; top: 50%;
+    color: white; font-size: 10px;
+    transform: translateY(-50%); z-index: 3;
+  }
+  .mod.active::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px rgba(233, 113, 28, 0.22); animation: pulseDot 1.6s infinite; }
+  .mod .num {
+    font-family: var(--mono);
+    font-size: 22px; font-weight: 600;
+    color: var(--muted);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .mod.active .num { color: var(--accent); }
+  .mod.done .num { color: var(--ink); }
+  .mod .info .ti {
+    font-size: 15px; font-weight: 500; letter-spacing: -0.01em;
+    line-height: 1.25; margin-bottom: 4px; text-wrap: pretty;
+  }
+  .mod .info .sub {
+    font-size: 12.5px; color: var(--ink-3);
+    line-height: 1.5; text-wrap: pretty;
+  }
+  .mod .info .meta {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    margin-top: 8px;
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .mod .info .meta strong { color: var(--ink); font-weight: 500; }
+  .mod .progress {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .mod .progress .head {
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .mod .progress .head .v { color: var(--ink); font-weight: 500; }
+  .mod .progress .br {
+    height: 6px; border-radius: 999px;
+    background: var(--bg-alt); overflow: hidden;
+  }
+  .mod .progress .br span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+  .mod .actions { display: flex; gap: 4px; align-items: center; }
+  .mod.locked { opacity: 0.65; }
+  .mod.locked .ti { color: var(--ink-2); }
+  @media (max-width: 900px) {
+    .mod { grid-template-columns: 1fr; gap: 12px; }
+    .mod .progress { max-width: 100%; }
+    .mod .actions { flex-direction: row; }
+  }
+</style>
+</head>
+<body data-page="lms">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Content</a> <span class="sep">/</span> <span>LMS</span></div>
+      <h1>LMS — <em>Siap Tembus Scopus!</em></h1>
+      <p>10 modul drip-feed yang membawa member dari menulis proposal sampai diterima Q1. Atur urutan, jadwal unlock, dan konten.</p>
+    </div>
+    <div class="head-cta">
+      <button class="vbtn ghost">Preview member view</button>
+      <button class="vbtn approve">+ Modul Baru</button>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <section class="kpis">
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Modul aktif</div></div><div class="kbig sm">10</div><div class="ksub">+ 2 draft</div></div>
+    <div class="kpi span3 accent reveal"><div class="ktop"><div class="klabel">Member sedang belajar</div></div><div class="kbig sm">840 <span class="kdelta">↑ 12%</span></div><div class="ksub">68% completion rate</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Avg. progres</div></div><div class="kbig sm">42<span class="acc">%</span></div><div class="ksub">Modul 4–5 (rerata posisi)</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Avg. waktu/modul</div></div><div class="kbig sm">38m</div><div class="ksub">Target: 30m</div></div>
+  </section>
+
+  <!-- Module roadmap -->
+  <section class="card reveal">
+    <div class="card-head">
+      <h3>Roadmap modul — Siap Tembus Scopus!</h3>
+      <div class="tabs">
+        <button class="tab active">Modul</button>
+        <button class="tab">Statistik Member</button>
+        <button class="tab">Drip schedule</button>
+      </div>
+    </div>
+
+    <div class="roadmap" style="margin: 18px 0 6px;">
+
+      <div class="mod done">
+        <div class="num">01</div>
+        <div class="info">
+          <div class="ti">Foundation: Apa itu Jurnal Scopus &amp; Sinta?</div>
+          <div class="sub">Pengenalan landscape jurnal Indonesia, indeksasi, dan kerangka kualitas.</div>
+          <div class="meta"><span><strong>5</strong> lessons</span><span><strong>28m</strong></span><span><strong>720</strong> selesai</span></div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Completion</span><span class="v">90%</span></div>
+          <div class="br"><span style="width: 90%; background: #2f8a40;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+      <div class="mod done">
+        <div class="num">02</div>
+        <div class="info">
+          <div class="ti">Memilih Research Gap yang Layak Tulis</div>
+          <div class="sub">Heuristik mencari celah riset yang signifikan tapi feasible dikerjakan tim CoPublika.</div>
+          <div class="meta"><span><strong>4</strong> lessons</span><span><strong>34m</strong></span><span><strong>680</strong> selesai</span></div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Completion</span><span class="v">85%</span></div>
+          <div class="br"><span style="width: 85%; background: #2f8a40;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+      <div class="mod done">
+        <div class="num">03</div>
+        <div class="info">
+          <div class="ti">Menulis Abstrak yang Diterima Editor</div>
+          <div class="sub">Struktur ASBAR (Aim-Setting-Background-Approach-Result) dan latihan rewriting.</div>
+          <div class="meta"><span><strong>6</strong> lessons</span><span><strong>42m</strong></span><span><strong>620</strong> selesai</span></div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Completion</span><span class="v">78%</span></div>
+          <div class="br"><span style="width: 78%; background: #2f8a40;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+      <div class="mod active">
+        <div class="num">04</div>
+        <div class="info">
+          <div class="ti">Literature Review yang Tidak Repetitif <span style="display: inline-block; vertical-align: middle; margin-left: 6px;" class="pill warn no-dot">Live drip · 28 Mei</span></div>
+          <div class="sub">Membangun argumen dari literatur — bukan sekadar daftar paper. Termasuk template synthesizing matrix.</div>
+          <div class="meta"><span><strong>7</strong> lessons</span><span><strong>52m</strong></span><span><strong>520</strong> sedang belajar</span></div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Completion</span><span class="v">62%</span></div>
+          <div class="br"><span style="width: 62%;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+      <div class="mod">
+        <div class="num">05</div>
+        <div class="info">
+          <div class="ti">Memilih Metodologi yang Reviewer Suka</div>
+          <div class="sub">Memetakan research question ke pilihan metodologi yang defensible.</div>
+          <div class="meta"><span><strong>6</strong> lessons</span><span><strong>48m</strong></span><span><strong>340</strong> sedang belajar</span></div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Completion</span><span class="v">28%</span></div>
+          <div class="br"><span style="width: 28%;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+      <div class="mod">
+        <div class="num">06</div>
+        <div class="info">
+          <div class="ti">Analisis Data: Statistik Tanpa Drama</div>
+          <div class="sub">Dari hipotesis ke statistik yang tepat — dengan contoh dataset CoPublika.</div>
+          <div class="meta"><span><strong>8</strong> lessons</span><span><strong>72m</strong></span><span><strong>180</strong> sedang belajar</span></div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Completion</span><span class="v">12%</span></div>
+          <div class="br"><span style="width: 12%;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+      <div class="mod locked">
+        <div class="num">07</div>
+        <div class="info">
+          <div class="ti">Statistical Reporting Tanpa Drama 🔒</div>
+          <div class="sub">Unlock setelah modul 6 selesai · drip-feed 7 hari.</div>
+          <div class="meta"><span><strong>5</strong> lessons</span><span><strong>38m</strong></span><span>Unlock dalam 14 hari</span></div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Status</span><span class="v">Locked</span></div>
+          <div class="br"><span style="width: 0%;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+      <div class="mod locked">
+        <div class="num">08</div>
+        <div class="info">
+          <div class="ti">Cover Letter &amp; Response to Reviewer 🔒</div>
+          <div class="sub">Studi kasus revision letter pasca peer review.</div>
+          <div class="meta"><span><strong>4</strong> lessons</span><span><strong>32m</strong></span></div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Status</span><span class="v">Locked</span></div>
+          <div class="br"><span style="width: 0%;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+      <div class="mod locked">
+        <div class="num">09</div>
+        <div class="info">
+          <div class="ti">Strategi Memilih Jurnal yang Tepat 🔒</div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Status</span><span class="v">Locked</span></div>
+          <div class="br"><span style="width: 0%;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+      <div class="mod locked">
+        <div class="num">10</div>
+        <div class="info">
+          <div class="ti">Setelah Diterima: Open Access, Citation, Outreach 🔒</div>
+        </div>
+        <div class="progress">
+          <div class="head"><span>Status</span><span class="v">Locked</span></div>
+          <div class="br"><span style="width: 0%;"></span></div>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

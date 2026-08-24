@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar — CoPublika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="login.html" disabled>
+<style>
+  body { background: var(--bg-alt); }
+  main { padding-top: 72px; min-height: 100vh; display: flex; }
+  .auth-wrap {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    width: 100%;
+    min-height: calc(100vh - 72px);
+  }
+  @media (max-width: 900px) { .auth-wrap { grid-template-columns: 1fr; } }
+
+  .auth-form {
+    background: var(--bg);
+    padding: clamp(40px, 6vw, 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    order: 2;
+  }
+  @media (max-width: 900px) { .auth-form { order: 1; } }
+
+  .auth-form .inner { max-width: 460px; width: 100%; margin: 0 auto; }
+  .auth-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .auth-eyebrow::before { content: ""; width: 24px; height: 1px; background: var(--accent); }
+  .auth-form h1 {
+    font-size: clamp(36px, 4vw, 48px);
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-bottom: 14px;
+  }
+  .auth-form .sub {
+    color: var(--ink-3);
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+  .auth-form .sub a { color: var(--accent); }
+  .auth-form .sub a:hover { text-decoration: underline; }
+
+  /* Progress steps */
+  .steps {
+    display: flex; gap: 8px;
+    margin-bottom: 32px;
+  }
+  .step {
+    flex: 1; height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .step.done { background: var(--accent); }
+  .step.active::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    animation: progress-fill 0.6s var(--ease-out);
+  }
+  @keyframes progress-fill { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+  .step-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .step-label .cur { color: var(--accent); }
+
+  .auth-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .auth-field.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 500px) { .auth-field.two { grid-template-columns: 1fr; } }
+  .auth-field label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .auth-field label .req { color: var(--accent); }
+  .auth-field input, .auth-field select {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 15px;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .auth-field input:focus, .auth-field select:focus { outline: 0; border-color: var(--ink); }
+
+  .check-list {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .check-list .chip {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .check-list .chip:hover { border-color: var(--ink); }
+  .check-list .chip.active { background: var(--ink); color: white; border-color: var(--ink); }
+
+  .terms {
+    display: flex; gap: 10px; align-items: flex-start;
+    margin: 16px 0 24px;
+    font-size: 13px; color: var(--ink-3); line-height: 1.5;
+  }
+  .terms input { margin-top: 4px; accent-color: var(--accent); }
+  .terms a { color: var(--accent); }
+  .terms a:hover { text-decoration: underline; }
+
+  .step-nav {
+    display: flex; gap: 10px; justify-content: space-between;
+    margin-top: 16px;
+  }
+
+  /* Right side — value list */
+  .auth-aside {
+    background: var(--ink);
+    color: white;
+    padding: clamp(40px, 6vw, 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    order: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  @media (max-width: 900px) { .auth-aside { order: 2; min-height: 400px; } }
+  .auth-aside::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 70% 30%, rgba(233,113,28,0.18), transparent 50%);
+    pointer-events: none;
+  }
+  .auth-aside > div { position: relative; z-index: 1; }
+  .auth-aside .logo-row img { height: 28px; }
+  .auth-aside h2 {
+    font-size: clamp(32px, 4vw, 48px);
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    margin-top: 48px;
+    text-wrap: balance;
+    max-width: 18ch;
+  }
+  .auth-aside h2 .accent { color: var(--accent); }
+  .auth-aside .perks {
+    margin-top: 40px;
+    display: flex; flex-direction: column;
+  }
+  .auth-aside .perk {
+    display: flex; gap: 16px;
+    padding: 20px 0;
+    border-top: 1px solid #2a2a2a;
+    align-items: flex-start;
+  }
+  .auth-aside .perk:last-child { border-bottom: 1px solid #2a2a2a; }
+  .auth-aside .perk .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    width: 32px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .auth-aside .perk h5 { font-size: 16px; font-weight: 500; margin-bottom: 4px; letter-spacing: -0.005em; }
+  .auth-aside .perk p { font-size: 13px; color: #c0c0c0; line-height: 1.5; }
+
+  .form-step { display: none; animation: fadeUp 0.4s var(--ease-out); }
+  .form-step.active { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main data-screen-label="Register">
+  <div class="auth-wrap">
+    <aside class="auth-aside">
+      <div class="logo-row">
+        <img src="assets/img/logo-white.png" alt="CoPublika">
+      </div>
+      <div>
+        <h2 data-i18n-id="Bergabung dengan <span class='accent'>1.240+</span> akademisi pemula yang sedang menulis hari ini." data-i18n-en="Join <span class='accent'>1,240+</span> early-career academics writing today.">Bergabung dengan <span class="accent">1.240+</span> akademisi pemula yang sedang menulis hari ini.</h2>
+        <div class="perks">
+          <div class="perk">
+            <span class="num">/ 01</span>
+            <div>
+              <h5 data-i18n-id="Akses gratis ke forum & 6 webinar bulanan." data-i18n-en="Free access to forums & 6 monthly webinars.">Akses gratis ke forum & 6 webinar bulanan.</h5>
+              <p data-i18n-id="Diskusi mingguan dengan mentor, klinik manuskrip ringan, dan rekaman acara." data-i18n-en="Weekly mentor discussions, light manuscript clinics, and event recordings.">Diskusi mingguan dengan mentor, klinik manuskrip ringan, dan rekaman acara.</p>
+            </div>
+          </div>
+          <div class="perk">
+            <span class="num">/ 02</span>
+            <div>
+              <h5 data-i18n-id="Match ke cluster riset sesuai bidang." data-i18n-en="Matched to research clusters in your field.">Match ke cluster riset sesuai bidang.</h5>
+              <p data-i18n-id="Bertemu co-author potensial dan akses ke 24 cluster aktif." data-i18n-en="Meet potential co-authors and access 24 active clusters.">Bertemu co-author potensial dan akses ke 24 cluster aktif.</p>
+            </div>
+          </div>
+          <div class="perk">
+            <span class="num">/ 03</span>
+            <div>
+              <h5 data-i18n-id="Prioritas pendaftaran bootcamp." data-i18n-en="Priority bootcamp registration.">Prioritas pendaftaran bootcamp.</h5>
+              <p data-i18n-id="Anggota komunitas mendapat akses 48 jam lebih awal ke setiap cohort." data-i18n-en="Members get 48-hour early access to every cohort.">Anggota komunitas mendapat akses 48 jam lebih awal ke setiap cohort.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="auth-form">
+      <div class="inner">
+        <div class="auth-eyebrow"><span data-i18n-id="Daftar gratis" data-i18n-en="Free registration">Daftar gratis</span></div>
+        <h1 data-i18n-id="Buat akun anda." data-i18n-en="Create your account.">Buat akun anda.</h1>
+        <p class="sub" data-i18n-id="Sudah punya akun? <a href='login.html'>Masuk di sini</a>." data-i18n-en="Already have an account? <a href='login.html'>Log in here</a>.">Sudah punya akun? <a href="login.html">Masuk di sini</a>.</p>
+
+        <div class="step-label">
+          <span data-i18n-id="Langkah" data-i18n-en="Step">Langkah</span> <span class="cur" id="curStep">01</span> / 02
+        </div>
+        <div class="steps">
+          <div class="step active" id="s1"></div>
+          <div class="step" id="s2"></div>
+        </div>
+
+        <form onsubmit="event.preventDefault(); alert('Demo register. Hubungkan ke backend untuk aktivasi.');">
+          <!-- Step 1 -->
+          <div class="form-step active" data-step="1">
+            <div class="auth-field two">
+              <div>
+                <label data-i18n-id="Nama depan" data-i18n-en="First name">Nama depan <span class="req">*</span></label>
+                <input type="text" required>
+              </div>
+              <div>
+                <label data-i18n-id="Nama belakang" data-i18n-en="Last name">Nama belakang</label>
+                <input type="text">
+              </div>
+            </div>
+            <div class="auth-field">
+              <label data-i18n-id="Email akademik" data-i18n-en="Academic email">Email akademik <span class="req">*</span></label>
+              <input type="email" required placeholder="anda@kampus.ac.id">
+            </div>
+            <div class="auth-field">
+              <label data-i18n-id="Kata sandi" data-i18n-en="Password">Kata sandi <span class="req">*</span></label>
+              <input type="password" required placeholder="Minimum 8 karakter">
+            </div>
+            <div class="step-nav">
+              <span></span>
+              <button class="btn btn-dark btn-lg btn-arrow" type="button" id="nextBtn" data-i18n-id="Lanjut" data-i18n-en="Continue">Lanjut</button>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="form-step" data-step="2">
+            <div class="auth-field">
+              <label data-i18n-id="Afiliasi" data-i18n-en="Affiliation">Afiliasi <span class="req">*</span></label>
+              <input type="text" data-i18n-placeholder="placeholder.affiliation" placeholder="Universitas / Institusi tempat anda mengajar/belajar">
+            </div>
+            <div class="auth-field">
+              <label data-i18n-id="Peran" data-i18n-en="Role">Peran</label>
+              <select>
+                <option data-i18n-id="Dosen baru (1–3 tahun)" data-i18n-en="New lecturer (1–3 years)">Dosen baru (1–3 tahun)</option>
+                <option data-i18n-id="Dosen muda (4–7 tahun)" data-i18n-en="Junior lecturer (4–7 years)">Dosen muda (4–7 tahun)</option>
+                <option data-i18n-id="Mahasiswa S2" data-i18n-en="Master's student">Mahasiswa S2</option>
+                <option data-i18n-id="Mahasiswa S3" data-i18n-en="PhD student">Mahasiswa S3</option>
+                <option data-i18n-id="Peneliti" data-i18n-en="Researcher">Peneliti</option>
+                <option data-i18n-id="Lainnya" data-i18n-en="Other">Lainnya</option>
+              </select>
+            </div>
+            <div class="auth-field">
+              <label data-i18n-id="Bidang minat (pilih hingga 3)" data-i18n-en="Fields of interest (pick up to 3)">Bidang minat (pilih hingga 3)</label>
+              <div class="check-list" id="fields">
+                <button type="button" class="chip" data-i18n-id="Pendidikan" data-i18n-en="Education">Pendidikan</button>
+                <button type="button" class="chip" data-i18n-id="Kesehatan" data-i18n-en="Health">Kesehatan</button>
+                <button type="button" class="chip" data-i18n-id="Sosial" data-i18n-en="Social">Sosial</button>
+                <button type="button" class="chip" data-i18n-id="Ekonomi" data-i18n-en="Economics">Ekonomi</button>
+                <button type="button" class="chip" data-i18n-id="Teknik" data-i18n-en="Engineering">Teknik</button>
+                <button type="button" class="chip" data-i18n-id="AI & Komputasi" data-i18n-en="AI & Computing">AI & Komputasi</button>
+                <button type="button" class="chip" data-i18n-id="Lingkungan" data-i18n-en="Environment">Lingkungan</button>
+                <button type="button" class="chip" data-i18n-id="Hukum" data-i18n-en="Law">Hukum</button>
+                <button type="button" class="chip" data-i18n-id="Linguistik" data-i18n-en="Linguistics">Linguistik</button>
+              </div>
+            </div>
+            <label class="terms">
+              <input type="checkbox" required>
+              <span data-i18n-id="Saya menyetujui <a href='#'>Syarat & Ketentuan</a> dan <a href='#'>Kebijakan Privasi</a> CoPublika." data-i18n-en="I agree to CoPublika's <a href='#'>Terms</a> and <a href='#'>Privacy Policy</a>.">Saya menyetujui <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a> CoPublika.</span>
+            </label>
+            <div class="step-nav">
+              <button class="btn btn-line btn-lg" type="button" id="backBtn" data-i18n-id="Kembali" data-i18n-en="Back">Kembali</button>
+              <button class="btn btn-dark btn-lg btn-arrow" type="submit" data-i18n-id="Buat Akun" data-i18n-en="Create Account">Buat Akun</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+<div id="site-footer" style="display:none;"></div>
+<script src="assets/js/main.js"></script>
+<script>
+  CoPublika.init();
+  document.querySelectorAll('[data-i18n-id]').forEach(el => {
+    if (el.getAttribute('data-i18n-id').includes('<')) el.innerHTML = el.getAttribute('data-i18n-id');
+  });
+
+  // Step nav
+  const steps = document.querySelectorAll('.form-step');
+  const s1 = document.getElementById('s1');
+  const s2 = document.getElementById('s2');
+  const cur = document.getElementById('curStep');
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    steps[0].classList.remove('active');
+    steps[1].classList.add('active');
+    s1.classList.remove('active'); s1.classList.add('done');
+    s2.classList.add('active');
+    cur.textContent = '02';
+  });
+  document.getElementById('backBtn').addEventListener('click', () => {
+    steps[1].classList.remove('active');
+    steps[0].classList.add('active');
+    s2.classList.remove('active');
+    s1.classList.remove('done'); s1.classList.add('active');
+    cur.textContent = '01';
+  });
+
+  // Fields chip (max 3)
+  const chips = document.querySelectorAll('#fields .chip');
+  chips.forEach(c => c.addEventListener('click', () => {
+    const active = document.querySelectorAll('#fields .chip.active');
+    if (c.classList.contains('active')) {
+      c.classList.remove('active');
+    } else if (active.length < 3) {
+      c.classList.add('active');
+    }
+  }));
+</script>
+</body>
+</html>

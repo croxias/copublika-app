@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifikasi Pendaftar — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .vrow {
+    display: grid;
+    grid-template-columns: 1fr 280px auto;
+    gap: 18px;
+    padding: 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+    transition: background 0.2s;
+  }
+  .vrow:last-child { border-bottom: 0; }
+  .vrow:hover { background: var(--bg-alt); }
+  .vrow .vapp { display: grid; grid-template-columns: 44px 1fr; gap: 14px; min-width: 0; }
+  .vrow .vapp .nm { font-size: 14.5px; font-weight: 500; letter-spacing: -0.005em; margin-bottom: 3px; }
+  .vrow .vapp .meta { font-size: 12px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+  .vrow .vapp .meta .pip { font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; }
+  .vrow .vapp .meta .dot { width: 3px; height: 3px; background: var(--muted); border-radius: 50%; }
+  .vrow .vchips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .vchip {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em;
+    padding: 3px 8px; border-radius: 999px;
+    background: var(--bg-alt); color: var(--ink-2);
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .vchip .k { color: var(--muted); }
+  .vchip.match { background: #eaf6ed; color: #1f7a36; }
+  .vchip.match .k { color: #4a9959; }
+  .vchip.mismatch { background: #fdebea; color: #a3201b; }
+  .vchip.mismatch .k { color: #b9544f; }
+  .vchip.scholar { background: var(--accent-soft); color: var(--accent-ink); }
+  .score {
+    display: flex; flex-direction: column; gap: 6px;
+    min-width: 0;
+  }
+  .score .head { display: flex; justify-content: space-between; align-items: baseline; }
+  .score .head .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; }
+  .score .head .v { font-family: var(--mono); font-size: 16px; font-weight: 500; color: var(--ink); letter-spacing: -0.005em; }
+  .score .head .v.match { color: #1f7a36; }
+  .score .head .v.warn { color: var(--accent); }
+  .score .head .v.low { color: #a3201b; }
+  .score .br { height: 5px; border-radius: 999px; background: var(--bg-alt); overflow: hidden; }
+  .score .br span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+  .score .br.high span { background: #2f8a40; }
+  .score .br.low span { background: #c93737; }
+  .vact { display: flex; flex-direction: column; gap: 6px; }
+  .vact .vbtn { width: 100%; justify-content: center; }
+  @media (max-width: 980px) {
+    .vrow { grid-template-columns: 1fr; gap: 14px; }
+    .vact { flex-direction: row; }
+    .vact .vbtn { flex: 1; }
+  }
+</style>
+</head>
+<body data-page="verifications" data-search="Cari nama, Scholar ID, institusi…">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Curation</a> <span class="sep">/</span> <span>Verifikasi Pendaftar</span></div>
+      <h1>Verifikasi <em>pendaftar.</em></h1>
+      <p>Periksa kecocokan data pendaftar dengan metadata Google Scholar — proses one-click untuk match tinggi.</p>
+    </div>
+    <div class="head-cta">
+      <button class="vbtn ghost">Ekspor CSV</button>
+      <button class="vbtn dark">Auto-process match ≥95% (6)</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <section class="kpis">
+    <div class="kpi span3 accent reveal">
+      <div class="ktop"><div class="klabel">Total antrian</div></div>
+      <div class="kbig sm">14</div>
+      <div class="ksub">SLA target: <strong>24 jam</strong></div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Auto-matched</div></div>
+      <div class="kbig sm">9 <span class="kdelta">↑</span></div>
+      <div class="ksub">Skor ≥ 90% · siap one-click</div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Perlu klarifikasi</div></div>
+      <div class="kbig sm">3</div>
+      <div class="ksub">Afiliasi/H-index tidak konsisten</div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Mismatch</div></div>
+      <div class="kbig sm" style="color: #a3201b;">2</div>
+      <div class="ksub">Scholar ID tidak ditemukan</div>
+    </div>
+  </section>
+
+  <!-- Filter bar -->
+  <div class="filter-bar reveal">
+    <div class="filter-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Cari nama, Scholar ID, institusi…">
+    </div>
+    <div class="filter-select">
+      <label>Batch</label>
+      <select><option>Semua batch</option><option>#4 — Sept 2025</option><option>#3 — Mar 2025</option></select>
+    </div>
+    <div class="filter-select">
+      <label>Skor</label>
+      <select><option>Semua</option><option>≥ 90%</option><option>70–89%</option><option>&lt; 70%</option></select>
+    </div>
+    <div class="filter-select">
+      <label>Bidang</label>
+      <select><option>Semua bidang</option><option>Pendidikan</option><option>Kesehatan</option><option>Ekonomi</option><option>Teknik</option></select>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs reveal" style="align-self: flex-start;">
+    <button class="tab active">Menunggu <span class="ct">14</span></button>
+    <button class="tab">Auto-matched <span class="ct">9</span></button>
+    <button class="tab">Perlu Cek <span class="ct">3</span></button>
+    <button class="tab">Mismatch <span class="ct">2</span></button>
+    <button class="tab">Terverifikasi <span class="ct">186</span></button>
+    <button class="tab">Ditolak <span class="ct">4</span></button>
+  </div>
+
+  <!-- Verification list -->
+  <section class="card reveal" style="padding: 0; overflow: hidden;">
+
+    <div class="vrow">
+      <div class="vapp">
+        <span class="av lg">RD</span>
+        <div>
+          <div class="nm">Dr. Reza Dwianto, M.Si.</div>
+          <div class="meta">
+            <span class="pip">APP-2418</span><span class="dot"></span>
+            <span>reza.d@undip.ac.id</span><span class="dot"></span>
+            <span>Universitas Diponegoro · Kebijakan Publik</span>
+          </div>
+          <div class="vchips" style="margin-top: 8px;">
+            <span class="vchip scholar"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.31 11.142 14.815 9.5 12 9.5s-5.31 1.642-6.758 4.269z"/></svg>7XQrK2pAAAAJ</span>
+            <span class="vchip match">H-Index <span class="k">·</span> 18 ✓</span>
+            <span class="vchip match">Afiliasi <span class="k">·</span> UNDIP ✓</span>
+            <span class="vchip match">Sitasi <span class="k">·</span> 1.420</span>
+            <span class="vchip">i10 <span class="k">·</span> 32</span>
+          </div>
+        </div>
+      </div>
+      <div class="score">
+        <div class="head"><span class="lbl">Skor kecocokan</span><span class="v match">96%</span></div>
+        <div class="br high"><span style="width: 96%"></span></div>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.04em;">Auto-match ✓ · 2 jam lalu</div>
+      </div>
+      <div class="vact">
+        <button class="vbtn approve"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Verify &amp; Approve</button>
+        <button class="vbtn ghost">Detail</button>
+        <button class="vbtn ghost danger">Tolak</button>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="vapp">
+        <span class="av lg">BH</span>
+        <div>
+          <div class="nm">Bayu Hermawan, Ph.D.</div>
+          <div class="meta">
+            <span class="pip">APP-2416</span><span class="dot"></span>
+            <span>bayu.h@ugm.ac.id</span><span class="dot"></span>
+            <span>UGM · AI &amp; Etika</span>
+          </div>
+          <div class="vchips" style="margin-top: 8px;">
+            <span class="vchip scholar">mNb3HQ8AAAAJ</span>
+            <span class="vchip match">H-Index · 23 ✓</span>
+            <span class="vchip match">Afiliasi · UGM ✓</span>
+            <span class="vchip match">Sitasi · 2.860</span>
+            <span class="vchip">Recommender · Dr. Anastasia L.</span>
+          </div>
+        </div>
+      </div>
+      <div class="score">
+        <div class="head"><span class="lbl">Skor kecocokan</span><span class="v match">98%</span></div>
+        <div class="br high"><span style="width: 98%"></span></div>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.04em;">Auto-match ✓ · 9 jam lalu</div>
+      </div>
+      <div class="vact">
+        <button class="vbtn approve">Verify &amp; Approve</button>
+        <button class="vbtn ghost">Detail</button>
+        <button class="vbtn ghost danger">Tolak</button>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="vapp">
+        <span class="av lg">SP</span>
+        <div>
+          <div class="nm">Siti Putri Anggraini, M.Pd.</div>
+          <div class="meta">
+            <span class="pip">APP-2417</span><span class="dot"></span>
+            <span>siti.putri@upi.edu</span><span class="dot"></span>
+            <span>UPI · Pendidikan &amp; EdTech</span>
+          </div>
+          <div class="vchips" style="margin-top: 8px;">
+            <span class="vchip scholar">q9KsmW2AAAAJ</span>
+            <span class="vchip match">H-Index · 6 ✓</span>
+            <span class="vchip mismatch">Afiliasi · "UPI Bandung" ≠ form "UPI"</span>
+            <span class="vchip">Sitasi · 184</span>
+          </div>
+        </div>
+      </div>
+      <div class="score">
+        <div class="head"><span class="lbl">Skor kecocokan</span><span class="v warn">72%</span></div>
+        <div class="br"><span style="width: 72%"></span></div>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.04em;">Perlu klarifikasi · 4 jam lalu</div>
+      </div>
+      <div class="vact">
+        <button class="vbtn ghost">Klarifikasi</button>
+        <button class="vbtn approve">Verify &amp; Approve</button>
+        <button class="vbtn ghost danger">Tolak</button>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="vapp">
+        <span class="av lg">WK</span>
+        <div>
+          <div class="nm">Dr. Wira Kusuma, M.T.</div>
+          <div class="meta">
+            <span class="pip">APP-2414</span><span class="dot"></span>
+            <span>wira.k@its.ac.id</span><span class="dot"></span>
+            <span>ITS · Teknik &amp; Sustainability</span>
+          </div>
+          <div class="vchips" style="margin-top: 8px;">
+            <span class="vchip scholar">tH6Lx9YAAAAJ</span>
+            <span class="vchip match">H-Index · 14 ✓</span>
+            <span class="vchip match">Afiliasi · ITS ✓</span>
+            <span class="vchip match">Sitasi · 980</span>
+          </div>
+        </div>
+      </div>
+      <div class="score">
+        <div class="head"><span class="lbl">Skor kecocokan</span><span class="v match">93%</span></div>
+        <div class="br high"><span style="width: 93%"></span></div>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.04em;">Auto-match ✓ · 12 jam lalu</div>
+      </div>
+      <div class="vact">
+        <button class="vbtn approve">Verify &amp; Approve</button>
+        <button class="vbtn ghost">Detail</button>
+        <button class="vbtn ghost danger">Tolak</button>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="vapp">
+        <span class="av lg">NM</span>
+        <div>
+          <div class="nm">Nia Maharani, S.Pd., M.Pd.</div>
+          <div class="meta">
+            <span class="pip">APP-2413</span><span class="dot"></span>
+            <span>nia.m@unesa.ac.id</span><span class="dot"></span>
+            <span>UNESA · Linguistik Terapan</span>
+          </div>
+          <div class="vchips" style="margin-top: 8px;">
+            <span class="vchip scholar">xK2Lp4VAAAAJ</span>
+            <span class="vchip match">H-Index · 4 ✓</span>
+            <span class="vchip mismatch">Pendidikan · S2 di form, S3 di Scholar</span>
+            <span class="vchip">Sitasi · 86</span>
+          </div>
+        </div>
+      </div>
+      <div class="score">
+        <div class="head"><span class="lbl">Skor kecocokan</span><span class="v warn">68%</span></div>
+        <div class="br"><span style="width: 68%"></span></div>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.04em;">Perlu klarifikasi · 1 hari lalu</div>
+      </div>
+      <div class="vact">
+        <button class="vbtn ghost">Klarifikasi</button>
+        <button class="vbtn approve">Verify &amp; Approve</button>
+        <button class="vbtn ghost danger">Tolak</button>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="vapp">
+        <span class="av lg">FA</span>
+        <div>
+          <div class="nm">Faisal Ardiansyah, S.T.</div>
+          <div class="meta">
+            <span class="pip">APP-2415</span><span class="dot"></span>
+            <span>faisal.a@gmail.com</span><span class="dot"></span>
+            <span>"Universitas Mandiri" · Manajemen</span>
+          </div>
+          <div class="vchips" style="margin-top: 8px;">
+            <span class="vchip mismatch">Scholar · tidak ditemukan</span>
+            <span class="vchip mismatch">Afiliasi · tidak terverifikasi</span>
+            <span class="vchip mismatch">Sitasi · tidak ada</span>
+            <span class="vchip">Email · domain umum</span>
+          </div>
+        </div>
+      </div>
+      <div class="score">
+        <div class="head"><span class="lbl">Skor kecocokan</span><span class="v low">12%</span></div>
+        <div class="br low"><span style="width: 12%"></span></div>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.04em;">Mismatch · 11 jam lalu</div>
+      </div>
+      <div class="vact">
+        <button class="vbtn ghost danger">Tolak</button>
+        <button class="vbtn ghost">Detail</button>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <div class="info">Menampilkan <strong>1–6</strong> dari <strong>14</strong> antrian</div>
+      <div class="pages">
+        <button disabled>←</button>
+        <button class="active">1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>→</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

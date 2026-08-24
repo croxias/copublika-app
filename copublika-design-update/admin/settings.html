@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pengaturan Situs — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .settings-shell { display: grid; grid-template-columns: 220px 1fr; gap: 14px; align-items: start; }
+  @media (max-width: 900px) { .settings-shell { grid-template-columns: 1fr; } }
+  .settings-rail {
+    position: sticky; top: 90px;
+    display: flex; flex-direction: column;
+    background: white; border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 8px;
+  }
+  .settings-rail a {
+    display: flex; gap: 10px; align-items: center;
+    padding: 9px 12px; border-radius: 8px;
+    color: var(--ink-3); font-size: 13px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .settings-rail a:hover { background: var(--bg-alt); color: var(--ink); }
+  .settings-rail a.active {
+    background: var(--ink); color: white;
+  }
+  .settings-rail a .ico {
+    width: 16px; height: 16px;
+  }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 700px) { .pair { grid-template-columns: 1fr; } }
+
+  .row-toggle {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .row-toggle:last-child { border-bottom: 0; }
+  .row-toggle .info .ti { font-size: 14px; font-weight: 500; letter-spacing: -0.005em; }
+  .row-toggle .info .desc { font-size: 12.5px; color: var(--ink-3); margin-top: 2px; max-width: 56ch; }
+
+  .nav-config { display: flex; flex-direction: column; }
+  .nav-row {
+    display: grid; grid-template-columns: 22px 1fr 90px 60px 80px;
+    gap: 12px; align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-row:last-child { border-bottom: 0; }
+  .nav-row .drag { color: var(--muted); cursor: grab; }
+  .nav-row .nm { font-size: 13.5px; font-weight: 500; }
+  .nav-row .sub { font-size: 11.5px; color: var(--ink-3); }
+  .nav-row .mt { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; }
+
+  .preview-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 10.5px;
+    background: var(--accent-soft); color: var(--accent-ink);
+    padding: 4px 10px; border-radius: 999px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body data-page="settings">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">System</a> <span class="sep">/</span> <span>Pengaturan Situs</span></div>
+      <h1>Pengaturan <em>situs.</em></h1>
+      <p>Brand, navigasi publik, integrasi, dan flag fitur. Perubahan tersimpan otomatis.</p>
+    </div>
+    <div class="head-cta">
+      <span class="preview-badge">● Live preview tersinkron</span>
+      <button class="vbtn ghost">Buang perubahan</button>
+      <button class="vbtn approve">Simpan</button>
+    </div>
+  </div>
+
+  <div class="settings-shell">
+    <!-- Rail -->
+    <aside class="settings-rail reveal">
+      <a class="active" href="#brand"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/></svg>Brand &amp; Identitas</a>
+      <a href="#nav"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Navigasi Publik</a>
+      <a href="#features"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Feature Flags</a>
+      <a href="#integrations"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Integrasi</a>
+      <a href="#newsletter"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m22 7-10 7L2 7"/></svg>Newsletter</a>
+      <a href="#legal"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Legal &amp; Compliance</a>
+    </aside>
+
+    <!-- Panel -->
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+
+      <!-- Brand -->
+      <section class="card reveal" id="brand">
+        <div class="card-head"><h3>Brand &amp; Identitas</h3><span class="meta">Tampil di header, footer, dan OG cards</span></div>
+        <div class="pair">
+          <div class="field"><label>Nama situs</label><input type="text" value="CoPublika"></div>
+          <div class="field"><label>Tagline</label><input type="text" value="Digital Research Engine &amp; Exclusive Community"></div>
+        </div>
+        <div class="field"><label>Deskripsi singkat (meta description)</label><textarea>CoPublika menghubungkan akademisi Indonesia untuk berkolaborasi menulis paper di jurnal Scopus &amp; Sinta — melalui sistem batch terkurasi.</textarea></div>
+        <div class="pair">
+          <div class="field"><label>Email kontak utama</label><input type="email" value="hello@copublika.id"></div>
+          <div class="field"><label>Akun media sosial</label><input type="text" value="@copublika"></div>
+        </div>
+      </section>
+
+      <!-- Navigation -->
+      <section class="card reveal" id="nav">
+        <div class="card-head"><h3>Navigasi Publik</h3><span class="meta">Drag untuk mengubah urutan · aktifkan/nonaktifkan menu</span></div>
+        <div class="nav-config">
+          <div class="nav-row">
+            <span class="drag">⋮⋮</span>
+            <div><div class="nm">Home</div><div class="sub">/ · landing page utama</div></div>
+            <span class="mt">240K visit</span>
+            <span class="mt">Tetap</span>
+            <label class="toggle"><input type="checkbox" checked disabled><span class="slider"></span></label>
+          </div>
+          <div class="nav-row">
+            <span class="drag">⋮⋮</span>
+            <div><div class="nm">About</div><div class="sub">/about · profil &amp; visi</div></div>
+            <span class="mt">18K visit</span>
+            <span class="mt">Aktif</span>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="nav-row">
+            <span class="drag">⋮⋮</span>
+            <div><div class="nm">Research Project</div><div class="sub">/research · galeri riset publik</div></div>
+            <span class="mt">42K visit</span>
+            <span class="mt">Aktif</span>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="nav-row">
+            <span class="drag">⋮⋮</span>
+            <div><div class="nm">Program → Siap Tembus Scopus</div><div class="sub">/program · LMS preview</div></div>
+            <span class="mt">14K visit</span>
+            <span class="mt">Aktif</span>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="nav-row">
+            <span class="drag">⋮⋮</span>
+            <div><div class="nm">Blog</div><div class="sub">/blog · 94 artikel</div></div>
+            <span class="mt">42.8K visit</span>
+            <span class="mt">Aktif</span>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="nav-row">
+            <span class="drag">⋮⋮</span>
+            <div><div class="nm">Event</div><div class="sub">/event · kalender</div></div>
+            <span class="mt">12K visit</span>
+            <span class="mt">Aktif</span>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="nav-row">
+            <span class="drag">⋮⋮</span>
+            <div><div class="nm">Contact</div><div class="sub">/contact · formulir inquiry</div></div>
+            <span class="mt">3.4K visit</span>
+            <span class="mt">Aktif</span>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Feature flags -->
+      <section class="card reveal" id="features">
+        <div class="card-head"><h3>Feature Flags</h3><span class="meta">Aktifkan/nonaktifkan fitur tanpa deploy</span></div>
+        <div>
+          <div class="row-toggle">
+            <div class="info">
+              <div class="ti">Curiosity Gap (blur preview untuk Guest)</div>
+              <div class="desc">Tampilkan abstrak 150 karakter pertama + overlay blur untuk visitor non-member. Mempertinggi konversi ke registrasi.</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div class="info">
+              <div class="ti">Google Scholar auto-sync (cron 24 jam)</div>
+              <div class="desc">Refresh H-Index dan citation count anggota secara berkala dari Scholar.</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div class="info">
+              <div class="ti">Magnetic CTA button (efek follow cursor)</div>
+              <div class="desc">Tombol Register di header mengikuti kursor dalam radius 10px.</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div class="info">
+              <div class="ti">Magnet PDF watermark</div>
+              <div class="desc">Setiap unduhan Template Vault disisipkan ID member otomatis untuk traceability.</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div class="info">
+              <div class="ti">Internationalization (EN locale)</div>
+              <div class="desc">Tampilkan toggle bendera ID/EN. Saat ini 84% string sudah diterjemahkan.</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="row-toggle">
+            <div class="info">
+              <div class="ti">Linked Data Search (kepakaran lintas member)</div>
+              <div class="desc">Beta · pencarian semantik berbasis JSONB di workspace member.</div>
+            </div>
+            <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Integrations -->
+      <section class="card reveal" id="integrations">
+        <div class="card-head"><h3>Integrasi</h3></div>
+        <div class="pair">
+          <div class="field"><label>Google Scholar API key</label><input type="text" value="sk-scholar-*****-fd84a"></div>
+          <div class="field"><label>S3 endpoint (storage)</label><input type="url" value="https://s3.id-jkt-1.copublika.id"></div>
+          <div class="field"><label>SMTP host (newsletter)</label><input type="text" value="smtp.postmarkapp.com"></div>
+          <div class="field"><label>Analytics ID</label><input type="text" value="UMG-9F4LRX1"></div>
+        </div>
+      </section>
+
+      <!-- Newsletter -->
+      <section class="card reveal" id="newsletter">
+        <div class="card-head"><h3>Newsletter</h3></div>
+        <div class="pair">
+          <div class="field"><label>Subject default batch baru</label><input type="text" value="Batch baru CoPublika sudah buka 🟠"></div>
+          <div class="field"><label>From name</label><input type="text" value="Adi @ CoPublika"></div>
+        </div>
+        <div class="field"><label>Template body</label><textarea>Salam akademik,&#10;&#10;Batch {{batch_name}} resmi dibuka. Kuota: {{quota}} slot — pendaftaran ditutup {{deadline}}.&#10;&#10;Daftar di sini → {{cta_url}}</textarea></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

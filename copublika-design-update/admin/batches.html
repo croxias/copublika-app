@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batch Management — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .batch-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; }
+  @media (max-width: 1100px) { .batch-grid { grid-template-columns: 1fr; } }
+
+  .active-batch { position: relative; overflow: hidden; }
+  .active-batch::before {
+    content: ""; position: absolute; top: -20%; right: -10%;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(233, 113, 28, 0.12), transparent 60%);
+    pointer-events: none;
+  }
+  .ab-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 14px; margin-bottom: 18px;
+  }
+  .ab-head .label {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em;
+    color: var(--accent); text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  }
+  .ab-head .label::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(233, 113, 28, 0.22);
+    animation: pulseDot 1.6s infinite;
+  }
+  .ab-head h2 {
+    font-size: 28px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.05;
+  }
+  .ab-head h2 em { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; color: var(--accent); }
+  .ab-head .deck { color: var(--ink-3); font-size: 13.5px; margin-top: 4px; }
+
+  .ab-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 8px 0 18px; }
+  .ab-stat { padding: 16px 16px 16px 0; border-right: 1px solid var(--line); }
+  .ab-stat:nth-child(2n) { padding-right: 0; padding-left: 16px; }
+  .ab-stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .ab-stat:last-child, .ab-stat:nth-last-child(2) { border-bottom: 0; }
+  .ab-stat .l { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+  .ab-stat .v { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .ab-stat .v .acc { color: var(--accent); }
+  .ab-stat .v.small { font-size: 16px; }
+  @media (min-width: 700px) {
+    .ab-stats { grid-template-columns: repeat(4, 1fr); }
+    .ab-stat { padding: 18px; border-bottom: 0; }
+    .ab-stat:nth-child(n+3) { border-top: 0; }
+    .ab-stat:nth-child(2n) { padding-left: 18px; padding-right: 18px; }
+  }
+
+  .ab-progress {
+    height: 8px; background: var(--bg-alt);
+    border-radius: 999px; overflow: hidden; margin: 4px 0 18px;
+  }
+  .ab-progress span {
+    display: block; height: 100%; width: 68%;
+    background: linear-gradient(90deg, var(--accent), #f59a4a);
+    border-radius: 999px;
+    box-shadow: 0 0 10px 0 rgba(233, 113, 28, 0.4);
+  }
+
+  .timeline {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+    border-top: 1px solid var(--line); padding-top: 18px;
+  }
+  .tl-step {
+    position: relative;
+    text-align: center;
+    padding-top: 20px;
+  }
+  .tl-step::before {
+    content: ""; position: absolute;
+    top: 0; left: 50%; width: 14px; height: 14px;
+    border-radius: 50%; background: white; border: 2px solid var(--line);
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+  .tl-step::after {
+    content: ""; position: absolute;
+    top: 6px; right: -50%; height: 2px; width: 100%;
+    background: var(--line); z-index: 1;
+  }
+  .tl-step:last-child::after { display: none; }
+  .tl-step.done::before { background: var(--ink); border-color: var(--ink); }
+  .tl-step.done::after { background: var(--ink); }
+  .tl-step.active::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px rgba(233, 113, 28, 0.22); }
+  .tl-step .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; }
+  .tl-step .date { font-size: 12px; color: var(--ink-2); font-weight: 500; margin-top: 4px; }
+  .tl-step.active .lbl { color: var(--accent); }
+
+  /* Quota gauge (side panel) */
+  .quota .ring {
+    width: 168px; height: 168px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) 0% 68%, var(--bg-alt) 68% 100%);
+    position: relative;
+    margin: 6px auto 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .quota .ring::after {
+    content: ""; position: absolute; inset: 16px;
+    border-radius: 50%; background: white; border: 1px solid var(--line);
+  }
+  .quota .ring .num {
+    position: relative; z-index: 1;
+    font-size: 40px; font-weight: 600; letter-spacing: -0.025em;
+    text-align: center;
+  }
+  .quota .ring .num small {
+    display: block; font-family: var(--mono); font-size: 10px;
+    color: var(--muted); letter-spacing: 0.08em;
+    text-transform: uppercase; font-weight: 400; margin-top: 4px;
+  }
+
+  /* History */
+  .b-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 100px 90px 90px 100px;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+  .b-row:last-child { border-bottom: 0; }
+  .b-row .id { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: 0.04em; }
+  .b-row .nm { font-weight: 500; font-size: 14px; }
+  .b-row .nm small { display: block; font-size: 11.5px; color: var(--ink-3); font-style: italic; margin-top: 2px; }
+  .b-row .mt { font-family: var(--mono); font-size: 11px; color: var(--ink-2); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+  @media (max-width: 800px) {
+    .b-row { grid-template-columns: 60px 1fr auto; gap: 8px 14px; }
+    .b-row .mt { grid-column: 2; }
+  }
+</style>
+</head>
+<body data-page="batches">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Curation</a> <span class="sep">/</span> <span>Batch Management</span></div>
+      <h1>Batch <em>management.</em></h1>
+      <p>Kontrol pembukaan, kuota, dan deadline batch — status real-time tampil di footer situs publik.</p>
+    </div>
+    <div class="head-cta">
+      <button class="vbtn ghost">Ekspor laporan batch</button>
+      <button class="vbtn approve lg">+ Buka Batch Baru</button>
+    </div>
+  </div>
+
+  <!-- Active batch hero -->
+  <section class="grid-2 batch-grid">
+    <div class="card active-batch reveal">
+      <div class="ab-head">
+        <div>
+          <div class="label">Batch saat ini · Open</div>
+          <h2>Batch #4 — <em>September 2025</em></h2>
+          <div class="deck">Pendaftaran ditutup 14 Juni 2025 (18 hari lagi). 96 slot tersisa.</div>
+        </div>
+        <div class="head-cta">
+          <button class="vbtn ghost">Pause</button>
+          <a class="vbtn dark" href="verifications.html">Antrian Verifikasi</a>
+        </div>
+      </div>
+
+      <div class="ab-progress"><span></span></div>
+
+      <div class="ab-stats">
+        <div class="ab-stat"><div class="l">Pendaftar</div><div class="v">204</div></div>
+        <div class="ab-stat"><div class="l">Terverifikasi</div><div class="v" style="color:#2f8a40;">186</div></div>
+        <div class="ab-stat"><div class="l">Menunggu</div><div class="v" style="color:var(--accent);">14</div></div>
+        <div class="ab-stat"><div class="l">Ditolak</div><div class="v" style="color:#a3201b;">4</div></div>
+      </div>
+
+      <div class="timeline">
+        <div class="tl-step done"><div class="lbl">Setup</div><div class="date">15 Mar 2025</div></div>
+        <div class="tl-step done"><div class="lbl">Soft Launch</div><div class="date">12 Apr 2025</div></div>
+        <div class="tl-step active"><div class="lbl">Pendaftaran</div><div class="date">28 Apr — 14 Jun</div></div>
+        <div class="tl-step"><div class="lbl">Verifikasi</div><div class="date">15 — 30 Jun</div></div>
+        <div class="tl-step"><div class="lbl">Onboarding</div><div class="date">01 Sep 2025</div></div>
+      </div>
+    </div>
+
+    <div class="card quota reveal">
+      <div class="card-head"><h3>Kuota & Penerimaan</h3><a class="link-mono" href="analytics.html">Funnel →</a></div>
+      <div class="ring"><div class="num">68%<small>Terisi</small></div></div>
+      <div class="batch-rows" style="border-top: 1px solid var(--line);">
+        <div class="brow" style="padding: 11px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;">
+          <span style="color: var(--muted); text-transform: uppercase;">Kuota total</span>
+          <span style="color: var(--ink); font-weight: 500;">300</span>
+        </div>
+        <div class="brow" style="padding: 11px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;">
+          <span style="color: var(--muted); text-transform: uppercase;">Penerimaan target</span>
+          <span style="color: var(--ink); font-weight: 500;">≥ 60%</span>
+        </div>
+        <div class="brow" style="padding: 11px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;">
+          <span style="color: var(--muted); text-transform: uppercase;">SLA verifikasi</span>
+          <span style="color: #2f8a40; font-weight: 500;">1.2 hari</span>
+        </div>
+        <div style="padding: 11px 0; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;">
+          <span style="color: var(--muted); text-transform: uppercase;">Status di footer publik</span>
+          <span class="pill active no-dot" style="background: #eaf6ed; color: #1f7a36; padding: 2px 8px;">Live</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- History table -->
+  <section class="card tbl-card reveal">
+    <div class="card-head">
+      <h3>Riwayat batch</h3>
+      <div class="tabs">
+        <button class="tab active">Semua <span class="ct">4</span></button>
+        <button class="tab">Open</button>
+        <button class="tab">Closed</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="b-row" style="background: var(--bg-alt);">
+        <div class="id">#4</div>
+        <div class="nm">September 2025<small>Pendaftaran masih terbuka</small></div>
+        <div class="mt">204 / 300</div>
+        <div class="mt">186 ✓</div>
+        <div class="mt">76% Q1/Q2</div>
+        <div><span class="pill warn no-dot" style="background: var(--accent-soft); color: var(--accent-ink);">Open</span></div>
+      </div>
+      <div class="b-row">
+        <div class="id">#3</div>
+        <div class="nm">Maret 2025<small>Onboarding selesai · cohort aktif</small></div>
+        <div class="mt">280 / 280</div>
+        <div class="mt">268 ✓</div>
+        <div class="mt">78% Q1/Q2</div>
+        <div><span class="pill plain">Closed</span></div>
+      </div>
+      <div class="b-row">
+        <div class="id">#2</div>
+        <div class="nm">September 2024<small>Cohort produktif · 142 publikasi</small></div>
+        <div class="mt">240 / 240</div>
+        <div class="mt">231 ✓</div>
+        <div class="mt">74% Q1/Q2</div>
+        <div><span class="pill plain">Closed</span></div>
+      </div>
+      <div class="b-row">
+        <div class="id">#1</div>
+        <div class="nm">Maret 2024<small>Batch perdana · pilot</small></div>
+        <div class="mt">120 / 120</div>
+        <div class="mt">112 ✓</div>
+        <div class="mt">68% Q1/Q2</div>
+        <div><span class="pill plain">Closed</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Create new batch form -->
+  <section class="card reveal">
+    <div class="card-head">
+      <h3>+ Buka batch baru</h3>
+      <span class="meta">Disimpan sebagai draft sampai Anda mengaktifkan</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
+      <div class="field"><label>Nama batch</label><input type="text" value="Batch #5 — Maret 2026"></div>
+      <div class="field"><label>Kuota</label><input type="number" value="350"></div>
+      <div class="field"><label>Status footer publik</label>
+        <select>
+          <option>Live (open)</option>
+          <option>Coming soon</option>
+          <option>Closed</option>
+        </select>
+      </div>
+      <div class="field"><label>Pendaftaran dibuka</label><input type="date" value="2025-11-01"></div>
+      <div class="field"><label>Pendaftaran ditutup</label><input type="date" value="2025-12-15"></div>
+      <div class="field"><label>Onboarding</label><input type="date" value="2026-03-01"></div>
+    </div>
+    <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
+      <button class="vbtn ghost">Simpan Draft</button>
+      <button class="vbtn approve">Buat &amp; Aktifkan</button>
+    </div>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

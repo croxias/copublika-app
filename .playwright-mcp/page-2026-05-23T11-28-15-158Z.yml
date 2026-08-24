@@ -1,0 +1,479 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - strong [ref=e6]: "Cohort #07"
+      - text: — pendaftaran dibuka, 24 kursi tersisa.
+    - link "Daftar sekarang →" [ref=e7] [cursor=pointer]:
+      - /url: /siap-tembus-scopus
+    - button "Tutup pengumuman" [ref=e8] [cursor=pointer]: ×
+  - banner [ref=e9]:
+    - generic [ref=e10]:
+      - link "CoPublika" [ref=e11] [cursor=pointer]:
+        - /url: /
+        - img "CoPublika" [ref=e12]
+      - navigation "Primary" [ref=e13]:
+        - link "Home" [ref=e14] [cursor=pointer]:
+          - /url: /
+        - link "About" [ref=e15] [cursor=pointer]:
+          - /url: /about
+        - link "Research Project" [ref=e16] [cursor=pointer]:
+          - /url: /research
+        - generic [ref=e17]:
+          - button "Program" [ref=e18] [cursor=pointer]:
+            - generic [ref=e19]: Program
+          - generic:
+            - link "Siap Tembus Scopus Flagship Bootcamp 12 minggu untuk publikasi terindeks Scopus Q1–Q3.":
+              - /url: /siap-tembus-scopus
+              - generic:
+                - img
+              - generic:
+                - generic:
+                  - text: Siap Tembus Scopus
+                  - generic: Flagship
+                - generic: Bootcamp 12 minggu untuk publikasi terindeks Scopus Q1–Q3.
+              - generic: →
+        - link "Blog" [ref=e21] [cursor=pointer]:
+          - /url: /blog
+        - link "Event" [ref=e22] [cursor=pointer]:
+          - /url: /event
+        - link "Contact" [ref=e23] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - button "Pilih bahasa" [ref=e26] [cursor=pointer]:
+            - img [ref=e28]
+            - generic [ref=e31]: ID
+          - generic:
+            - button "Bahasa Indonesia ✓":
+              - generic:
+                - img
+              - generic: Bahasa Indonesia
+              - text: ✓
+            - button "English":
+              - generic:
+                - img
+              - generic: English
+        - link "Log In" [ref=e33] [cursor=pointer]:
+          - /url: /login
+        - link "Join Batch" [ref=e34] [cursor=pointer]:
+          - /url: /register
+          - generic [ref=e35]: Join Batch
+          - img [ref=e36]
+  - main [ref=e38]:
+    - generic [ref=e39]:
+      - img [ref=e40]
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - generic [ref=e65]:
+            - generic [ref=e68]: "Cohort #07 — Pendaftaran Dibuka"
+            - heading "Bootcamp Siap Tembus Scopus." [level=1] [ref=e69]:
+              - text: Bootcamp
+              - generic [ref=e70]: Siap Tembus Scopus.
+            - paragraph [ref=e71]:
+              - text: 12 minggu pendampingan terstruktur — dari pemilihan topik hingga
+              - emphasis [ref=e72]: acceptance letter
+              - text: . Mentor 1-on-1 dengan rekam jejak publikasi Q1–Q3.
+            - generic [ref=e73]:
+              - link "Klaim Kursi Gratis" [ref=e74] [cursor=pointer]:
+                - /url: /register
+                - generic [ref=e75]: Klaim Kursi Gratis
+                - img [ref=e76]
+              - link "Lihat Modul →" [ref=e78] [cursor=pointer]:
+                - /url: "#curriculum"
+            - generic [ref=e79]:
+              - generic [ref=e80]:
+                - generic [ref=e81]: Durasi
+                - generic [ref=e82]: 12 Minggu
+              - generic [ref=e83]:
+                - generic [ref=e84]: Format
+                - generic [ref=e85]: Hybrid
+              - generic [ref=e86]:
+                - generic [ref=e87]: Mulai
+                - generic [ref=e88]: 15 Sep 2025
+              - generic [ref=e89]:
+                - generic [ref=e90]: Kuota
+                - generic [ref=e91]: 24 / 60
+          - generic [ref=e93]:
+            - generic [ref=e94]:
+              - generic [ref=e95]: LIVE · COHORT FEED
+              - text: 07 / 12
+            - generic [ref=e96]:
+              - generic [ref=e97]:
+                - generic [ref=e98]: 0%
+                - text: Akseptasi cohort 2024
+              - generic [ref=e99]:
+                - generic [ref=e100]: "0"
+                - text: Publikasi alumni
+              - generic [ref=e101]:
+                - generic [ref=e102]: "0"
+                - text: Mentor Q1–Q3
+            - generic [ref=e103]:
+              - generic [ref=e104]: Update terbaru
+              - generic [ref=e105]:
+                - generic [ref=e106]: Rini P.diterima diSustainability Q1
+                - generic [ref=e107]: Andika H.submit keHealth Promotion Intl.
+                - generic [ref=e108]: Lina K.draft selesaiTEFLIN Q3
+                - generic [ref=e109]: Bayu S.revisi minorResources, C&R Q1
+            - generic [ref=e110]:
+              - generic [ref=e111]: "+33"
+              - generic [ref=e112]:
+                - strong [ref=e113]: 36 peserta
+                - text: sudah mendaftar
+        - generic [ref=e114]: Gulir untuk eksplor
+    - generic [ref=e115]:
+      - generic [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e120]: P.01
+          - generic [ref=e121]: Untuk siapa
+        - heading "Anda akan cocok di sini jika…" [level=2] [ref=e122]
+      - generic [ref=e123]:
+        - generic [ref=e125]:
+          - generic [ref=e128]: Profil ideal
+          - list [ref=e129]:
+            - listitem [ref=e130]:
+              - generic [ref=e132]: Dosen 1–5 tahun pengalaman yang ingin membangun rekam jejak publikasi internasional.
+            - listitem [ref=e133]:
+              - generic [ref=e135]: Mahasiswa S2/S3 yang membutuhkan publikasi sebagai syarat lulus atau syarat beasiswa.
+            - listitem [ref=e136]:
+              - generic [ref=e138]: Peneliti yang sudah pernah submit tapi sering ditolak — atau merasa stuck di tahap revisi.
+            - listitem [ref=e139]:
+              - generic [ref=e141]: Akademisi yang punya data / ide tapi belum tahu cara mengubahnya menjadi naskah jurnal.
+        - generic [ref=e143]:
+          - generic [ref=e146]: Bukan untuk anda jika
+          - list [ref=e147]:
+            - listitem [ref=e148]:
+              - img [ref=e150]
+              - generic [ref=e153]: Yang mengharap garansi accept di Q1 dalam 12 minggu — bukan janji kami.
+            - listitem [ref=e154]:
+              - img [ref=e156]
+              - generic [ref=e159]: Yang tidak punya minimal 5 jam per minggu untuk membaca & menulis.
+            - listitem [ref=e160]:
+              - img [ref=e162]
+              - generic [ref=e165]: Yang hanya cari sertifikat tanpa proses — kami pendampingan, bukan kursus pasif.
+    - generic [ref=e166]:
+      - generic [ref=e167]:
+        - generic [ref=e168]:
+          - generic [ref=e169]:
+            - generic [ref=e171]: P.02
+            - generic [ref=e172]: Modul
+          - heading "12 minggu. 6 fase ." [level=2] [ref=e173]:
+            - text: 12 minggu.
+            - generic [ref=e174]: 6 fase
+            - text: .
+        - paragraph [ref=e176]: Setiap fase memiliki output yang konkret. Tidak ada fase yang dilewati — bahkan jika anda sudah pernah submit sebelumnya.
+      - generic [ref=e177]:
+        - generic [ref=e178]:
+          - generic [ref=e179]:
+            - img [ref=e181]
+            - text: "01"
+          - generic [ref=e184]:
+            - generic [ref=e185]: W 1–2Phase 01 · Discover
+            - heading "Pemilihan Topik & Jurnal Target" [level=4] [ref=e186]
+            - paragraph [ref=e187]: Workshop scoping, pemetaan gap riset, dan analisis fit jurnal Scopus.
+            - generic [ref=e188]:
+              - img [ref=e190]
+              - text: Output1-page Concept Note
+        - generic [ref=e192]:
+          - generic [ref=e193]:
+            - img [ref=e195]
+            - text: "02"
+          - generic [ref=e198]:
+            - generic [ref=e199]: W 3–4Phase 02 · Review
+            - heading "Tinjauan Pustaka Sistematis" [level=4] [ref=e200]
+            - paragraph [ref=e201]: Strategi pencarian, sintesis tematik, dan penyusunan argumen literatur.
+            - generic [ref=e202]:
+              - img [ref=e204]
+              - text: OutputLiterature Matrix
+        - generic [ref=e206]:
+          - generic [ref=e207]:
+            - img [ref=e209]
+            - text: "03"
+          - generic [ref=e216]:
+            - generic [ref=e217]: W 5–6Phase 03 · Method
+            - heading "Metodologi & Analisis Data" [level=4] [ref=e218]
+            - paragraph [ref=e219]: Justifikasi metode, validitas, dan presentasi hasil yang publikasi-ready.
+            - generic [ref=e220]:
+              - img [ref=e222]
+              - text: OutputMethods + Results Draft
+        - generic [ref=e224]:
+          - generic [ref=e225]:
+            - img [ref=e227]
+            - text: "04"
+          - generic [ref=e230]:
+            - generic [ref=e231]: W 7–8Phase 04 · Write
+            - heading "Penulisan Akademik Bahasa Inggris" [level=4] [ref=e232]
+            - paragraph [ref=e233]: Anchor sentences, kohesi paragraf, dan diksi akademik untuk reviewer internasional.
+            - generic [ref=e234]:
+              - img [ref=e236]
+              - text: OutputFull Manuscript Draft
+        - generic [ref=e238]:
+          - generic [ref=e239]:
+            - img [ref=e241]
+            - text: "05"
+          - generic [ref=e245]:
+            - generic [ref=e246]: W 9–10Phase 05 · Refine
+            - heading "Klinik Manuskrip & Peer Review" [level=4] [ref=e247]
+            - paragraph [ref=e248]: Internal peer review dua putaran, mock reviewer comments, dan revisi terstruktur.
+            - generic [ref=e249]:
+              - img [ref=e251]
+              - text: OutputRevised Manuscript
+        - generic [ref=e253]:
+          - generic [ref=e254]:
+            - img [ref=e256]
+            - text: "06"
+          - generic [ref=e259]:
+            - generic [ref=e260]: W 11–12Phase 06 · Submit
+            - heading "Submission & Strategi Revisi" [level=4] [ref=e261]
+            - paragraph [ref=e262]: Cover letter, response strategy, dan pendampingan submission portal.
+            - generic [ref=e263]:
+              - img [ref=e265]
+              - text: OutputSubmitted to Scopus
+    - generic [ref=e267]:
+      - generic [ref=e268]:
+        - generic [ref=e269]:
+          - generic [ref=e271]: P.04
+          - generic [ref=e272]: Yang anda bawa pulang
+        - heading "6 hasil konkret. Tidak hanya teori." [level=2] [ref=e273]
+      - generic [ref=e274]:
+        - generic [ref=e275]:
+          - img [ref=e277]
+          - heading "Naskah lengkap 5.000–8.000 kata" [level=3] [ref=e280]
+          - paragraph [ref=e281]: Naskah jadi yang siap di-submit ke jurnal target — bukan draft setengah jadi.
+        - generic [ref=e282]:
+          - img [ref=e284]
+          - heading "Daftar jurnal target ter-validasi" [level=3] [ref=e288]
+          - paragraph [ref=e289]: Analisis fit, scope, dan estimasi timeline untuk 3–5 jurnal kandidat.
+        - generic [ref=e290]:
+          - img [ref=e292]
+          - heading "Cover letter & response template" [level=3] [ref=e295]
+          - paragraph [ref=e296]: Template profesional untuk submission dan response-to-reviewer yang siap pakai.
+        - generic [ref=e297]:
+          - img [ref=e299]
+          - heading "Mentor 1-on-1 (6 sesi)" [level=3] [ref=e303]
+          - paragraph [ref=e304]: Mentor aktif yang membaca naskah anda — bukan hanya sesi grup yang generik.
+        - generic [ref=e305]:
+          - img [ref=e307]
+          - heading "Jaringan 24 rekan cohort" [level=3] [ref=e314]
+          - paragraph [ref=e315]: Co-author potensial seumur hidup. Alumni network terbuka setelah bootcamp.
+        - generic [ref=e316]:
+          - img [ref=e318]
+          - heading "Sertifikat & rekomendasi" [level=3] [ref=e322]
+          - paragraph [ref=e323]: Sertifikat penyelesaian + surat rekomendasi mentor untuk beasiswa / promosi.
+    - generic [ref=e324]:
+      - generic [ref=e325]:
+        - generic [ref=e326]:
+          - generic [ref=e327]:
+            - generic [ref=e329]: P.03
+            - generic [ref=e330]: Mentor
+          - heading "Dibimbing peneliti aktif." [level=2] [ref=e331]
+        - paragraph [ref=e333]: 6 mentor inti dengan track record Q1–Q3 yang masih aktif submit & review setiap tahun.
+      - generic [ref=e334]:
+        - generic [ref=e336]:
+          - generic [ref=e337]: AP
+          - generic [ref=e338]:
+            - heading "Dr. Ade Putranto, M.Sc." [level=5] [ref=e339]
+            - generic [ref=e340]: Educational Tech · Q1 Author
+            - paragraph [ref=e341]: Penulis 28 artikel Scopus, reviewer di 4 jurnal Q1, mentor sejak 2019.
+            - generic [ref=e342]: h-index 14
+        - generic [ref=e344]:
+          - generic [ref=e345]: MR
+          - generic [ref=e346]:
+            - heading "Dr. Maya Rahmawati" [level=5] [ref=e347]
+            - generic [ref=e348]: Public Health · Q2 Editor
+            - paragraph [ref=e349]: Associate editor di jurnal kesehatan Q2, fokus literasi kesehatan komunitas.
+            - generic [ref=e350]: h-index 11
+        - generic [ref=e352]:
+          - generic [ref=e353]: BS
+          - generic [ref=e354]:
+            - heading "Dr. Bayu Setiawan" [level=5] [ref=e355]
+            - generic [ref=e356]: Sustainability · Reviewer Q1
+            - paragraph [ref=e357]: Reviewer aktif di Sustainability dan Resources, Conservation & Recycling.
+            - generic [ref=e358]: h-index 9
+        - generic [ref=e360]:
+          - generic [ref=e361]: LK
+          - generic [ref=e362]:
+            - heading "Dr. Lina Kartika" [level=5] [ref=e363]
+            - generic [ref=e364]: Linguistics · TEFLIN Q3
+            - paragraph [ref=e365]: Spesialis academic writing dan editor di TEFLIN Journal.
+            - generic [ref=e366]: h-index 8
+        - generic [ref=e368]:
+          - generic [ref=e369]: FR
+          - generic [ref=e370]:
+            - heading "Fajar Ramadhan, Ph.D." [level=5] [ref=e371]
+            - generic [ref=e372]: AI & Engineering · Q1
+            - paragraph [ref=e373]: Penulis 12 paper IEEE, fokus computer vision dan AI etis.
+            - generic [ref=e374]: h-index 7
+        - generic [ref=e376]:
+          - generic [ref=e377]: DN
+          - generic [ref=e378]:
+            - heading "Dr. Dewi Nirmala" [level=5] [ref=e379]
+            - generic [ref=e380]: Sociology · Q2 Author
+            - paragraph [ref=e381]: Spesialis riset kualitatif, pendekatan etnografi, dan grounded theory.
+            - generic [ref=e382]: h-index 10
+    - generic [ref=e383]:
+      - generic [ref=e384]:
+        - generic [ref=e385]:
+          - generic [ref=e386]:
+            - generic [ref=e388]: P.05
+            - generic [ref=e389]: Cerita alumni
+          - heading "Dari mereka yang sudah tembus." [level=2] [ref=e390]:
+            - text: Dari mereka yang sudah
+            - emphasis [ref=e391]: tembus
+            - text: .
+        - paragraph [ref=e392]: Tiga dari 142 alumni yang sudah menerbitkan naskah pasca-bootcamp.
+      - generic [ref=e393]:
+        - generic [ref=e394]:
+          - generic [ref=e395]: "Cohort #05 · Q3 → Q2“"
+          - paragraph [ref=e396]: Saya kira tembus Q3 sudah luar biasa. Cohort ini mengajari saya cara naik kelas — naskah saya akhirnya diterima di Q2 setelah dua kali revisi.
+          - generic [ref=e397]: Q2Jurnal Diterima
+          - generic [ref=e399]:
+            - generic [ref=e400]: Rini Puspita, M.Pd.
+            - generic [ref=e401]: Dosen, Universitas Negeri Semarang
+        - generic [ref=e402]:
+          - generic [ref=e403]: "Cohort #06 · Submission“"
+          - paragraph [ref=e404]: Mentor saya membaca naskah saya tiga kali sebelum disubmit. Detail itu yang membuat reviewer Q1 saya menulis 'this is well-structured'.
+          - generic [ref=e405]: Q1Under Review
+          - generic [ref=e407]:
+            - generic [ref=e408]: Putri Andini, Ph.D.
+            - generic [ref=e409]: Peneliti BRIN
+        - generic [ref=e410]:
+          - generic [ref=e411]: "Cohort #04 · Lulus → Mentor“"
+          - paragraph [ref=e412]: Klinik manuskrip mingguan memaksa saya konsisten. Yang dulu saya tunda berbulan-bulan akhirnya selesai dalam 6 minggu — sekarang saya jadi mentor.
+          - generic [ref=e413]: 6 mggDraft → Submit
+          - generic [ref=e415]:
+            - generic [ref=e416]: dr. Andika Hidayat
+            - generic [ref=e417]: "Mentor cohort #07"
+    - generic [ref=e419]:
+      - generic [ref=e420]: Beta · 100% Gratis
+      - 'heading "Cohort #07 — 100% gratis. Hanya 24 kursi tersisa." [level=2] [ref=e421]':
+        - text: "Cohort #07 —"
+        - emphasis [ref=e422]: 100% gratis
+        - text: .
+        - text: Hanya 24 kursi tersisa.
+      - paragraph [ref=e423]: Sebagai bagian dari program beta CoPublika, biaya bootcamp 12 minggu sepenuhnya digratiskan. Yang kami minta hanya komitmen anda untuk hadir sampai akhir.
+      - generic [ref=e424]:
+        - generic [ref=e425]: Pendaftaran ditutup dalam
+        - generic [ref=e426]:
+          - generic [ref=e427]: —Hari
+          - text: ":"
+          - generic [ref=e428]: —Jam
+          - text: ":"
+          - generic [ref=e429]: —Menit
+          - text: ":"
+          - generic [ref=e430]: —Detik
+      - generic [ref=e431]:
+        - generic [ref=e432]:
+          - generic [ref=e433]:
+            - generic [ref=e434]: Kuota terisi
+            - generic [ref=e435]:
+              - text: "36"
+              - generic [ref=e436]: / 60
+          - generic [ref=e437]:
+            - generic [ref=e438]: Tersisa
+            - generic [ref=e439]: 24 kursi
+        - generic [ref=e440]: ●Pendaftaran ditutup ketika kuota terpenuhi
+      - generic [ref=e441]:
+        - generic [ref=e442]:
+          - img [ref=e444]
+          - text: Akses semua modul 12 minggu
+        - generic [ref=e446]:
+          - img [ref=e448]
+          - text: Mentor 1-on-1 (6 sesi)
+        - generic [ref=e450]:
+          - img [ref=e452]
+          - text: Klinik manuskrip mingguan
+        - generic [ref=e454]:
+          - img [ref=e456]
+          - text: Sertifikat & alumni network
+      - generic [ref=e458]:
+        - link "Klaim Kursi Gratis" [ref=e459] [cursor=pointer]:
+          - /url: /register
+          - text: Klaim Kursi Gratis
+          - img [ref=e460]
+        - link "Tanya dulu" [ref=e462] [cursor=pointer]:
+          - /url: /contact
+  - contentinfo [ref=e463]:
+    - generic [ref=e464]:
+      - generic [ref=e465]:
+        - generic [ref=e466]:
+          - link "CoPublika" [ref=e467] [cursor=pointer]:
+            - /url: /
+            - img "CoPublika" [ref=e468]
+          - paragraph [ref=e469]: Digital Research Engine & Exclusive Community. Platform kolaborasi akademik terkurasi untuk menerbitkan publikasi berkualitas tinggi.
+        - generic [ref=e471]:
+          - generic [ref=e472]: Dapatkan notifikasi batch terbaru
+          - generic [ref=e474]:
+            - textbox "Email untuk newsletter" [ref=e475]:
+              - /placeholder: Email anda
+            - button "Subscribe" [ref=e476] [cursor=pointer]:
+              - text: Subscribe
+              - img [ref=e477]
+      - generic [ref=e480]:
+        - generic [ref=e481]:
+          - generic [ref=e482]: Menu
+          - list [ref=e483]:
+            - listitem [ref=e484]:
+              - link "Home" [ref=e485] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e486]:
+              - link "About" [ref=e487] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e488]:
+              - link "Research Project" [ref=e489] [cursor=pointer]:
+                - /url: /research
+            - listitem [ref=e490]:
+              - link "Blog" [ref=e491] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e492]:
+              - link "Event" [ref=e493] [cursor=pointer]:
+                - /url: /event
+        - generic [ref=e494]:
+          - generic [ref=e495]: Program
+          - list [ref=e496]:
+            - listitem [ref=e497]:
+              - link "Siap Tembus Scopus" [ref=e498] [cursor=pointer]:
+                - /url: /siap-tembus-scopus
+        - generic [ref=e499]:
+          - generic [ref=e500]: Contact
+          - list [ref=e501]:
+            - listitem [ref=e502]:
+              - link "hello@copublika.id" [ref=e503] [cursor=pointer]:
+                - /url: mailto:hello@copublika.id
+            - listitem [ref=e504]:
+              - link "Contact Form" [ref=e505] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e506]:
+              - link "Press" [ref=e507] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e508]:
+          - generic [ref=e509]: Legal
+          - list [ref=e510]:
+            - listitem [ref=e511]:
+              - link "Terms" [ref=e512] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e513]:
+              - link "Privacy" [ref=e514] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e515]:
+              - link "Council Charter" [ref=e516] [cursor=pointer]:
+                - /url: /curation-process
+        - generic [ref=e517]:
+          - generic [ref=e518]: Connect
+          - generic [ref=e519]:
+            - link "LinkedIn" [ref=e520] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e521]
+            - link "Twitter / X" [ref=e523] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e524]
+            - link "Instagram" [ref=e526] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e527]
+            - link "YouTube" [ref=e529] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e530]
+      - generic [ref=e533]:
+        - generic [ref=e534]: © 2026 CoPublika. All rights reserved.
+        - generic [ref=e535]: "Batch #04: Open — Jakarta · Singapore · Zürich"
+  - button "Open Next.js Dev Tools" [ref=e542] [cursor=pointer]:
+    - img [ref=e543]

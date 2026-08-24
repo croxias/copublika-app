@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — CoPublika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  /* Contact layout */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+  @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
+
+  .contact-info { position: sticky; top: 100px; align-self: start; }
+  .channel {
+    display: flex;
+    gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+    transition: padding 0.3s var(--ease);
+    align-items: flex-start;
+  }
+  .channel:hover { padding-left: 8px; }
+  .channel:first-child { border-top: 1px solid var(--line); }
+  .channel .icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--ink-2);
+    transition: all 0.3s var(--ease);
+  }
+  .channel:hover .icon { background: var(--accent); border-color: var(--accent); color: white; }
+  .channel .info { flex: 1; }
+  .channel .l {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .channel .v { font-size: 17px; color: var(--ink); font-weight: 500; letter-spacing: -0.005em; }
+  .channel .sub { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
+
+  /* Form */
+  .form {
+    padding: clamp(32px, 4vw, 56px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--bg);
+  }
+  .form-row { margin-bottom: 24px; }
+  .form-row.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 500px) { .form-row.two { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .field label .req { color: var(--accent); }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 15px;
+    color: var(--ink);
+    transition: border-color 0.2s, background 0.2s;
+    font-family: inherit;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline: none;
+    border-color: var(--ink);
+    background: var(--bg-alt);
+  }
+  .field textarea { min-height: 140px; resize: vertical; line-height: 1.5; }
+  .form .topic-chips {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
+  }
+  .form .topic-chip {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .form .topic-chip:hover { border-color: var(--ink); }
+  .form .topic-chip.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .form-submit {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .form-submit .note {
+    font-size: 12px;
+    color: var(--muted);
+    max-width: 40ch;
+  }
+
+  /* Office info */
+  .office {
+    margin-top: 40px;
+    padding: 28px;
+    background: var(--bg-alt);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+  }
+  .office h5 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .office p { font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+  .office .map {
+    aspect-ratio: 16 / 9;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-top: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .office .map::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(0deg, var(--line) 0%, var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 0%, var(--line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.6;
+  }
+  .office .map::after {
+    content: "📍";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px;
+  }
+
+  /* Success state */
+  .success-state {
+    display: none;
+    text-align: center;
+    padding: 60px 32px;
+  }
+  .success-state.show { display: block; }
+  .success-state .check {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 28px;
+    animation: pop 0.4s var(--ease-out);
+  }
+  @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+  .success-state h3 { font-size: 28px; letter-spacing: -0.02em; margin-bottom: 12px; }
+  .success-state p { font-size: 16px; color: var(--ink-3); max-width: 40ch; margin: 0 auto; line-height: 1.5; }
+
+  /* Form on hide */
+  .form-fields.hide { display: none; }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main data-screen-label="Contact">
+
+  <section class="page-hero">
+    <div class="ph-orb" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="breadcrumb reveal">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <span class="sep">/</span>
+        <span data-i18n="nav.contact">Contact</span>
+      </div>
+      <h1 class="page-h reveal" data-delay="1" data-i18n-id="Sapa kami." data-i18n-en="Say hello.">Sapa kami.</h1>
+      <p class="page-sub reveal" data-delay="2" data-i18n-id="Pertanyaan tentang program, kolaborasi institusi, atau ajakan menulis tamu — semuanya kami baca." data-i18n-en="Questions about programs, institutional collaboration, or guest-writing pitches — we read them all.">Pertanyaan tentang program, kolaborasi institusi, atau ajakan menulis tamu — semuanya kami baca.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="contact-grid">
+
+        <!-- Info column -->
+        <div class="contact-info reveal">
+          <div class="sh-tag" style="margin-bottom: 32px;"><span class="bar"></span><span class="num">C.01</span><span data-i18n-id="Saluran" data-i18n-en="Channels">Saluran</span></div>
+
+          <a class="channel" href="mailto:halo@copublika.id">
+            <span class="icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 7L12 13L21 7M3 7V17C3 17.5523 3.44772 18 4 18H20C20.5523 18 21 17.5523 21 17V7M3 7C3 6.44772 3.44772 6 4 6H20C20.5523 6 21 6.44772 21 7" stroke="currentColor" stroke-width="1.6"/></svg>
+            </span>
+            <div class="info">
+              <div class="l">Email</div>
+              <div class="v">halo@copublika.id</div>
+              <div class="sub" data-i18n-id="Balasan dalam 24 jam kerja" data-i18n-en="Reply within 24 work hours">Balasan dalam 24 jam kerja</div>
+            </div>
+          </a>
+          <a class="channel" href="#">
+            <span class="icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 11.5C21 16.1944 17.1944 20 12.5 20C11.4 20 10.3 19.78 9.3 19.38L4 21L5.62 15.7C5.22 14.7 5 13.6 5 12.5C5 7.80558 8.80558 4 13.5 4C18.1944 4 22 7.80558 22 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <div class="info">
+              <div class="l">WhatsApp</div>
+              <div class="v">+62 813 2025 0707</div>
+              <div class="sub" data-i18n-id="Senin–Jumat · 09.00–17.00 WIB" data-i18n-en="Mon–Fri · 09.00–17.00 WIB">Senin–Jumat · 09.00–17.00 WIB</div>
+            </div>
+          </a>
+          <a class="channel" href="#">
+            <span class="icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+            </span>
+            <div class="info">
+              <div class="l">Instagram</div>
+              <div class="v">@copublika.id</div>
+              <div class="sub" data-i18n-id="Update harian & cuplikan event" data-i18n-en="Daily updates & event snippets">Update harian & cuplikan event</div>
+            </div>
+          </a>
+          <a class="channel" href="#">
+            <span class="icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V17M8 7V7.01M12 17V13.5C12 12.6716 12.6716 12 13.5 12V12C14.3284 12 15 12.6716 15 13.5V17M15 17V14.5C15 13.6716 15.6716 13 16.5 13V13C17.3284 13 18 13.6716 18 14.5V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </span>
+            <div class="info">
+              <div class="l">LinkedIn</div>
+              <div class="v">CoPublika Academic Community</div>
+              <div class="sub" data-i18n-id="Untuk kolaborasi institusi" data-i18n-en="For institutional collaboration">Untuk kolaborasi institusi</div>
+            </div>
+          </a>
+
+          <div class="office">
+            <h5 data-i18n-id="Markas" data-i18n-en="Headquarters">Markas</h5>
+            <p data-i18n-id="Jl. Cik Di Tiro No. 24<br>Yogyakarta 55223<br>Indonesia" data-i18n-en="Jl. Cik Di Tiro No. 24<br>Yogyakarta 55223<br>Indonesia">Jl. Cik Di Tiro No. 24<br>Yogyakarta 55223<br>Indonesia</p>
+            <div class="map" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <!-- Form column -->
+        <div>
+          <div class="form reveal" data-delay="1">
+            <div class="form-fields">
+              <div style="margin-bottom: 32px;">
+                <div class="sh-tag"><span class="bar"></span><span class="num">C.02</span><span data-i18n-id="Kirim Pesan" data-i18n-en="Send a Message">Kirim Pesan</span></div>
+                <h3 style="font-size:28px; letter-spacing:-0.02em; margin-top:14px;" data-i18n-id="Apa yang ingin anda diskusikan?" data-i18n-en="What would you like to discuss?">Apa yang ingin anda diskusikan?</h3>
+              </div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label data-i18n-id="Topik pesan" data-i18n-en="Message topic">Topik pesan <span class="req">*</span></label>
+                  <div class="topic-chips" id="topics">
+                    <button class="topic-chip active" data-i18n-id="Program" data-i18n-en="Program">Program</button>
+                    <button class="topic-chip" data-i18n-id="Kolaborasi" data-i18n-en="Collaboration">Kolaborasi</button>
+                    <button class="topic-chip" data-i18n-id="Beasiswa" data-i18n-en="Scholarship">Beasiswa</button>
+                    <button class="topic-chip" data-i18n-id="Tulisan Tamu" data-i18n-en="Guest Writing">Tulisan Tamu</button>
+                    <button class="topic-chip" data-i18n-id="Lainnya" data-i18n-en="Other">Lainnya</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row two">
+                <div class="field">
+                  <label data-i18n-id="Nama lengkap" data-i18n-en="Full name">Nama lengkap <span class="req">*</span></label>
+                  <input type="text" required>
+                </div>
+                <div class="field">
+                  <label data-i18n-id="Afiliasi" data-i18n-en="Affiliation">Afiliasi</label>
+                  <input type="text" data-i18n-id-placeholder="Universitas / Institusi" placeholder="Universitas / Institusi">
+                </div>
+              </div>
+
+              <div class="form-row two">
+                <div class="field">
+                  <label>Email <span class="req">*</span></label>
+                  <input type="email" required placeholder="nama@kampus.ac.id">
+                </div>
+                <div class="field">
+                  <label data-i18n-id="Nomor WhatsApp" data-i18n-en="WhatsApp number">Nomor WhatsApp</label>
+                  <input type="tel" placeholder="+62 ___ ____ ____">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label data-i18n-id="Pesan anda" data-i18n-en="Your message">Pesan anda <span class="req">*</span></label>
+                  <textarea required data-i18n-placeholder="placeholder.message" placeholder="Ceritakan apa yang anda butuhkan — semakin detail, semakin baik kami dapat membantu."></textarea>
+                </div>
+              </div>
+
+              <div class="form-submit">
+                <span class="note" data-i18n-id="Dengan mengirim, anda setuju kami menyimpan email anda untuk merespons pesan ini." data-i18n-en="By sending, you agree we may store your email to respond to this message.">Dengan mengirim, anda setuju kami menyimpan email anda untuk merespons pesan ini.</span>
+                <button class="btn btn-dark btn-lg btn-arrow" type="button" id="sendBtn" data-i18n-id="Kirim Pesan" data-i18n-en="Send Message">Kirim Pesan</button>
+              </div>
+            </div>
+
+            <div class="success-state" id="success">
+              <div class="check">✓</div>
+              <h3 data-i18n-id="Pesan terkirim." data-i18n-en="Message sent.">Pesan terkirim.</h3>
+              <p data-i18n-id="Terima kasih. Tim kami akan membalas dalam 24 jam kerja melalui email yang anda berikan." data-i18n-en="Thanks. Our team will reply within 24 work hours to the email you provided.">Terima kasih. Tim kami akan membalas dalam 24 jam kerja melalui email yang anda berikan.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/main.js"></script>
+<script>
+  CoPublika.init('contact');
+
+  // Topic chips
+  const chips = document.querySelectorAll('#topics .topic-chip');
+  chips.forEach(c => c.addEventListener('click', (e) => {
+    e.preventDefault();
+    chips.forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+  }));
+
+  // Fake send
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    document.querySelector('.form-fields').classList.add('hide');
+    document.getElementById('success').classList.add('show');
+  });
+</script>
+</body>
+</html>

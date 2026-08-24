@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Vault — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 980px) { .tpl-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 700px) { .tpl-grid { grid-template-columns: 1fr; } }
+
+  .tpl {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+  .tpl:hover { border-color: var(--ink); transform: translateY(-3px); }
+
+  .tpl-preview {
+    aspect-ratio: 1 / 1.3;
+    background: linear-gradient(180deg, #fff 0%, #fafaf7 100%);
+    position: relative; overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tpl-preview .doc {
+    width: 70%;
+    background: white;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 6px;
+    border-radius: 2px;
+  }
+  .tpl-preview .doc .ln {
+    height: 4px; border-radius: 2px;
+    background: var(--bg-alt);
+  }
+  .tpl-preview .doc .ln.short { width: 60%; }
+  .tpl-preview .doc .ln.med { width: 85%; }
+  .tpl-preview .doc .head {
+    height: 8px; width: 50%; background: var(--ink);
+    border-radius: 2px; margin-bottom: 4px;
+  }
+  .tpl-preview .doc .sub {
+    height: 4px; width: 38%; background: var(--accent);
+    border-radius: 2px; margin-bottom: 6px;
+  }
+  .tpl-preview .wm {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-22deg);
+    font-family: var(--mono); font-size: 13px;
+    color: rgba(233, 113, 28, 0.18);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .tpl-preview .fmt {
+    position: absolute;
+    top: 12px; right: 12px;
+    font-family: var(--mono); font-size: 10px;
+    background: var(--ink); color: white;
+    padding: 3px 8px; border-radius: 4px;
+    letter-spacing: 0.08em;
+  }
+  .tpl-preview .fmt.docx { background: #2a4a90; }
+  .tpl-preview .fmt.tex { background: #0c8062; }
+
+  .tpl-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .tpl-body .cat {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--accent); letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .tpl-body h4 {
+    font-size: 16px; font-weight: 500;
+    letter-spacing: -0.01em; line-height: 1.25; text-wrap: pretty;
+  }
+  .tpl-body p {
+    font-size: 12.5px; color: var(--ink-3);
+    line-height: 1.5; text-wrap: pretty;
+  }
+  .tpl-body .stats {
+    display: flex; gap: 14px; margin-top: auto;
+    padding-top: 12px; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .tpl-body .stats strong { color: var(--ink); font-family: var(--sans); font-weight: 500; font-size: 13px; }
+  .tpl-body .actions {
+    display: flex; gap: 6px; margin-top: 10px;
+  }
+  .tpl-body .actions .vbtn { flex: 1; justify-content: center; }
+</style>
+</head>
+<body data-page="templates" data-search="Cari template, jurnal, kategori…">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Content</a> <span class="sep">/</span> <span>Template Vault</span></div>
+      <h1>Template <em>Vault.</em></h1>
+      <p>Template manuskrip, cover letter, dan revision letter — setiap unduhan dapat watermark ID member otomatis.</p>
+    </div>
+    <div class="head-cta">
+      <button class="vbtn ghost">Atur watermark</button>
+      <button class="vbtn approve">+ Upload Template</button>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <section class="kpis">
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Total template</div></div><div class="kbig sm">36</div><div class="ksub">PDF · DOCX · TeX</div></div>
+    <div class="kpi span3 accent reveal"><div class="ktop"><div class="klabel">Unduhan (30d)</div></div><div class="kbig sm">1.840 <span class="kdelta">↑ 22%</span></div><div class="ksub">Avg <strong>51</strong>/template</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Watermark aktif</div></div><div class="kbig sm">36 <span style="color:#2f8a40; font-size:18px;">✓</span></div><div class="ksub">Dynamic ID member</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Top template</div></div><div class="kbig sm">Cover<br><span style="font-size:14px; color:var(--ink-3); font-weight:400;">Letter — Computers &amp; Education</span></div></div>
+  </section>
+
+  <!-- Filter -->
+  <div class="filter-bar reveal">
+    <div class="filter-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Cari template, jurnal, kategori…">
+    </div>
+    <div class="filter-select"><label>Kategori</label><select><option>Semua</option><option>Manuskrip</option><option>Cover Letter</option><option>Revision Letter</option><option>Proposal</option><option>Slides</option></select></div>
+    <div class="filter-select"><label>Format</label><select><option>Semua</option><option>PDF</option><option>DOCX</option><option>TeX</option></select></div>
+    <div class="filter-select"><label>Urutkan</label><select><option>Unduhan ↓</option><option>Terbaru</option><option>Nama A–Z</option></select></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs reveal" style="align-self: flex-start;">
+    <button class="tab active">Semua <span class="ct">36</span></button>
+    <button class="tab">Manuskrip <span class="ct">12</span></button>
+    <button class="tab">Cover Letter <span class="ct">10</span></button>
+    <button class="tab">Revision <span class="ct">6</span></button>
+    <button class="tab">Proposal <span class="ct">5</span></button>
+    <button class="tab">Slides <span class="ct">3</span></button>
+  </div>
+
+  <!-- Template grid -->
+  <section class="tpl-grid">
+
+    <div class="tpl reveal">
+      <div class="tpl-preview">
+        <div class="doc">
+          <div class="head"></div>
+          <div class="sub"></div>
+          <div class="ln med"></div>
+          <div class="ln"></div>
+          <div class="ln med"></div>
+          <div class="ln short"></div>
+          <div class="ln med"></div>
+          <div class="ln"></div>
+        </div>
+        <div class="wm">CoPublika · MBR-1240</div>
+        <span class="fmt docx">DOCX</span>
+      </div>
+      <div class="tpl-body">
+        <span class="cat">/ Cover Letter</span>
+        <h4>Cover Letter — Computers &amp; Education (Q1)</h4>
+        <p>Template cover letter sesuai gaya Elsevier dengan struktur ASBAR.</p>
+        <div class="stats">
+          <span><strong>284</strong> unduh</span>
+          <span><strong>4.8</strong>★</span>
+          <span>v2.3</span>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+          <button class="vbtn dark">Preview</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tpl reveal">
+      <div class="tpl-preview">
+        <div class="doc">
+          <div class="head"></div>
+          <div class="sub"></div>
+          <div class="ln"></div>
+          <div class="ln med"></div>
+          <div class="ln short"></div>
+          <div class="ln"></div>
+          <div class="ln med"></div>
+        </div>
+        <div class="wm">CoPublika · MBR-1240</div>
+        <span class="fmt">PDF</span>
+      </div>
+      <div class="tpl-body">
+        <span class="cat">/ Manuskrip</span>
+        <h4>Manuscript Skeleton — Studies in Higher Education</h4>
+        <p>Skeleton IMRaD lengkap dengan style sheet jurnal.</p>
+        <div class="stats">
+          <span><strong>198</strong> unduh</span>
+          <span><strong>4.7</strong>★</span>
+          <span>v1.4</span>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+          <button class="vbtn dark">Preview</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tpl reveal">
+      <div class="tpl-preview">
+        <div class="doc">
+          <div class="head"></div>
+          <div class="sub"></div>
+          <div class="ln med"></div>
+          <div class="ln short"></div>
+          <div class="ln"></div>
+          <div class="ln short"></div>
+        </div>
+        <div class="wm">CoPublika · MBR-1240</div>
+        <span class="fmt tex">TeX</span>
+      </div>
+      <div class="tpl-body">
+        <span class="cat">/ Manuskrip</span>
+        <h4>LaTeX — IEEE Transactions Style</h4>
+        <p>Source TeX + bibliography template untuk engineering papers.</p>
+        <div class="stats">
+          <span><strong>156</strong> unduh</span>
+          <span><strong>4.9</strong>★</span>
+          <span>v3.1</span>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+          <button class="vbtn dark">Preview</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tpl reveal">
+      <div class="tpl-preview">
+        <div class="doc">
+          <div class="head"></div>
+          <div class="sub"></div>
+          <div class="ln"></div>
+          <div class="ln med"></div>
+          <div class="ln short"></div>
+          <div class="ln"></div>
+        </div>
+        <div class="wm">CoPublika · MBR-1240</div>
+        <span class="fmt docx">DOCX</span>
+      </div>
+      <div class="tpl-body">
+        <span class="cat">/ Revision Letter</span>
+        <h4>Response to Reviewer — Point-by-Point</h4>
+        <p>Format standar dengan tracked-changes &amp; cross-referencing.</p>
+        <div class="stats">
+          <span><strong>142</strong> unduh</span>
+          <span><strong>4.6</strong>★</span>
+          <span>v2.0</span>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+          <button class="vbtn dark">Preview</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tpl reveal">
+      <div class="tpl-preview">
+        <div class="doc">
+          <div class="head"></div>
+          <div class="sub"></div>
+          <div class="ln med"></div>
+          <div class="ln"></div>
+          <div class="ln med"></div>
+          <div class="ln short"></div>
+          <div class="ln"></div>
+        </div>
+        <div class="wm">CoPublika · MBR-1240</div>
+        <span class="fmt">PDF</span>
+      </div>
+      <div class="tpl-body">
+        <span class="cat">/ Proposal</span>
+        <h4>Concept Note — 1 Page Framework</h4>
+        <p>Template 1-page concept note untuk fase Discover.</p>
+        <div class="stats">
+          <span><strong>118</strong> unduh</span>
+          <span><strong>4.8</strong>★</span>
+          <span>v1.2</span>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+          <button class="vbtn dark">Preview</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tpl reveal">
+      <div class="tpl-preview">
+        <div class="doc">
+          <div class="head"></div>
+          <div class="sub"></div>
+          <div class="ln short"></div>
+          <div class="ln med"></div>
+          <div class="ln"></div>
+        </div>
+        <div class="wm">CoPublika · MBR-1240</div>
+        <span class="fmt docx">DOCX</span>
+      </div>
+      <div class="tpl-body">
+        <span class="cat">/ Cover Letter</span>
+        <h4>Cover Letter — Lancet Regional Health</h4>
+        <p>Untuk jurnal kesehatan tier-1 di kawasan Asia-Pasifik.</p>
+        <div class="stats">
+          <span><strong>96</strong> unduh</span>
+          <span><strong>4.7</strong>★</span>
+          <span>v1.0</span>
+        </div>
+        <div class="actions">
+          <button class="vbtn ghost">Edit</button>
+          <button class="vbtn dark">Preview</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div style="display: flex; justify-content: center; padding: 8px 0;">
+    <button class="vbtn ghost">Tampilkan 30 template lainnya</button>
+  </div>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

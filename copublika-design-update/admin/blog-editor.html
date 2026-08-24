@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tulis Artikel — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  /* Sticky action bar on top */
+  .editor-toolbar-sticky {
+    position: sticky;
+    top: 74px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    margin: -28px -32px 0;
+    padding: 14px 32px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 700px) { .editor-toolbar-sticky { margin: -22px -18px 0; padding: 12px 18px; top: 70px; } }
+  .save-state {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-3); letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .save-state::before {
+    content: ""; width: 7px; height: 7px;
+    background: #2f8a40; border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(47, 138, 64, 0.2);
+  }
+  .save-state.saving::before { background: var(--accent); box-shadow: 0 0 0 3px rgba(233, 113, 28, 0.2); animation: pulseDot 1s infinite; }
+
+  /* Editor shell */
+  .ed-shell {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 18px;
+    align-items: start;
+    margin-top: 24px;
+  }
+  @media (max-width: 1100px) { .ed-shell { grid-template-columns: 1fr; } }
+
+  /* Title field — large display style */
+  .ed-title {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: clamp(26px, 3vw, 38px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    padding: 8px 0;
+    color: var(--ink);
+    outline: none;
+    border-bottom: 2px dashed transparent;
+    transition: border-color 0.2s;
+  }
+  .ed-title:focus { border-bottom-color: var(--accent); }
+  .ed-subtitle {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--ink-3);
+    line-height: 1.5;
+    padding: 6px 0 14px;
+    outline: none;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.2s;
+    font-style: italic;
+  }
+  .ed-subtitle:focus { border-bottom-color: var(--line); }
+
+  /* Cover image area */
+  .cover-area {
+    margin: 14px 0 20px;
+    border: 2px dashed var(--line);
+    border-radius: var(--radius-lg);
+    padding: 36px 20px;
+    text-align: center;
+    background: var(--bg-alt);
+    color: var(--ink-3);
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-area:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .cover-area .ico {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: white;
+    color: var(--ink-3);
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .cover-area:hover .ico { color: var(--accent); }
+  .cover-area .lab { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .cover-area .hint {
+    font-size: 12px; color: var(--muted);
+    margin-top: 4px; font-family: var(--mono); letter-spacing: 0.04em;
+  }
+  .cover-area.has-cover {
+    border-style: solid;
+    padding: 0;
+    aspect-ratio: 21 / 9;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    color: white;
+  }
+  .cover-area.has-cover .ico, .cover-area.has-cover .lab, .cover-area.has-cover .hint { display: none; }
+  .cover-area.has-cover::after {
+    content: "Klik untuk mengganti";
+    position: absolute; bottom: 12px; right: 16px;
+    font-family: var(--mono); font-size: 10.5px;
+    background: rgba(0,0,0,0.7); color: white;
+    padding: 4px 10px; border-radius: 999px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* Markdown editor + preview split */
+  .md-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: white;
+  }
+  @media (max-width: 980px) { .md-split { grid-template-columns: 1fr; } }
+  .md-split .pane {
+    display: flex; flex-direction: column;
+    min-height: 480px;
+  }
+  .md-split .pane + .pane { border-left: 1px solid var(--line); }
+  @media (max-width: 980px) {
+    .md-split .pane + .pane { border-left: 0; border-top: 1px solid var(--line); }
+  }
+  .pane-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-alt);
+  }
+  .pane-head .lab {
+    font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .md-toolbar {
+    display: flex; gap: 2px; flex-wrap: wrap;
+  }
+  .md-toolbar button {
+    width: 28px; height: 28px;
+    border-radius: 6px; border: 0; background: transparent;
+    color: var(--ink-3); cursor: pointer;
+    font-family: var(--mono); font-size: 13px; font-weight: 500;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .md-toolbar button:hover { background: white; color: var(--ink); }
+  .md-toolbar .div { width: 1px; background: var(--line); margin: 4px 3px; }
+
+  .md-area {
+    width: 100%; flex: 1;
+    border: 0; padding: 18px 20px;
+    font-family: var(--mono); font-size: 13px; line-height: 1.65;
+    color: var(--ink); resize: none;
+    background: white;
+    min-height: 380px;
+  }
+  .md-area:focus { outline: none; background: #fafaf7; }
+
+  /* Preview rendered */
+  .md-preview {
+    padding: 18px 24px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    font-size: 14.5px;
+    overflow-y: auto;
+    flex: 1;
+    max-height: 600px;
+  }
+  .md-preview h2 {
+    font-size: 22px; font-weight: 600;
+    letter-spacing: -0.02em; margin: 18px 0 10px;
+    color: var(--ink);
+  }
+  .md-preview h3 {
+    font-size: 17px; font-weight: 500;
+    letter-spacing: -0.01em; margin: 14px 0 8px;
+    color: var(--ink);
+  }
+  .md-preview p { margin: 10px 0; text-wrap: pretty; }
+  .md-preview ul, .md-preview ol { padding-left: 22px; margin: 10px 0; }
+  .md-preview li { margin: 4px 0; }
+  .md-preview strong { color: var(--ink); font-weight: 600; }
+  .md-preview em { color: var(--accent-ink); font-style: italic; }
+  .md-preview code {
+    font-family: var(--mono); font-size: 12.5px;
+    background: var(--bg-alt); padding: 2px 6px; border-radius: 4px;
+    color: var(--ink);
+  }
+  .md-preview blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 14px; margin: 14px 0;
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    color: var(--accent-ink);
+  }
+
+  /* Sidebar panels */
+  .ed-side {
+    display: flex; flex-direction: column;
+    gap: 14px;
+    position: sticky; top: 160px;
+  }
+  @media (max-width: 1100px) { .ed-side { position: relative; top: 0; } }
+  .side-panel {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+  }
+  .side-panel h4 {
+    font-size: 13.5px; font-weight: 500;
+    letter-spacing: -0.005em;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .side-panel h4 .num {
+    font-family: var(--mono); font-size: 10px;
+    background: var(--accent-soft); color: var(--accent-ink);
+    padding: 2px 7px; border-radius: 999px;
+    letter-spacing: 0.06em;
+  }
+
+  /* Tag input */
+  .tag-input {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    min-height: 38px;
+  }
+  .tag-input:focus-within { border-color: var(--ink); background: white; }
+  .tag-input .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px;
+    background: var(--ink); color: white;
+    padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .tag-input .chip .x { cursor: pointer; opacity: 0.7; }
+  .tag-input .chip .x:hover { opacity: 1; }
+  .tag-input input {
+    flex: 1; min-width: 80px;
+    border: 0; outline: 0; background: transparent;
+    font-family: inherit; font-size: 12.5px;
+    color: var(--ink);
+  }
+
+  .seo-score {
+    display: flex; gap: 14px; align-items: center;
+    padding: 12px;
+    background: var(--bg-alt);
+    border-radius: 8px;
+    margin-bottom: 14px;
+  }
+  .seo-score .ring {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: conic-gradient(#2f8a40 0% 82%, var(--line) 82% 100%);
+    position: relative;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .seo-score .ring::after {
+    content: ""; position: absolute; inset: 5px;
+    border-radius: 50%; background: var(--bg-alt);
+  }
+  .seo-score .ring .v {
+    position: relative; z-index: 1;
+    font-size: 16px; font-weight: 600;
+    letter-spacing: -0.01em; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .seo-score .info .ti { font-size: 13px; font-weight: 500; }
+  .seo-score .info .desc {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); letter-spacing: 0.04em;
+    text-transform: uppercase; margin-top: 2px;
+  }
+
+  .seo-check {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-top: 6px;
+  }
+  .seo-row {
+    display: grid; grid-template-columns: 20px 1fr;
+    gap: 10px; font-size: 12.5px; color: var(--ink-3);
+    line-height: 1.4;
+  }
+  .seo-row .ico {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #eaf6ed; color: #1f7a36;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .seo-row.warn .ico { background: var(--accent-soft); color: var(--accent-ink); }
+  .seo-row.fail .ico { background: #fdebea; color: #a3201b; }
+
+  /* Schedule */
+  .sched-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sched-grid .field { margin-bottom: 0; }
+</style>
+</head>
+<body data-page="blog">
+
+  <!-- Sticky save bar -->
+  <div class="editor-toolbar-sticky">
+    <div class="crumb" style="font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: flex; gap: 8px; align-items: center;">
+      <a href="blog.html" style="color: var(--ink-3);">Blog</a>
+      <span style="color: var(--accent);">/</span>
+      <span>Editor · Draft baru</span>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <span class="save-state">Tersimpan · 18 detik lalu</span>
+      <a class="vbtn ghost" href="blog.html">Batal</a>
+      <button class="vbtn ghost">Preview</button>
+      <button class="vbtn ghost">Simpan Draft</button>
+      <button class="vbtn approve">Jadwalkan Publish</button>
+    </div>
+  </div>
+
+  <div class="ed-shell">
+
+    <!-- Main editor -->
+    <div>
+      <input class="ed-title" type="text" placeholder="Judul artikel…" value="Mengapa Reviewer 2 Selalu Galak? Membaca Antara Baris Komentar">
+      <input class="ed-subtitle" type="text" placeholder="Subjudul / lead paragraf opsional…" value="Reviewer 2 bukan musuh — dia adalah pembaca paling skeptis dari naskah Anda.">
+
+      <!-- Cover -->
+      <div class="cover-area">
+        <div class="ico">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+        </div>
+        <div class="lab">Tarik atau klik untuk upload cover image</div>
+        <div class="hint">Rekomendasi 1600 × 900 · max 2 MB · JPG / PNG / WebP</div>
+      </div>
+
+      <!-- Markdown + preview -->
+      <div class="md-split">
+        <div class="pane">
+          <div class="pane-head">
+            <span class="lab">Markdown</span>
+            <div class="md-toolbar">
+              <button title="Heading 2"><strong>H2</strong></button>
+              <button title="Heading 3"><strong>H3</strong></button>
+              <span class="div"></span>
+              <button title="Bold"><strong>B</strong></button>
+              <button title="Italic"><em>I</em></button>
+              <button title="Strike">S</button>
+              <span class="div"></span>
+              <button title="Link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              </button>
+              <button title="Image">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+              </button>
+              <button title="Quote">"</button>
+              <span class="div"></span>
+              <button title="Bullet list">·</button>
+              <button title="Numbered">1.</button>
+              <button title="Code">&lt;/&gt;</button>
+            </div>
+          </div>
+          <textarea class="md-area" id="mdInput">## Pendahuluan
+
+Reviewer 2 bukan musuh — dia adalah pembaca paling skeptis dari naskah Anda. Komentar yang galak biasanya berarti:
+
+1. **Klaim terlalu kuat** untuk evidence yang Anda punya
+2. **Asumsi metodologis** yang tidak dijelaskan
+3. **Posisi teoretis** yang berbeda dengan reviewer
+
+Dalam tulisan ini saya akan membongkar 5 pola komentar reviewer 2 dan bagaimana meresponsnya tanpa membuat editor jengkel.
+
+## Pola 1: "The author overclaims"
+
+Tanda komentar ini muncul ketika Anda menggunakan kata seperti *prove*, *demonstrate definitively*, atau *eliminate*. Reviewer 2 akan menanyakan: "Sample size 60 tidak cukup untuk klaim generalisasi populasi 270 juta."
+
+> Tip: gunakan hedging seperti "suggests", "indicates", atau "is consistent with". Anda tidak kalah otoritas — Anda menambah kalibrasi.
+
+## Pola 2: "Methodology is unclear"
+
+Sering ditemui di paper yang mencampur kualitatif dan kuantitatif. Reviewer ingin tahu: bagaimana coding dilakukan, siapa yang melakukan, dan bagaimana inter-rater reliability dijaga.
+
+Pastikan setiap step ada pijakan teori dan justifikasi pragmatisnya.</textarea>
+        </div>
+
+        <div class="pane">
+          <div class="pane-head">
+            <span class="lab">Preview</span>
+            <span style="font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: 0.04em;">~ 380 kata · 4m baca</span>
+          </div>
+          <div class="md-preview" id="mdPreview">
+            <h2>Pendahuluan</h2>
+            <p>Reviewer 2 bukan musuh — dia adalah pembaca paling skeptis dari naskah Anda. Komentar yang galak biasanya berarti:</p>
+            <ol>
+              <li><strong>Klaim terlalu kuat</strong> untuk evidence yang Anda punya</li>
+              <li><strong>Asumsi metodologis</strong> yang tidak dijelaskan</li>
+              <li><strong>Posisi teoretis</strong> yang berbeda dengan reviewer</li>
+            </ol>
+            <p>Dalam tulisan ini saya akan membongkar 5 pola komentar reviewer 2 dan bagaimana meresponsnya tanpa membuat editor jengkel.</p>
+            <h2>Pola 1: "The author overclaims"</h2>
+            <p>Tanda komentar ini muncul ketika Anda menggunakan kata seperti <em>prove</em>, <em>demonstrate definitively</em>, atau <em>eliminate</em>. Reviewer 2 akan menanyakan: "Sample size 60 tidak cukup untuk klaim generalisasi populasi 270 juta."</p>
+            <blockquote><strong>Tip:</strong> gunakan hedging seperti "suggests", "indicates", atau "is consistent with". Anda tidak kalah otoritas — Anda menambah kalibrasi.</blockquote>
+            <h2>Pola 2: "Methodology is unclear"</h2>
+            <p>Sering ditemui di paper yang mencampur kualitatif dan kuantitatif. Reviewer ingin tahu: bagaimana <code>coding</code> dilakukan, siapa yang melakukan, dan bagaimana <em>inter-rater reliability</em> dijaga.</p>
+            <p>Pastikan setiap step ada pijakan teori dan justifikasi pragmatisnya.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side panels -->
+    <aside class="ed-side">
+
+      <!-- Meta -->
+      <div class="side-panel">
+        <h4>Metadata <span class="num">01</span></h4>
+        <div class="field"><label>Slug URL</label><input type="text" value="reviewer-2-galak"></div>
+        <div class="field" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div><label>Kategori</label><select><option>Manuskrip</option><option>Strategi</option><option>Publikasi</option><option>Workshop</option></select></div>
+          <div><label>Penulis</label><select><option>Hadi Suryanto</option><option>Anwar Putranto</option><option>Sari Nurhaliza</option></select></div>
+        </div>
+        <div class="field" style="margin-bottom: 0;">
+          <label>Tag</label>
+          <div class="tag-input">
+            <span class="chip">manuskrip <span class="x">×</span></span>
+            <span class="chip">peer review <span class="x">×</span></span>
+            <span class="chip">scopus q1 <span class="x">×</span></span>
+            <input type="text" placeholder="Ketik tag baru…">
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO -->
+      <div class="side-panel">
+        <h4>SEO &amp; Visibilitas <span class="num">02</span></h4>
+        <div class="seo-score">
+          <div class="ring"><span class="v">82</span></div>
+          <div class="info">
+            <div class="ti">Skor SEO: Baik</div>
+            <div class="desc">2 saran perbaikan</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Meta description</label>
+          <textarea>Memahami pola komentar reviewer 2 dan strategi merespons revision tanpa membuat editor jengkel. 5 pola yang paling sering muncul.</textarea>
+          <span class="hint">132 / 160 karakter ✓</span>
+        </div>
+
+        <div class="seo-check">
+          <div class="seo-row"><span class="ico">✓</span><span>Keyword utama muncul di judul dan H2</span></div>
+          <div class="seo-row"><span class="ico">✓</span><span>Meta description antara 120–160 karakter</span></div>
+          <div class="seo-row warn"><span class="ico">!</span><span>Belum ada alt text untuk cover image</span></div>
+          <div class="seo-row warn"><span class="ico">!</span><span>Tambahkan internal link ke 2–3 artikel terkait</span></div>
+        </div>
+      </div>
+
+      <!-- Schedule -->
+      <div class="side-panel">
+        <h4>Jadwal Publish <span class="num">03</span></h4>
+        <div class="sched-grid">
+          <div class="field"><label>Tanggal</label><input type="date" value="2025-06-04"></div>
+          <div class="field"><label>Jam (WIB)</label><input type="text" value="10:00"></div>
+        </div>
+        <div class="field" style="margin-top: 6px;">
+          <label>Visibility</label>
+          <select>
+            <option>Public (semua)</option>
+            <option>Member only</option>
+            <option>Private (preview link)</option>
+          </select>
+        </div>
+        <div class="row-toggle" style="padding: 12px 0 0; border-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 13px;">Auto-publish ke newsletter</span>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="row-toggle" style="padding: 8px 0 0; border-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 13px;">Promosikan di hero blog</span>
+          <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="side-panel" style="background: #fefaf4; border-color: #fcebd6;">
+        <h4 style="color: var(--accent-ink);">Aksi Lain</h4>
+        <button class="vbtn ghost" style="width: 100%; justify-content: center; margin-bottom: 8px;">Duplikasi sebagai draft</button>
+        <button class="vbtn ghost danger" style="width: 100%; justify-content: center;">Buang draft</button>
+      </div>
+    </aside>
+  </div>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

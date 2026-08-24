@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — CoPublika Member</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../admin/_shell.css">
+<style>
+  /* ===========================================================
+     MEMBER DASHBOARD — Research Workspace
+     =========================================================== */
+
+  /* Welcome / hero block */
+  .welcome {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 60%, #2a1810 100%);
+    color: white;
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome::before {
+    content: ""; position: absolute;
+    top: -30%; right: -10%;
+    width: 460px; height: 460px;
+    background: radial-gradient(circle, rgba(233, 113, 28, 0.18), transparent 60%);
+    pointer-events: none;
+  }
+  .welcome::after {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 80% 70% at 70% 30%, black 20%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 70% 30%, black 20%, transparent 70%);
+    pointer-events: none;
+  }
+  .welcome > * { position: relative; z-index: 1; }
+  .welcome .top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 22px;
+  }
+  .welcome .tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 10.5px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 5px 12px; border-radius: 999px;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    backdrop-filter: blur(8px);
+  }
+  .welcome .tag .pulse {
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(233, 113, 28, 0.22);
+    animation: pulseDot 1.6s infinite;
+  }
+  .welcome h1 {
+    font-size: clamp(28px, 3.6vw, 44px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    text-wrap: balance;
+    color: white;
+  }
+  .welcome h1 em {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+  .welcome .deck {
+    color: rgba(255,255,255,0.65);
+    font-size: 14.5px;
+    line-height: 1.5;
+    margin-top: 10px;
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+
+  .w-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 22px;
+  }
+  @media (max-width: 800px) {
+    .w-stats { grid-template-columns: 1fr 1fr; gap: 18px 0; }
+  }
+  .w-stats .it {
+    padding-right: 18px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+  .w-stats .it:last-child { border-right: 0; }
+  .w-stats .it:not(:first-child) { padding-left: 18px; }
+  @media (max-width: 800px) {
+    .w-stats .it:nth-child(2n) { border-right: 0; }
+    .w-stats .it:nth-child(odd) { padding-left: 0; }
+  }
+  .w-stats .l {
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.08em; color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+  }
+  .w-stats .v {
+    font-size: 30px; font-weight: 600;
+    letter-spacing: -0.025em; line-height: 1;
+    margin-top: 8px; color: white;
+    font-variant-numeric: tabular-nums;
+  }
+  .w-stats .v .acc { color: var(--accent); }
+  .w-stats .sub {
+    font-size: 11.5px; color: rgba(255,255,255,0.5);
+    margin-top: 6px; font-family: var(--mono); letter-spacing: 0.04em;
+  }
+
+  /* Project pipeline */
+  .pipeline { display: flex; flex-direction: column; gap: 12px; }
+  .proj {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+    position: relative;
+    transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .proj:hover { border-color: var(--ink); transform: translateY(-2px); }
+  .proj.featured {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, #fff 0%, #fffaf4 100%);
+  }
+  .proj-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 14px; margin-bottom: 14px;
+  }
+  .proj .pid {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--accent); letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .proj h3 {
+    font-size: 18px; font-weight: 500;
+    letter-spacing: -0.015em; line-height: 1.25;
+    text-wrap: pretty;
+  }
+  .proj .meta {
+    font-size: 12.5px; color: var(--ink-3);
+    font-style: italic; margin-top: 8px;
+  }
+  .proj-meta-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin: 14px 0;
+  }
+  @media (max-width: 700px) { .proj-meta-grid { grid-template-columns: 1fr 1fr; } }
+  .proj-meta-grid .cell {
+    padding: 12px 16px 12px 0;
+    border-right: 1px solid var(--line);
+  }
+  .proj-meta-grid .cell:last-child { border-right: 0; }
+  .proj-meta-grid .cell:not(:first-child) { padding-left: 16px; }
+  @media (max-width: 700px) {
+    .proj-meta-grid .cell:nth-child(2n) { border-right: 0; padding-right: 0; }
+    .proj-meta-grid .cell:nth-child(n+3) { border-top: 1px solid var(--line); }
+  }
+  .proj-meta-grid .l {
+    font-family: var(--mono); font-size: 9.5px;
+    color: var(--muted); letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .proj-meta-grid .v {
+    font-size: 13.5px; font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+  .proj-meta-grid .v.acc { color: var(--accent); }
+
+  /* Stage tracker — 5 dots with connecting line */
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    margin-top: 10px;
+  }
+  .stage {
+    position: relative;
+    padding-top: 22px;
+    text-align: center;
+  }
+  .stage::before {
+    content: ""; position: absolute;
+    top: 0; left: 50%;
+    width: 14px; height: 14px;
+    border-radius: 50%; background: white;
+    border: 2px solid var(--line);
+    transform: translateX(-50%);
+    z-index: 2;
+    transition: all 0.2s;
+  }
+  .stage::after {
+    content: ""; position: absolute;
+    top: 6px; right: -50%;
+    width: 100%; height: 2px;
+    background: var(--line); z-index: 1;
+  }
+  .stage:last-child::after { display: none; }
+  .stage.done::before { background: var(--ink); border-color: var(--ink); }
+  .stage.done::after { background: var(--ink); }
+  .stage.active::before {
+    background: var(--accent); border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(233, 113, 28, 0.22);
+    animation: pulseDot 1.6s infinite;
+  }
+  .stage .lbl {
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.06em; color: var(--muted);
+    text-transform: uppercase;
+  }
+  .stage .sub {
+    font-size: 11px; color: var(--ink-3);
+    margin-top: 4px;
+  }
+  .stage.active .lbl { color: var(--accent); }
+  .stage.done .lbl { color: var(--ink); }
+
+  /* LMS progress card */
+  .lms-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 0;
+    overflow: hidden;
+  }
+  .lms-head {
+    padding: 22px 22px 18px;
+    background: linear-gradient(135deg, #fafaf7 0%, #fff 100%);
+    border-bottom: 1px solid var(--line);
+  }
+  .lms-head .tag {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--accent); letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .lms-head h3 {
+    font-size: 22px; font-weight: 600;
+    letter-spacing: -0.02em; line-height: 1.1;
+    margin-top: 6px;
+  }
+  .lms-head h3 em { font-family: 'Fraunces', serif; font-style: italic; color: var(--accent); font-weight: 400; }
+  .lms-head .meta {
+    display: flex; gap: 14px;
+    margin-top: 12px;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-3); letter-spacing: 0.04em;
+  }
+  .lms-head .meta strong { color: var(--ink); font-weight: 500; }
+  .lms-progress {
+    margin-top: 14px;
+    height: 8px; border-radius: 999px;
+    background: var(--bg-alt); overflow: hidden;
+    position: relative;
+  }
+  .lms-progress span {
+    display: block; height: 100%;
+    width: 62%;
+    background: linear-gradient(90deg, var(--accent), #f59a4a);
+    border-radius: 999px;
+    box-shadow: 0 0 12px 0 rgba(233, 113, 28, 0.5);
+  }
+  .lms-body { padding: 18px 22px; }
+  .lms-body .lbl {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .lms-list { display: flex; flex-direction: column; }
+  .lms-row {
+    display: grid; grid-template-columns: 24px 1fr auto;
+    gap: 12px; align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+  }
+  .lms-row:first-child { border-top: 0; }
+  .lms-row .ck {
+    width: 18px; height: 18px;
+    border-radius: 50%; border: 2px solid var(--line);
+    background: white;
+  }
+  .lms-row.done .ck {
+    background: var(--ink); border-color: var(--ink);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+  .lms-row.active .ck {
+    border-color: var(--accent);
+    background: white;
+    position: relative;
+  }
+  .lms-row.active .ck::after {
+    content: ""; position: absolute;
+    inset: 3px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .lms-row .ti { font-size: 13px; font-weight: 500; letter-spacing: -0.005em; }
+  .lms-row.locked .ti { color: var(--muted); }
+  .lms-row .ts { font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: 0.04em; }
+  .lms-row.active .ti { color: var(--accent); }
+
+  /* Collab invites */
+  .inv {
+    display: grid; grid-template-columns: 40px 1fr auto;
+    gap: 12px; padding: 14px 0;
+    border-top: 1px solid var(--line);
+    align-items: center;
+  }
+  .inv:first-child { border-top: 0; }
+  .inv .info .ti { font-size: 13.5px; font-weight: 500; letter-spacing: -0.005em; line-height: 1.3; }
+  .inv .info .meta {
+    font-size: 11.5px; color: var(--ink-3); margin-top: 4px;
+    font-style: italic;
+  }
+  .inv .info .body {
+    font-size: 12.5px; color: var(--ink-3);
+    line-height: 1.45; margin-top: 6px; text-wrap: pretty;
+  }
+  .inv .actions { display: flex; gap: 6px; flex-direction: column; }
+  .inv .actions .vbtn { height: 28px; padding: 0 12px; font-size: 11.5px; }
+
+  /* Cluster card */
+  .cluster-mini {
+    background: var(--ink); color: white;
+    border-radius: var(--radius-lg);
+    padding: 22px;
+    position: relative; overflow: hidden;
+  }
+  .cluster-mini::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(233, 113, 28, 0.22), transparent 60%);
+  }
+  .cluster-mini > * { position: relative; z-index: 1; }
+  .cluster-mini .tag {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--accent); letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .cluster-mini h3 {
+    font-size: 22px; font-weight: 600;
+    letter-spacing: -0.02em; line-height: 1.1;
+    margin-top: 6px; color: white;
+  }
+  .cluster-mini .lead {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 14px;
+    font-size: 12.5px; color: rgba(255,255,255,0.7);
+  }
+  .cluster-mini .stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0; margin-top: 18px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 14px;
+  }
+  .cluster-mini .stats .it { padding-right: 12px; border-right: 1px solid rgba(255,255,255,0.08); }
+  .cluster-mini .stats .it:last-child { border-right: 0; }
+  .cluster-mini .stats .it:not(:first-child) { padding-left: 12px; }
+  .cluster-mini .stats .l { font-family: var(--mono); font-size: 9.5px; color: rgba(255,255,255,0.5); letter-spacing: 0.06em; text-transform: uppercase; }
+  .cluster-mini .stats .v { font-size: 18px; font-weight: 500; margin-top: 4px; color: white; font-variant-numeric: tabular-nums; }
+  .cluster-mini .cta { margin-top: 18px; }
+
+  /* Quick templates */
+  .tpl-row {
+    display: grid; grid-template-columns: 36px 1fr auto;
+    gap: 12px; align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid var(--line);
+    cursor: pointer;
+    transition: padding-left 0.2s;
+    text-decoration: none; color: inherit;
+  }
+  .tpl-row:first-of-type { border-top: 0; }
+  .tpl-row:hover { padding-left: 6px; }
+  .tpl-row .ico {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--bg-alt);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-3);
+    font-family: var(--mono); font-size: 11px;
+    font-weight: 500;
+  }
+  .tpl-row .ico.docx { background: #e7ecf5; color: #2a4a90; }
+  .tpl-row .ico.tex { background: #eaf6ed; color: #1f7a36; }
+  .tpl-row .ti { font-size: 13px; font-weight: 500; letter-spacing: -0.005em; }
+  .tpl-row .sub { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+  .tpl-row .dl {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+
+  /* KPI cards */
+  .kpi.member-feat {
+    background: var(--accent-soft);
+    border-color: transparent;
+  }
+  .kpi.member-feat .klabel { color: var(--accent-ink); }
+  .kpi.member-feat .kbig { color: var(--accent-ink); }
+  .kpi.member-feat .ksub { color: var(--accent-ink); }
+</style>
+</head>
+<body data-page="dashboard" data-screen-label="Member Dashboard">
+
+  <!-- Welcome -->
+  <section class="welcome reveal">
+    <div class="top">
+      <span class="tag"><span class="pulse"></span>Cluster Pendidikan &amp; EdTech · Active sejak Mar 2025</span>
+      <span class="tag" style="background: var(--accent); border-color: var(--accent); color: white;">RP-052 · Pending Review</span>
+    </div>
+    <h1>Selamat pagi, <em>Hadi.</em></h1>
+    <p class="deck">Modul 4 menunggu Anda menyelesaikan literature review · Dr. Anastasia mengundang Anda kolaborasi · 2 template baru direkomendasikan untuk paper jurnal target Anda.</p>
+
+    <div class="w-stats">
+      <div class="it">
+        <div class="l">H-Index</div>
+        <div class="v">18 <span style="font-size: 14px; color: rgba(255,255,255,0.55);">↑ +1</span></div>
+        <div class="sub">+3 sejak join Mar 2025</div>
+      </div>
+      <div class="it">
+        <div class="l">Publikasi tayang</div>
+        <div class="v">12<span class="acc">+</span></div>
+        <div class="sub">2 sedang in review</div>
+      </div>
+      <div class="it">
+        <div class="l">Riset berjalan</div>
+        <div class="v">3</div>
+        <div class="sub">1 pending · 2 writing</div>
+      </div>
+      <div class="it">
+        <div class="l">LMS Progress</div>
+        <div class="v">62<span class="acc">%</span></div>
+        <div class="sub">Mod 04 · 4 lessons left</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KPI strip — quick metrics -->
+  <section class="kpis">
+    <div class="kpi span3 member-feat reveal">
+      <div class="ktop">
+        <div class="klabel">Undangan kolaborasi</div>
+        <div class="kico" style="background: var(--accent); color: white;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/></svg>
+        </div>
+      </div>
+      <div class="kbig sm">2 <span style="font-size: 12px;">menunggu respons</span></div>
+      <div class="ksub">Dari Dr. Anastasia &amp; Dr. Sari</div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Citation (12 bulan)</div></div>
+      <div class="kbig sm">284 <span class="kdelta">↑ 32</span></div>
+      <div class="ksub">Top paper: <strong>42 sitasi</strong></div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Template diunduh</div></div>
+      <div class="kbig sm">8</div>
+      <div class="ksub">Watermark MBR-0824 aktif</div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Event terdaftar</div></div>
+      <div class="kbig sm">3</div>
+      <div class="ksub">Berikutnya: <strong>Workshop SR · 02 Jun</strong></div>
+    </div>
+  </section>
+
+  <!-- Active research projects -->
+  <section>
+    <div class="sect-h reveal">
+      <h2>Riset Saya — 3 berjalan</h2>
+      <a class="link-mono" href="projects.html">Lihat semua →</a>
+    </div>
+
+    <div class="pipeline">
+
+      <!-- Featured -->
+      <a class="proj featured reveal" href="projects.html">
+        <div class="proj-head">
+          <div>
+            <div class="pid">RP-052</div>
+            <h3>Doctoral Supervision in the Online Modality: Voices from 60 Indonesian PhD Candidates</h3>
+            <div class="meta">Sebagai Lead · 3 co-author · UNS, UGM, UM</div>
+          </div>
+          <span class="pill warn">Pending Review</span>
+        </div>
+
+        <div class="proj-meta-grid">
+          <div class="cell">
+            <div class="l">Cluster</div>
+            <div class="v">Pendidikan &amp; EdTech</div>
+          </div>
+          <div class="cell">
+            <div class="l">Target</div>
+            <div class="v">Studies in Higher Ed. <span class="acc">Q1</span></div>
+          </div>
+          <div class="cell">
+            <div class="l">Visibility</div>
+            <div class="v">Public Gallery</div>
+          </div>
+          <div class="cell">
+            <div class="l">Submitted</div>
+            <div class="v">18 menit lalu</div>
+          </div>
+        </div>
+
+        <div class="stages">
+          <div class="stage done"><div class="lbl">Draft</div><div class="sub">12 Mei</div></div>
+          <div class="stage done"><div class="lbl">Discover</div><div class="sub">18 Mei</div></div>
+          <div class="stage done"><div class="lbl">Write</div><div class="sub">26 Mei</div></div>
+          <div class="stage active"><div class="lbl">Pending</div><div class="sub">28 Mei</div></div>
+          <div class="stage"><div class="lbl">Published</div><div class="sub">—</div></div>
+        </div>
+      </a>
+
+      <!-- Active write -->
+      <a class="proj reveal" href="projects.html">
+        <div class="proj-head">
+          <div>
+            <div class="pid">RP-044</div>
+            <h3>Rubric Co-Design with Faculty: Authentic Assessment in the GenAI Era</h3>
+            <div class="meta">Sebagai Co-author · Lead: Dr. Laras Kartika · UNY, UPI, UNS</div>
+          </div>
+          <span class="pill review">Writing · 70%</span>
+        </div>
+
+        <div class="proj-meta-grid">
+          <div class="cell">
+            <div class="l">Cluster</div>
+            <div class="v">Pendidikan &amp; EdTech</div>
+          </div>
+          <div class="cell">
+            <div class="l">Target</div>
+            <div class="v">Assessment &amp; Eval HE <span class="acc">Q1</span></div>
+          </div>
+          <div class="cell">
+            <div class="l">Slot Anda</div>
+            <div class="v">Methods + Discussion</div>
+          </div>
+          <div class="cell">
+            <div class="l">Deadline draft</div>
+            <div class="v">12 Jun 2025</div>
+          </div>
+        </div>
+
+        <div class="stages">
+          <div class="stage done"><div class="lbl">Draft</div></div>
+          <div class="stage done"><div class="lbl">Discover</div></div>
+          <div class="stage active"><div class="lbl">Write</div><div class="sub">Anda di sini</div></div>
+          <div class="stage"><div class="lbl">Pending</div></div>
+          <div class="stage"><div class="lbl">Published</div></div>
+        </div>
+      </a>
+
+      <!-- Discover -->
+      <a class="proj reveal" href="projects.html">
+        <div class="proj-head">
+          <div>
+            <div class="pid">RP-049</div>
+            <h3>Translanguaging in EMI Classrooms: Engineering &amp; Humanities Faculty Comparison</h3>
+            <div class="meta">Sebagai Co-author · Lead: Dr. Sari Nurhaliza · UPI, UNS, UNDIP</div>
+          </div>
+          <span class="pill draft">Discover · 30%</span>
+        </div>
+
+        <div class="proj-meta-grid">
+          <div class="cell">
+            <div class="l">Cluster</div>
+            <div class="v">Linguistik Terapan</div>
+          </div>
+          <div class="cell">
+            <div class="l">Target</div>
+            <div class="v">System <span class="acc">Q1</span></div>
+          </div>
+          <div class="cell">
+            <div class="l">Slot Anda</div>
+            <div class="v">Quantitative analyst</div>
+          </div>
+          <div class="cell">
+            <div class="l">Concept due</div>
+            <div class="v">04 Jun 2025</div>
+          </div>
+        </div>
+
+        <div class="stages">
+          <div class="stage done"><div class="lbl">Draft</div></div>
+          <div class="stage active"><div class="lbl">Discover</div></div>
+          <div class="stage"><div class="lbl">Write</div></div>
+          <div class="stage"><div class="lbl">Pending</div></div>
+          <div class="stage"><div class="lbl">Published</div></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- 2-col: LMS + Cluster -->
+  <section class="grid-2">
+
+    <!-- LMS current module -->
+    <div class="lms-card reveal">
+      <div class="lms-head">
+        <span class="tag">Modul 04 · sedang berjalan</span>
+        <h3>Literature Review yang <em>Tidak Repetitif</em></h3>
+        <div class="meta">
+          <span><strong>62%</strong> selesai</span>
+          <span><strong>4</strong> dari 7 lessons</span>
+          <span><strong>22m</strong> tersisa</span>
+        </div>
+        <div class="lms-progress"><span></span></div>
+      </div>
+      <div class="lms-body">
+        <div class="lbl">Lessons</div>
+        <div class="lms-list">
+          <div class="lms-row done"><div class="ck">✓</div><div class="ti">Lesson 1 — Apa itu literature review yang bagus?</div><span class="ts">8m</span></div>
+          <div class="lms-row done"><div class="ck">✓</div><div class="ti">Lesson 2 — Membaca paper dengan sistematis</div><span class="ts">12m</span></div>
+          <div class="lms-row done"><div class="ck">✓</div><div class="ti">Lesson 3 — Synthesizing matrix template</div><span class="ts">10m</span></div>
+          <div class="lms-row done"><div class="ck">✓</div><div class="ti">Lesson 4 — Argumentasi vs. enumerasi</div><span class="ts">6m</span></div>
+          <div class="lms-row active"><div class="ck"></div><div class="ti">Lesson 5 — Identifikasi research gap</div><span class="ts">8m · lanjutkan →</span></div>
+          <div class="lms-row locked"><div class="ck"></div><div class="ti">Lesson 6 — Menulis paragraf pembuka</div><span class="ts">9m</span></div>
+          <div class="lms-row locked"><div class="ck"></div><div class="ti">Lesson 7 — Quiz &amp; refleksi</div><span class="ts">5m</span></div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 18px;">
+          <a class="vbtn approve" href="lms.html" style="flex: 1; justify-content: center;">Lanjutkan Lesson 5</a>
+          <a class="vbtn ghost" href="lms.html">Roadmap penuh</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: cluster + collab invites + templates -->
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+
+      <!-- Cluster mini -->
+      <div class="cluster-mini reveal">
+        <div class="tag">Cluster Anda · / 01 Flagship</div>
+        <h3>Pendidikan &amp; Teknologi Pembelajaran</h3>
+        <div class="lead">
+          <span class="av sm" style="background: rgba(255,255,255,0.1); color: white;">AP</span>
+          <span>Lead: Prof. Anwar Putranto</span>
+        </div>
+        <div class="stats">
+          <div class="it"><div class="l">Anggota</div><div class="v">142</div></div>
+          <div class="it"><div class="l">Riset aktif</div><div class="v">11</div></div>
+          <div class="it"><div class="l">Publikasi</div><div class="v">68<span style="color:var(--accent);">+</span></div></div>
+        </div>
+        <div class="cta">
+          <a class="vbtn approve" href="cluster.html">Lihat cluster lengkap</a>
+        </div>
+      </div>
+
+      <!-- Collab invites -->
+      <div class="card reveal">
+        <div class="card-head"><h3>Undangan kolaborasi</h3><a class="link-mono" href="collaborators.html">Buka semua →</a></div>
+        <div>
+          <div class="inv">
+            <span class="av lg">AL</span>
+            <div class="info">
+              <div class="ti">Dr. Anastasia L. mengundang Anda ke RP-050</div>
+              <div class="meta">"Federated Learning for Clinical NLP" · slot: Statistical analyst</div>
+              <div class="body">"Pak Hadi, saya butuh perspektif Anda untuk bagian statistik dan reporting. Mungkin 2-3 minggu engagement?"</div>
+            </div>
+            <div class="actions">
+              <button class="vbtn approve">Terima</button>
+              <button class="vbtn ghost">Tolak</button>
+            </div>
+          </div>
+          <div class="inv">
+            <span class="av lg">SN</span>
+            <div class="info">
+              <div class="ti">Dr. Sari N. mengundang Anda diskusi awal</div>
+              <div class="meta">Topik: "Code-switching corpus study" · belum jadi proyek</div>
+            </div>
+            <div class="actions">
+              <button class="vbtn approve">Jadwalkan</button>
+              <button class="vbtn ghost">Nanti</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Template recommendations -->
+      <div class="card reveal">
+        <div class="card-head"><h3>Template direkomendasikan</h3><a class="link-mono" href="templates.html">Vault →</a></div>
+        <div>
+          <a class="tpl-row" href="templates.html">
+            <div class="ico docx">DOCX</div>
+            <div>
+              <div class="ti">Cover Letter — Studies in Higher Education</div>
+              <div class="sub">Cocok untuk RP-052 · v2.3</div>
+            </div>
+            <span class="dl">Unduh ↓</span>
+          </a>
+          <a class="tpl-row" href="templates.html">
+            <div class="ico">PDF</div>
+            <div>
+              <div class="ti">Response to Reviewer — Point-by-Point</div>
+              <div class="sub">Persiapan revisi · v2.0</div>
+            </div>
+            <span class="dl">Unduh ↓</span>
+          </a>
+          <a class="tpl-row" href="templates.html">
+            <div class="ico tex">TeX</div>
+            <div>
+              <div class="ti">Manuscript Skeleton — Mixed Methods</div>
+              <div class="sub">IMRaD + statistical reporting</div>
+            </div>
+            <span class="dl">Unduh ↓</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tracker + Events -->
+  <section class="grid-2">
+    <!-- Research tracker -->
+    <div class="card reveal">
+      <div class="card-head">
+        <h3>Tracker minggu ini</h3>
+        <a class="link-mono" href="tracker.html">Detail tracker →</a>
+      </div>
+      <div>
+        <div class="lms-row done" style="padding: 14px 0;"><div class="ck">✓</div><div class="ti">Submit RP-052 ke review CoPublika</div><span class="ts">Selesai · 18m lalu</span></div>
+        <div class="lms-row done" style="padding: 14px 0;"><div class="ck">✓</div><div class="ti">Refine literatur RP-044 (Methods)</div><span class="ts">Selesai · Senin</span></div>
+        <div class="lms-row active" style="padding: 14px 0;"><div class="ck"></div><div class="ti">Selesaikan Lesson 5 — Identifikasi research gap</div><span class="ts">In progress</span></div>
+        <div class="lms-row" style="padding: 14px 0;"><div class="ck" style="border-color: var(--line);"></div><div class="ti">Draft concept note RP-049 (2 halaman)</div><span class="ts">Due 04 Jun</span></div>
+        <div class="lms-row" style="padding: 14px 0;"><div class="ck" style="border-color: var(--line);"></div><div class="ti">Review draft Methods dari Dr. Laras (RP-044)</div><span class="ts">Due 08 Jun</span></div>
+        <div class="lms-row" style="padding: 14px 0; border-bottom: 0;"><div class="ck" style="border-color: var(--line);"></div><div class="ti">Workshop Systematic Review (registrasi)</div><span class="ts">02 Jun · 09:00</span></div>
+      </div>
+    </div>
+
+    <!-- Upcoming events / activities -->
+    <div class="card reveal">
+      <div class="card-head">
+        <h3>Aktivitas mendatang</h3>
+        <a class="link-mono" href="events.html">Kalender →</a>
+      </div>
+      <div>
+        <div class="inv" style="grid-template-columns: 60px 1fr auto;">
+          <div style="text-align: center;">
+            <div style="font-size: 22px; font-weight: 600; letter-spacing: -0.01em;">02</div>
+            <div style="font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase;">Jun</div>
+          </div>
+          <div class="info">
+            <div class="ti">Workshop Systematic Review — Cluster Kesehatan</div>
+            <div class="meta">Anda terdaftar · Hybrid · 09:00–16:00</div>
+          </div>
+          <a class="vbtn ghost" href="events.html">Detail</a>
+        </div>
+        <div class="inv" style="grid-template-columns: 60px 1fr auto;">
+          <div style="text-align: center;">
+            <div style="font-size: 22px; font-weight: 600; letter-spacing: -0.01em;">06</div>
+            <div style="font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase;">Jun</div>
+          </div>
+          <div class="info">
+            <div class="ti">AMA Cluster Lead — Pendidikan &amp; EdTech</div>
+            <div class="meta">Member only · 20:00 WIB · Prof. Anwar</div>
+          </div>
+          <a class="vbtn approve" href="events.html">Daftar</a>
+        </div>
+        <div class="inv" style="grid-template-columns: 60px 1fr auto;">
+          <div style="text-align: center;">
+            <div style="font-size: 22px; font-weight: 600; letter-spacing: -0.01em;">10</div>
+            <div style="font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase;">Jun</div>
+          </div>
+          <div class="info">
+            <div class="ti">Bootcamp Statistical Reporting</div>
+            <div class="meta">Batch #4 cohort · 3 hari · Rp 850rb</div>
+          </div>
+          <a class="vbtn ghost" href="events.html">Detail</a>
+        </div>
+        <div class="inv" style="grid-template-columns: 60px 1fr auto; border-bottom: 0;">
+          <div style="text-align: center;">
+            <div style="font-size: 22px; font-weight: 600; letter-spacing: -0.01em;">15</div>
+            <div style="font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase;">Jun</div>
+          </div>
+          <div class="info">
+            <div class="ti">Open Data &amp; FAIR Principles untuk Peneliti Indonesia</div>
+            <div class="meta">Gratis · Online · Dr. Reza Dwianto</div>
+          </div>
+          <a class="vbtn approve" href="events.html">Daftar</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

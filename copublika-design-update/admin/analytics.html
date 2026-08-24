@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .chart-card { padding: 0; overflow: hidden; }
+  .chart-card .card-head { padding: 18px 20px 14px; margin: 0; }
+  .chart-body { padding: 6px 20px 24px; }
+
+  /* Sparkline area chart (SVG) */
+  .area { width: 100%; height: 220px; display: block; }
+  .area .grid line { stroke: var(--line); stroke-dasharray: 2 4; }
+  .area .axis text { font-family: var(--mono); font-size: 10px; fill: var(--muted); }
+  .area .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+  .area .fill { fill: url(#g-accent); opacity: 0.5; }
+  .area .pt { fill: var(--accent); }
+
+  /* Bars */
+  .bars { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; height: 200px; align-items: end; padding: 0 8px; }
+  .bars .col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .bars .col .bar { width: 100%; background: var(--bg-alt); border-radius: 4px 4px 0 0; min-height: 6px; transition: background 0.2s; cursor: pointer; }
+  .bars .col:hover .bar { background: var(--accent); }
+  .bars .col.hi .bar { background: var(--accent); }
+  .bars .col .lbl { font-family: var(--mono); font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* Funnel */
+  .funnel { display: flex; flex-direction: column; gap: 8px; }
+  .fstep {
+    display: grid;
+    grid-template-columns: 130px 1fr 80px;
+    gap: 12px;
+    align-items: center;
+  }
+  .fstep .lbl { font-size: 13px; font-weight: 500; }
+  .fstep .lbl small { display: block; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .fstep .bar {
+    height: 38px; border-radius: 8px;
+    background: linear-gradient(90deg, var(--ink) 0%, #2a2a2a 100%);
+    display: flex; align-items: center; padding: 0 14px;
+    color: white; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em;
+  }
+  .fstep.s2 .bar { width: 84%; }
+  .fstep.s3 .bar { width: 56%; background: linear-gradient(90deg, var(--accent), var(--accent-ink)); box-shadow: 0 0 10px 0 rgba(233, 113, 28, 0.3); }
+  .fstep.s4 .bar { width: 34%; }
+  .fstep.s5 .bar { width: 22%; }
+  .fstep .num { text-align: right; font-family: var(--mono); font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .fstep .num small { display: block; font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* Cluster ranking list */
+  .rank { display: flex; flex-direction: column; }
+  .rank-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 90px 56px;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid var(--line);
+  }
+  .rank-row:first-child { border-top: 0; }
+  .rank-row .ix {
+    font-family: var(--mono);
+    font-size: 11px; color: var(--muted); letter-spacing: 0.04em;
+  }
+  .rank-row .nm { font-size: 13.5px; font-weight: 500; letter-spacing: -0.005em; }
+  .rank-row .nm small { display: block; font-size: 11px; color: var(--ink-3); margin-top: 2px; font-family: var(--mono); letter-spacing: 0.04em; text-transform: uppercase; }
+  .rank-row .br {
+    height: 6px; border-radius: 999px; background: var(--bg-alt); overflow: hidden;
+  }
+  .rank-row .br span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+  .rank-row .ct {
+    font-family: var(--mono); font-size: 12px; text-align: right;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  .rank-row:nth-child(-n+3) .ix { color: var(--accent); }
+</style>
+</head>
+<body data-page="analytics">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Overview</a> <span class="sep">/</span> <span>Analytics</span></div>
+      <h1>Statistik <em>ekosistem.</em></h1>
+      <p>Performa member, publikasi, dan konten — diukur dari batch perdana sampai hari ini.</p>
+    </div>
+    <div class="seg">
+      <button>7d</button>
+      <button>30d</button>
+      <button class="active">90d</button>
+      <button>Q2</button>
+      <button>12m</button>
+    </div>
+  </div>
+
+  <!-- KPI strip -->
+  <section class="kpis">
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Member baru</div></div>
+      <div class="kbig sm">+186 <span class="kdelta">↑ 22%</span></div>
+      <div class="ksub">vs 90 hari sebelumnya</div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Publikasi tayang</div></div>
+      <div class="kbig sm">42 <span class="kdelta">↑ 14%</span></div>
+      <div class="ksub">14 Q1 · 18 Q2 · 10 Sinta</div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Akseptasi Q1/Q2</div></div>
+      <div class="kbig sm">76<span class="acc">%</span></div>
+      <div class="ksub">rolling 12 bulan</div>
+    </div>
+    <div class="kpi span3 reveal">
+      <div class="ktop"><div class="klabel">Blog → registrasi</div></div>
+      <div class="kbig sm">23<span class="acc">%</span> <span class="kdelta down">↓ 1.2%</span></div>
+      <div class="ksub">artikel terkonversi tertinggi: 5.4%</div>
+    </div>
+  </section>
+
+  <!-- Chart row -->
+  <section class="grid-2">
+    <div class="card chart-card reveal">
+      <div class="card-head">
+        <div>
+          <h3>Pertumbuhan member · 12 bulan terakhir</h3>
+          <div style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: 0.04em;">Total: <strong style="color:var(--ink);">1.240</strong> · CAGR <strong style="color:var(--accent);">+38%</strong></div>
+        </div>
+        <div class="tabs">
+          <button class="tab active">Member</button>
+          <button class="tab">Publikasi</button>
+        </div>
+      </div>
+      <div class="chart-body">
+        <svg class="area" viewBox="0 0 600 220" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="g-accent" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#E9711C" stop-opacity="0.28"/>
+              <stop offset="100%" stop-color="#E9711C" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <g class="grid">
+            <line x1="0" y1="40" x2="600" y2="40"/>
+            <line x1="0" y1="90" x2="600" y2="90"/>
+            <line x1="0" y1="140" x2="600" y2="140"/>
+            <line x1="0" y1="190" x2="600" y2="190"/>
+          </g>
+          <path class="fill" d="M 0 190 L 0 175 L 50 168 L 100 158 L 150 142 L 200 135 L 250 118 L 300 110 L 350 88 L 400 75 L 450 58 L 500 42 L 550 30 L 600 18 L 600 220 L 0 220 Z"/>
+          <path class="line" d="M 0 175 L 50 168 L 100 158 L 150 142 L 200 135 L 250 118 L 300 110 L 350 88 L 400 75 L 450 58 L 500 42 L 550 30 L 600 18"/>
+          <g>
+            <circle class="pt" cx="550" cy="30" r="4"/>
+            <circle class="pt" cx="600" cy="18" r="5"/>
+          </g>
+        </svg>
+        <div style="display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.04em; padding: 6px 0 0; text-transform: uppercase;">
+          <span>Jun '24</span><span>Sep '24</span><span>Des '24</span><span>Mar '25</span><span>Mei '25</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card chart-card reveal">
+      <div class="card-head">
+        <div>
+          <h3>Publikasi per bulan</h3>
+          <div style="font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: 0.04em;">Median: <strong style="color:var(--ink);">11</strong> per bulan</div>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div class="bars">
+          <div class="col"><div class="bar" style="height: 28%"></div><span class="lbl">Jun</span></div>
+          <div class="col"><div class="bar" style="height: 36%"></div><span class="lbl">Jul</span></div>
+          <div class="col"><div class="bar" style="height: 44%"></div><span class="lbl">Agu</span></div>
+          <div class="col"><div class="bar" style="height: 38%"></div><span class="lbl">Sep</span></div>
+          <div class="col"><div class="bar" style="height: 52%"></div><span class="lbl">Okt</span></div>
+          <div class="col"><div class="bar" style="height: 60%"></div><span class="lbl">Nov</span></div>
+          <div class="col"><div class="bar" style="height: 48%"></div><span class="lbl">Des</span></div>
+          <div class="col"><div class="bar" style="height: 64%"></div><span class="lbl">Jan</span></div>
+          <div class="col"><div class="bar" style="height: 72%"></div><span class="lbl">Feb</span></div>
+          <div class="col"><div class="bar" style="height: 78%"></div><span class="lbl">Mar</span></div>
+          <div class="col hi"><div class="bar" style="height: 88%"></div><span class="lbl">Apr</span></div>
+          <div class="col hi"><div class="bar" style="height: 100%"></div><span class="lbl">Mei</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Funnel + top clusters -->
+  <section class="grid-2">
+    <div class="card reveal">
+      <div class="card-head"><h3>Funnel pendaftaran — Batch #4</h3><a class="link-mono" href="batches.html">Batch detail →</a></div>
+      <div class="funnel">
+        <div class="fstep s1">
+          <div class="lbl">Visitor public<small>Landing page</small></div>
+          <div class="bar"><span>14.620 visit</span></div>
+          <div class="num">100%</div>
+        </div>
+        <div class="fstep s2">
+          <div class="lbl">Klik registrasi<small>Tombol header / CTA</small></div>
+          <div class="bar"><span>1.840 klik</span></div>
+          <div class="num">12.6%<small>↑ vs B3</small></div>
+        </div>
+        <div class="fstep s3">
+          <div class="lbl">Submit aplikasi<small>Form selesai</small></div>
+          <div class="bar"><span>520 aplikasi</span></div>
+          <div class="num">28.3%</div>
+        </div>
+        <div class="fstep s4">
+          <div class="lbl">Auto-matched<small>Scholar valid</small></div>
+          <div class="bar"><span>312 match</span></div>
+          <div class="num">60%</div>
+        </div>
+        <div class="fstep s5">
+          <div class="lbl">Approved<small>Aktif sebagai member</small></div>
+          <div class="bar"><span>204 member</span></div>
+          <div class="num">39.2%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-head"><h3>Top 6 cluster paling aktif</h3><a class="link-mono" href="clusters.html">Semua cluster →</a></div>
+      <div class="rank">
+        <div class="rank-row"><span class="ix">/01</span><div class="nm">Pendidikan &amp; EdTech<small>68 publikasi · 142 anggota</small></div><div class="br"><span style="width: 100%"></span></div><div class="ct">68</div></div>
+        <div class="rank-row"><span class="ix">/02</span><div class="nm">Kesehatan Masyarakat<small>42 publikasi · 96 anggota</small></div><div class="br"><span style="width: 62%"></span></div><div class="ct">42</div></div>
+        <div class="rank-row"><span class="ix">/03</span><div class="nm">Kebijakan Publik<small>34 publikasi · 81 anggota</small></div><div class="br"><span style="width: 50%"></span></div><div class="ct">34</div></div>
+        <div class="rank-row"><span class="ix">/04</span><div class="nm">Ekonomi Sirkular<small>28 publikasi · 64 anggota</small></div><div class="br"><span style="width: 41%"></span></div><div class="ct">28</div></div>
+        <div class="rank-row"><span class="ix">/05</span><div class="nm">Linguistik Terapan<small>23 publikasi · 57 anggota</small></div><div class="br"><span style="width: 34%"></span></div><div class="ct">23</div></div>
+        <div class="rank-row"><span class="ix">/06</span><div class="nm">Manajemen &amp; Bisnis<small>21 publikasi · 53 anggota</small></div><div class="br"><span style="width: 31%"></span></div><div class="ct">21</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content performance -->
+  <section class="card tbl-card reveal">
+    <div class="card-head">
+      <h3>Performa konten — 30 hari terakhir</h3>
+      <a class="link-mono" href="blog.html">Buka CMS →</a>
+    </div>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Konten</th>
+          <th>Tipe</th>
+          <th>Tayang</th>
+          <th class="right">Visit</th>
+          <th class="right">Conv. registrasi</th>
+          <th class="right">Avg. waktu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><div class="nm">Anatomy of an Accepted Paper: 5 Kebiasaan Penulis Q1</div><div class="sm">Anwar Putranto</div></td><td><span class="pill plain">Blog</span></td><td>22 Mei 2025</td><td class="right">8.420</td><td class="right" style="color:var(--accent); font-weight:500;">5.4%</td><td class="right">4m 12d</td></tr>
+        <tr><td><div class="nm">7 Heuristik Memilih Reviewer yang Tidak Akan Galak</div><div class="sm">Sari Nurhaliza</div></td><td><span class="pill plain">Blog</span></td><td>15 Mei 2025</td><td class="right">6.180</td><td class="right">3.2%</td><td class="right">3m 48d</td></tr>
+        <tr><td><div class="nm">Webinar — Strategi Memilih Jurnal Q1 di Era GenAI</div><div class="sm">480 registran</div></td><td><span class="pill warn no-dot" style="background:#fef3c7; color:#92400e;">Event</span></td><td>28 Mei 2025</td><td class="right">4.240</td><td class="right">11.2%</td><td class="right">—</td></tr>
+        <tr><td><div class="nm">LMS Modul 7: Statistical Reporting Tanpa Drama</div><div class="sm">Hadi Suryanto</div></td><td><span class="pill plain">LMS</span></td><td>10 Mei 2025</td><td class="right">3.860</td><td class="right">—</td><td class="right">12m 30d</td></tr>
+        <tr><td><div class="nm">Mengapa Reviewer 2 Selalu Galak? Membaca Antara Baris</div><div class="sm">Hadi Suryanto · Scheduled</div></td><td><span class="pill plain">Blog</span></td><td>04 Jun 2025</td><td class="right">—</td><td class="right">—</td><td class="right">—</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

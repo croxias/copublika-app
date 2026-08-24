@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  /* Featured live event */
+  .live-card {
+    background: var(--ink); color: white; border-color: var(--ink);
+    position: relative; overflow: hidden;
+  }
+  .live-card::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 85% 20%, rgba(233, 113, 28, 0.25), transparent 55%);
+    pointer-events: none;
+  }
+  .live-card > * { position: relative; z-index: 1; }
+  .live-card .live-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 10.5px;
+    background: var(--accent); color: white;
+    padding: 5px 12px; border-radius: 999px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .live-card .live-tag::before {
+    content: ""; width: 7px; height: 7px; background: white;
+    border-radius: 50%; animation: pulseDot 1.4s infinite;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.2);
+  }
+  .live-card h2 { font-size: 30px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.05; text-wrap: balance; }
+  .live-card h2 em { font-family: 'Fraunces', serif; font-style: italic; color: var(--accent); font-weight: 400; }
+  .live-card .deck { color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 8px; max-width: 60ch; line-height: 1.55; }
+  .live-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin: 18px 0;
+  }
+  .live-stats .it { padding: 14px 16px 14px 0; border-right: 1px solid rgba(255,255,255,0.08); }
+  .live-stats .it:last-child { border-right: 0; padding-right: 0; }
+  .live-stats .it:not(:first-child) { padding-left: 16px; }
+  .live-stats .l { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-bottom: 6px; }
+  .live-stats .v { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: white; font-variant-numeric: tabular-nums; }
+  .live-stats .v .acc { color: var(--accent); }
+  .live-cta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .live-cta .vbtn.dark { background: white; color: var(--ink); border-color: white; }
+  .live-cta .vbtn.dark:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .live-cta .vbtn.ghost { background: transparent; border-color: rgba(255,255,255,0.18); color: white; }
+  .live-cta .vbtn.ghost:hover { border-color: white; }
+
+  /* Event rows */
+  .ev-row {
+    display: grid;
+    grid-template-columns: 72px 1fr 140px 100px 110px 36px;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .ev-row:hover { background: var(--bg-alt); }
+  .ev-row:last-child { border-bottom: 0; }
+  .ev-row .day {
+    width: 72px; padding: 10px 0;
+    border-radius: 8px;
+    background: var(--bg-alt);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .ev-row .day.live { background: var(--accent-soft); }
+  .ev-row .day.live .d { color: var(--accent-ink); }
+  .ev-row .day.live .m { color: var(--accent); }
+  .ev-row .day .d { font-size: 22px; font-weight: 600; letter-spacing: -0.015em; line-height: 1; }
+  .ev-row .day .m { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-top: 4px; display: block; }
+  .ev-row .pt { font-size: 14.5px; font-weight: 500; line-height: 1.3; margin-bottom: 4px; letter-spacing: -0.005em; text-wrap: pretty; }
+  .ev-row .pa { font-size: 11.5px; color: var(--ink-3); display: flex; gap: 8px; flex-wrap: wrap; }
+  .ev-row .pa .typ { font-family: var(--mono); color: var(--accent); letter-spacing: 0.04em; text-transform: uppercase; font-size: 10.5px; }
+  .ev-row .mt { font-family: var(--mono); font-size: 10.5px; color: var(--ink-2); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+  .ev-row .reg-bar {
+    height: 4px; border-radius: 999px; background: var(--bg-alt); overflow: hidden; margin-top: 4px;
+  }
+  .ev-row .reg-bar span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+  @media (max-width: 900px) {
+    .ev-row { grid-template-columns: 56px 1fr auto; gap: 8px 14px; }
+    .ev-row .day { width: 56px; padding: 8px 0; }
+    .ev-row > div:nth-child(3), .ev-row > div:nth-child(4), .ev-row > div:nth-child(5) { grid-column: 2; }
+  }
+</style>
+</head>
+<body data-page="events" data-search="Cari event, pembicara, lokasi…">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Content</a> <span class="sep">/</span> <span>Event</span></div>
+      <h1>Event <em>kalendar.</em></h1>
+      <p>Webinar, workshop, AMA — status Live / Upcoming / Ended tampil otomatis di event publik.</p>
+    </div>
+    <div class="head-cta">
+      <button class="vbtn ghost">Sync ke kalender publik</button>
+      <button class="vbtn approve">+ Event Baru</button>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <section class="kpis">
+    <div class="kpi span3 accent reveal"><div class="ktop"><div class="klabel">Live now</div></div><div class="kbig sm">1</div><div class="ksub">Webinar Q1 di Era GenAI</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Upcoming (30d)</div></div><div class="kbig sm">12</div><div class="ksub">3 berbayar · 9 gratis</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Total registran</div></div><div class="kbig sm">2.840</div><div class="ksub">Avg. <strong>237</strong>/event</div></div>
+    <div class="kpi span3 reveal"><div class="ktop"><div class="klabel">Show rate rata-rata</div></div><div class="kbig sm">68<span class="acc">%</span></div><div class="ksub">Industry benchmark: 40%</div></div>
+  </section>
+
+  <!-- Live event -->
+  <section class="card live-card reveal">
+    <span class="live-tag">Live now · 480 viewer</span>
+    <h2>Webinar — Strategi Memilih Jurnal Q1 di <em>Era GenAI</em></h2>
+    <div class="deck">Diskusi dipandu Anwar Putranto &amp; Bayu Nugroho — bagaimana memilih jurnal target ketika landscape berubah cepat. Sesi live 90 menit + Q&amp;A.</div>
+
+    <div class="live-stats">
+      <div class="it"><div class="l">Mulai</div><div class="v">28 Mei · 14:00</div></div>
+      <div class="it"><div class="l">Registran</div><div class="v">480</div></div>
+      <div class="it"><div class="l">Live attend</div><div class="v">312 <span class="acc">(65%)</span></div></div>
+      <div class="it"><div class="l">Q&amp;A submission</div><div class="v">48</div></div>
+    </div>
+
+    <div class="live-cta">
+      <button class="vbtn dark">Buka Live Console</button>
+      <button class="vbtn ghost">Lihat registrasi</button>
+      <button class="vbtn ghost">Sematkan polling</button>
+    </div>
+  </section>
+
+  <!-- Filter -->
+  <div class="filter-bar reveal">
+    <div class="filter-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Cari event, pembicara, lokasi…">
+    </div>
+    <div class="filter-select"><label>Status</label><select><option>Semua</option><option>Live</option><option>Upcoming</option><option>Ended</option></select></div>
+    <div class="filter-select"><label>Tipe</label><select><option>Semua</option><option>Webinar</option><option>Workshop</option><option>AMA</option><option>Bootcamp</option></select></div>
+    <div class="filter-select"><label>Bayar</label><select><option>Semua</option><option>Gratis</option><option>Berbayar</option></select></div>
+  </div>
+
+  <!-- Tabs + table -->
+  <section class="card tbl-card reveal">
+    <div class="card-head">
+      <h3>Kalender event</h3>
+      <div class="tabs">
+        <button class="tab active">Upcoming <span class="ct">12</span></button>
+        <button class="tab">Live <span class="ct">1</span></button>
+        <button class="tab">Ended <span class="ct">48</span></button>
+      </div>
+    </div>
+
+    <div>
+      <div class="ev-row">
+        <div class="day live"><div class="d">28</div><span class="m">Mei</span></div>
+        <div>
+          <div class="pt">Webinar — Strategi Memilih Jurnal Q1 di Era GenAI</div>
+          <div class="pa"><span class="typ">/ Webinar</span><span>· Anwar Putranto, Bayu Nugroho</span><span>· Online · Gratis</span></div>
+        </div>
+        <div>
+          <div class="mt">480 / unlimited</div>
+          <div class="reg-bar"><span style="width: 100%; background: white; border: 1px solid var(--accent);"></span></div>
+        </div>
+        <div class="mt">14:00 WIB</div>
+        <div><span class="pill live no-dot" style="background: #eaf6ed; color: #1f7a36;">● Live now</span></div>
+        <span class="arr">→</span>
+      </div>
+
+      <div class="ev-row">
+        <div class="day"><div class="d">02</div><span class="m">Jun</span></div>
+        <div>
+          <div class="pt">Workshop Penulisan Systematic Review — Cluster Kesehatan</div>
+          <div class="pa"><span class="typ">/ Workshop</span><span>· Dr. Rahmawati M.</span><span>· Hybrid · Rp 250rb</span></div>
+        </div>
+        <div>
+          <div class="mt">64 / 80 kuota</div>
+          <div class="reg-bar"><span style="width: 80%;"></span></div>
+        </div>
+        <div class="mt">09:00–16:00</div>
+        <div><span class="pill warn">Upcoming</span></div>
+        <span class="arr">→</span>
+      </div>
+
+      <div class="ev-row">
+        <div class="day"><div class="d">06</div><span class="m">Jun</span></div>
+        <div>
+          <div class="pt">AMA Cluster Lead — Pendidikan &amp; EdTech</div>
+          <div class="pa"><span class="typ">/ AMA</span><span>· Prof. Anwar Putranto</span><span>· Online · Gratis · Member only</span></div>
+        </div>
+        <div>
+          <div class="mt">128 / unlimited</div>
+          <div class="reg-bar"><span style="width: 100%; background: var(--ink-3);"></span></div>
+        </div>
+        <div class="mt">20:00 WIB</div>
+        <div><span class="pill draft">Draft</span></div>
+        <span class="arr">→</span>
+      </div>
+
+      <div class="ev-row">
+        <div class="day"><div class="d">10</div><span class="m">Jun</span></div>
+        <div>
+          <div class="pt">Bootcamp Statistical Reporting — Batch 4 Cohort</div>
+          <div class="pa"><span class="typ">/ Bootcamp</span><span>· Dr. Hadi Suryanto</span><span>· Hybrid · Rp 850rb</span></div>
+        </div>
+        <div>
+          <div class="mt">22 / 30 kuota</div>
+          <div class="reg-bar"><span style="width: 73%;"></span></div>
+        </div>
+        <div class="mt">09:00–17:00 (3 hari)</div>
+        <div><span class="pill warn">Upcoming</span></div>
+        <span class="arr">→</span>
+      </div>
+
+      <div class="ev-row">
+        <div class="day"><div class="d">15</div><span class="m">Jun</span></div>
+        <div>
+          <div class="pt">Webinar — Open Data &amp; FAIR Principles untuk Peneliti Indonesia</div>
+          <div class="pa"><span class="typ">/ Webinar</span><span>· Dr. Reza Dwianto</span><span>· Online · Gratis</span></div>
+        </div>
+        <div>
+          <div class="mt">240 / unlimited</div>
+          <div class="reg-bar"><span style="width: 100%; background: var(--ink-3);"></span></div>
+        </div>
+        <div class="mt">19:00 WIB</div>
+        <div><span class="pill warn">Upcoming</span></div>
+        <span class="arr">→</span>
+      </div>
+
+      <div class="ev-row">
+        <div class="day"><div class="d">22</div><span class="m">Jun</span></div>
+        <div>
+          <div class="pt">Workshop Cover Letter &amp; Response to Reviewers</div>
+          <div class="pa"><span class="typ">/ Workshop</span><span>· Dr. Sari Nurhaliza</span><span>· Online · Rp 150rb</span></div>
+        </div>
+        <div>
+          <div class="mt">8 / 40 kuota</div>
+          <div class="reg-bar"><span style="width: 20%;"></span></div>
+        </div>
+        <div class="mt">13:00–17:00</div>
+        <div><span class="pill warn">Upcoming</span></div>
+        <span class="arr">→</span>
+      </div>
+
+      <div class="pagination">
+        <div class="info">Menampilkan <strong>1–6</strong> dari <strong>12</strong> upcoming</div>
+        <div class="pages">
+          <button disabled>←</button>
+          <button class="active">1</button>
+          <button>2</button>
+          <button>→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

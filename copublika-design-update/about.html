@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — CoPublika</title>
+<meta name="description" content="Tentang CoPublika — komunitas akademisi pemula untuk publikasi terindeks.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  /* ===== Hero — DARK theme (matches homepage hero) ===== */
+  .about-hero {
+    padding: clamp(110px, 12vw, 180px) 0 clamp(60px, 7vw, 100px);
+    position: relative;
+    overflow: hidden;
+    background: #0a0a0a;
+    color: white;
+  }
+  .about-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 80%);
+    pointer-events: none;
+  }
+  .about-hero::after {
+    content: "";
+    position: absolute;
+    top: -10%; right: -10%;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(233, 113, 28, 0.28), transparent 60%);
+    filter: blur(80px);
+    pointer-events: none;
+    animation: heroGlow 16s ease-in-out infinite alternate;
+  }
+  @keyframes heroGlow {
+    to { transform: translate(-25vw, 18vh) scale(1.2); }
+  }
+  .about-hero .ph-orb {
+    position: absolute;
+    bottom: -20%; left: -10%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(40, 80, 180, 0.18), transparent 60%);
+    filter: blur(100px);
+    pointer-events: none;
+    animation: heroGlow2 22s ease-in-out infinite alternate;
+  }
+  @keyframes heroGlow2 {
+    to { transform: translate(30vw, -20vh) scale(1.15); }
+  }
+  .about-hero .wrap { position: relative; z-index: 1; }
+
+  .about-hero-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+  @media (max-width: 900px) { .about-hero-grid { grid-template-columns: 1fr; gap: 48px; } }
+
+  .ah-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 28px;
+  }
+  .ah-badge .pulse {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(233, 113, 28, 0.18);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(233, 113, 28, 0.06); } }
+
+  .about-hero h1 {
+    font-size: clamp(40px, 5.2vw, 72px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    text-wrap: balance;
+    color: white;
+  }
+  .about-hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+    position: relative;
+    display: inline-block;
+  }
+  .about-hero h1 em::after {
+    content: "";
+    position: absolute;
+    bottom: 4%;
+    left: 0; right: 0;
+    height: 8%;
+    background: var(--accent);
+    opacity: 0.2;
+    z-index: -1;
+  }
+  .about-hero .ah-lead {
+    font-size: clamp(16px, 1.4vw, 19px);
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.55;
+    max-width: 50ch;
+    margin-bottom: 32px;
+  }
+  .ah-meta {
+    display: flex;
+    gap: 32px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
+  }
+  .ah-meta .item .l {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .ah-meta .item .v {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: white;
+  }
+  .ah-meta .item .v .accent { color: var(--accent); }
+
+  /* Right side — collage */
+  .ah-visual {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    max-width: 460px;
+    margin-left: auto;
+  }
+  .ah-tile {
+    position: absolute;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.5);
+    transition: transform 0.5s var(--ease);
+  }
+  .ah-tile img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(15%); }
+  .ah-tile:hover { transform: translateY(-6px) scale(1.02); }
+  .ah-tile.t1 { top: 0; left: 0; width: 55%; height: 60%; animation: float1 8s ease-in-out infinite alternate; }
+  .ah-tile.t2 { top: 8%; right: 0; width: 38%; height: 38%; animation: float2 10s ease-in-out infinite alternate; }
+  .ah-tile.t3 { bottom: 0; right: 8%; width: 50%; height: 45%; animation: float1 12s ease-in-out infinite alternate-reverse; }
+  .ah-tile.t4 {
+    bottom: 4%; left: 5%;
+    width: 28%; aspect-ratio: 1;
+    background: var(--accent);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    border-color: transparent;
+    animation: float2 9s ease-in-out infinite alternate-reverse;
+  }
+  .ah-tile.t4 .num {
+    font-size: clamp(22px, 2.6vw, 32px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-align: center;
+  }
+  .ah-tile.t4 .lbl {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-top: 4px;
+    text-align: center;
+    line-height: 1.3;
+  }
+  @keyframes float1 { to { transform: translateY(-12px); } }
+  @keyframes float2 { to { transform: translateY(10px); } }
+  @media (max-width: 600px) { .ah-visual { max-width: 360px; } }
+
+  /* ===== Mission ===== */
+  .section-mission {
+    padding: clamp(80px, 9vw, 130px) 0;
+    background: var(--bg-alt);
+    position: relative;
+    overflow: hidden;
+  }
+  .section-mission::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, black 30%, transparent 85%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, black 30%, transparent 85%);
+    pointer-events: none;
+  }
+  .mission-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  @media (max-width: 900px) { .mission-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .mission-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 40px 36px;
+    box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .mission-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 60%;
+    background: var(--accent);
+    border-radius: 0 4px 4px 0;
+  }
+  .mission-card .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-bottom: 24px;
+  }
+  .mission-card .quote-icon {
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .mission-card h2 {
+    font-size: clamp(22px, 2.4vw, 30px);
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-wrap: pretty;
+  }
+  .mission-card p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-3);
+    margin-bottom: 14px;
+  }
+  .mission-card p:last-child { margin-bottom: 0; }
+
+  .mission-side h3 {
+    font-size: clamp(28px, 3.4vw, 40px);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    font-weight: 600;
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+  .mission-side h3 .accent {
+    color: var(--accent);
+    position: relative;
+    display: inline-block;
+  }
+  .mission-side h3 .accent::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 6%;
+    height: 6%;
+    background: var(--accent);
+    opacity: 0.18;
+  }
+  .mission-side .ms-sub {
+    font-size: 16px;
+    color: var(--ink-3);
+    line-height: 1.55;
+    margin-bottom: 28px;
+    max-width: 50ch;
+  }
+  .mission-side .checkmarks {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .mission-side .check {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .mission-side .check:hover { border-color: var(--ink); transform: translateX(4px); }
+  .mission-side .check .ico {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+  }
+  .mission-side .check .txt {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+
+  /* ===== Values — compact 4-up bento ===== */
+  .section-values {
+    padding: clamp(80px, 9vw, 130px) 0;
+    background: white;
+  }
+  .values-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto clamp(40px, 5vw, 64px);
+  }
+  .values-head .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 18px;
+  }
+  .values-head .tag .num { color: var(--accent); }
+  .values-head h2 {
+    font-size: clamp(32px, 4.4vw, 52px);
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    margin-bottom: 14px;
+    text-wrap: balance;
+  }
+  .values-head p {
+    color: var(--ink-3);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .values-bento {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 900px) { .values-bento { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .values-bento { grid-template-columns: 1fr; } }
+  .value-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s var(--ease), border-color 0.3s, background 0.3s;
+  }
+  .value-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    background: white;
+  }
+  .value-card .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+  .value-card .icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    margin-bottom: 4px;
+    transition: background 0.3s, color 0.3s;
+  }
+  .value-card:hover .icon {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .value-card h4 {
+    font-size: 18px;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .value-card p {
+    color: var(--ink-3);
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-top: -4px;
+  }
+
+  /* ===== Quote section — softer, more elegant ===== */
+  .section-quote {
+    padding: clamp(70px, 8vw, 110px) 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(233, 113, 28, 0.14), transparent 55%),
+      linear-gradient(180deg, #0f0a06 0%, #0a0a0a 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .section-quote::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 60% 70% at 50% 50%, black 30%, transparent 85%);
+    -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 50%, black 30%, transparent 85%);
+    pointer-events: none;
+  }
+  .section-quote .wrap { position: relative; z-index: 1; max-width: 880px; }
+  .quote-mark-svg {
+    color: var(--accent);
+    margin-bottom: 24px;
+    opacity: 0.85;
+  }
+  .section-quote blockquote {
+    font-size: clamp(22px, 2.8vw, 34px);
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    font-weight: 500;
+    text-wrap: balance;
+    color: white;
+  }
+  .section-quote blockquote .accent { color: var(--accent); }
+  .section-quote .attr {
+    margin-top: 32px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .section-quote .attr .av {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: white;
+  }
+  .section-quote .attr .who { color: white; font-weight: 500; font-size: 14px; }
+  .section-quote .attr .role { color: rgba(255, 255, 255, 0.55); font-size: 12px; margin-top: 3px; }
+
+  /* ===== Timeline — visual cards ===== */
+  .section-timeline {
+    padding: clamp(80px, 9vw, 130px) 0;
+    background: var(--bg-alt);
+  }
+  .timeline-head {
+    text-align: center;
+    margin-bottom: clamp(40px, 5vw, 64px);
+  }
+  .timeline-head .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 14px;
+  }
+  .timeline-head .tag .num { color: var(--accent); }
+  .timeline-head h2 {
+    font-size: clamp(32px, 4.4vw, 52px);
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .timeline-track {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 900px) { .timeline-track { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 500px) { .timeline-track { grid-template-columns: 1fr; } }
+  .timeline-track::before {
+    content: "";
+    position: absolute;
+    top: 50px;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--line);
+    z-index: 0;
+  }
+  @media (max-width: 900px) { .timeline-track::before { display: none; } }
+
+  .tl-step {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 24px;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s var(--ease), border-color 0.3s, box-shadow 0.3s;
+  }
+  .tl-step:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 20px 32px -16px rgba(233, 113, 28, 0.18);
+  }
+  .tl-step .dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 4px solid white;
+    box-shadow: 0 0 0 1px var(--line);
+    margin-bottom: 18px;
+    position: relative;
+    top: -16px;
+  }
+  .tl-step:hover .dot { box-shadow: 0 0 0 1px var(--accent); }
+  .tl-step .yr {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+  .tl-step .stage {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .tl-step h4 {
+    font-size: 16px;
+    letter-spacing: -0.005em;
+    line-height: 1.25;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .tl-step p {
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+
+  /* ===== Team ===== */
+  .section-team {
+    padding: clamp(80px, 9vw, 130px) 0;
+    background: white;
+  }
+  .team-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto clamp(40px, 5vw, 56px);
+  }
+  .team-head .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 14px;
+  }
+  .team-head .tag .num { color: var(--accent); }
+  .team-head h2 {
+    font-size: clamp(32px, 4.4vw, 52px);
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    margin-bottom: 14px;
+    text-wrap: balance;
+  }
+  .team-head p {
+    color: var(--ink-3);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 900px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .team-grid { grid-template-columns: 1fr; } }
+  .member-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    transition: transform 0.4s var(--ease), border-color 0.3s, background 0.3s;
+  }
+  .member-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    background: white;
+  }
+  .member-card .ph {
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    background: white;
+  }
+  .member-card .ph img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(15%);
+    transition: transform 0.6s var(--ease), filter 0.4s;
+  }
+  .member-card:hover .ph img { transform: scale(1.06); filter: grayscale(0%); }
+  .member-card .ph .badge {
+    position: absolute;
+    bottom: 10px; left: 10px;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    backdrop-filter: blur(8px);
+  }
+  .member-card .ph .badge.accent { background: var(--accent); color: white; }
+  .member-card .info { padding: 0 6px 8px; }
+  .member-card .name {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .member-card .role {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .member-card .role .accent { color: var(--accent); }
+  .member-card.more {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: white;
+    border-style: dashed;
+  }
+  .member-card.more .ph {
+    background: var(--bg-alt);
+    border: 1px dashed var(--line);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    font-size: 36px;
+    font-weight: 300;
+  }
+  .member-card.more .name { color: var(--ink); }
+
+  /* ===== Final CTA reuse from main.css ===== */
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main data-screen-label="About">
+
+  <!-- ===== HERO ===== -->
+  <section class="about-hero">
+    <div class="ph-orb" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="about-hero-grid">
+        <div>
+          <div class="ah-badge reveal">
+            <span class="pulse"></span>
+            <span data-i18n-id="Tentang CoPublika" data-i18n-en="About CoPublika">Tentang CoPublika</span>
+          </div>
+          <h1 class="reveal" data-delay="1" data-html="true" data-i18n-id="Bukan platform. <em>Sebuah komunitas</em> untuk akademisi pemula." data-i18n-en="Not a platform. <em>A community</em> for early-career academics.">Bukan platform. <em>Sebuah komunitas</em> untuk akademisi pemula.</h1>
+          <p class="ah-lead reveal" data-delay="2" data-i18n-id="Kami lahir dari pengamatan sederhana: akademisi pemula di Indonesia tidak kekurangan ide. Yang sering kurang adalah teman seperjuangan, mentor yang sabar, dan struktur yang konsisten." data-i18n-en="We grew from a simple observation: early-career academics in Indonesia don't lack ideas. What's missing are peers, patient mentors, and consistent structure.">Kami lahir dari pengamatan sederhana: akademisi pemula di Indonesia tidak kekurangan ide. Yang sering kurang adalah teman seperjuangan, mentor yang sabar, dan struktur yang konsisten.</p>
+          <div class="ah-meta reveal" data-delay="3">
+            <div class="item">
+              <span class="l" data-i18n-id="Berdiri" data-i18n-en="Founded">Berdiri</span>
+              <span class="v">2024</span>
+            </div>
+            <div class="item">
+              <span class="l" data-i18n-id="Markas" data-i18n-en="Based in">Markas</span>
+              <span class="v">Yogyakarta, ID</span>
+            </div>
+            <div class="item">
+              <span class="l" data-i18n-id="Anggota" data-i18n-en="Members">Anggota</span>
+              <span class="v">1.240<span class="accent">+</span></span>
+            </div>
+            <div class="item">
+              <span class="l" data-i18n-id="Publikasi" data-i18n-en="Publications">Publikasi</span>
+              <span class="v">318</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ah-visual reveal" data-delay="2">
+          <div class="ah-tile t1"><img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80&auto=format&fit=crop" alt=""></div>
+          <div class="ah-tile t2"><img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=500&q=80&auto=format&fit=crop" alt=""></div>
+          <div class="ah-tile t3"><img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80&auto=format&fit=crop" alt=""></div>
+          <div class="ah-tile t4">
+            <div>
+              <div class="num">47</div>
+              <div class="lbl" data-i18n-id="Mentor" data-i18n-en="Mentors">Mentor</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MISSION ===== -->
+  <section class="section-mission">
+    <div class="wrap">
+      <div class="mission-grid">
+        <div class="mission-card reveal">
+          <span class="label">
+            <span style="width:6px; height:6px; background:var(--accent); border-radius:50%;"></span>
+            <span data-i18n-id="Misi Kami" data-i18n-en="Our Mission">Misi Kami</span>
+          </span>
+          <svg class="quote-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M9 7H5C5 4.5 6 3 8 3l1-2C6 1 3 4 3 8v8h6V7zm10 0h-4c0-2.5 1-4 3-4l1-2c-3 0-6 3-6 7v8h6V7z"/></svg>
+          <h2 data-i18n-id="Mendampingi akademisi pemula menemukan suara akademiknya — dan menerbitkannya di jurnal yang dihormati." data-i18n-en="Helping early-career academics find their academic voice — and publish it in respected journals.">Mendampingi akademisi pemula menemukan suara akademiknya — dan menerbitkannya di jurnal yang dihormati.</h2>
+          <p data-i18n-id="Kami percaya bahwa publikasi internasional adalah keterampilan yang bisa dipelajari, bukan bakat yang diwariskan." data-i18n-en="We believe international publication is a learnable skill, not an inherited talent.">Kami percaya bahwa publikasi internasional adalah keterampilan yang bisa dipelajari, bukan bakat yang diwariskan.</p>
+        </div>
+
+        <div class="mission-side reveal" data-delay="1">
+          <h3 data-html="true" data-i18n-id="Setiap akademisi berhak punya <span class='accent'>ruang aman</span> untuk gagal dan belajar." data-i18n-en="Every academic deserves a <span class='accent'>safe space</span> to fail and learn.">Setiap akademisi berhak punya <span class="accent">ruang aman</span> untuk gagal dan belajar.</h3>
+          <p class="ms-sub" data-i18n-id="Akses ke mentor berpengalaman, struktur kerja yang jelas, dan teman seperjuangan — hal yang dulu hanya dimiliki segelintir kampus elit." data-i18n-en="Access to experienced mentors, clear frameworks, and peers — once exclusive to a few elite campuses.">Akses ke mentor berpengalaman, struktur kerja yang jelas, dan teman seperjuangan — hal yang dulu hanya dimiliki segelintir kampus elit.</p>
+          <div class="checkmarks">
+            <div class="check">
+              <span class="ico">✓</span>
+              <span class="txt" data-i18n-id="Mentor aktif yang masih menulis di jurnal Q1–Q3" data-i18n-en="Active mentors still publishing in Q1–Q3 journals">Mentor aktif yang masih menulis di jurnal Q1–Q3</span>
+            </div>
+            <div class="check">
+              <span class="ico">✓</span>
+              <span class="txt" data-i18n-id="Klinik manuskrip mingguan dengan peer-review internal" data-i18n-en="Weekly manuscript clinics with internal peer review">Klinik manuskrip mingguan dengan peer-review internal</span>
+            </div>
+            <div class="check">
+              <span class="ico">✓</span>
+              <span class="txt" data-i18n-id="Komunitas tanpa rangking — semua belajar bersama" data-i18n-en="A community without ranking — we all learn together">Komunitas tanpa rangking — semua belajar bersama</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VALUES ===== -->
+  <section class="section-values">
+    <div class="wrap">
+      <div class="values-head reveal">
+        <div class="tag"><span class="num">/ 02</span><span data-i18n-id="Nilai Inti" data-i18n-en="Core Values">Nilai Inti</span></div>
+        <h2 data-i18n-id="Empat prinsip yang kami pegang." data-i18n-en="Four principles we hold close.">Empat prinsip yang kami pegang.</h2>
+        <p data-i18n-id="Apa yang membedakan komunitas kami dari platform pembelajaran lainnya." data-i18n-en="What sets us apart from other learning platforms.">Apa yang membedakan komunitas kami dari platform pembelajaran lainnya.</p>
+      </div>
+
+      <div class="values-bento">
+        <div class="value-card reveal">
+          <span class="num">/ 01</span>
+          <div class="icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h4 data-i18n-id="Proses, bukan janji" data-i18n-en="Process, not promises">Proses, bukan janji</h4>
+          <p data-i18n-id="Kami tidak menjual jaminan acceptance. Kami menjamin kerangka kerja, klinik mingguan, dan mentor yang hadir." data-i18n-en="We don't sell acceptance guarantees. We guarantee frameworks, weekly clinics, and present mentors.">Kami tidak menjual jaminan acceptance. Kami menjamin kerangka kerja, klinik mingguan, dan mentor yang hadir.</p>
+        </div>
+        <div class="value-card reveal" data-delay="1">
+          <span class="num">/ 02</span>
+          <div class="icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M14.5 16c1.5-1 3-1.5 4.5-1.5 1.5 0 3 .5 4 1.5"/></svg>
+          </div>
+          <h4 data-i18n-id="Kolaboratif, bukan kompetitif" data-i18n-en="Collaborative, not competitive">Kolaboratif, bukan kompetitif</h4>
+          <p data-i18n-id="Tidak ada ranking peserta. Sesama anggota didorong menjadi co-author dan saling memberi peer-review." data-i18n-en="No ranking. Members are encouraged to co-author and peer-review for one another.">Tidak ada ranking peserta. Sesama anggota didorong menjadi co-author dan saling memberi peer-review.</p>
+        </div>
+        <div class="value-card reveal" data-delay="2">
+          <span class="num">/ 03</span>
+          <div class="icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <h4 data-i18n-id="Konsisten, bukan instan" data-i18n-en="Consistent, not instant">Konsisten, bukan instan</h4>
+          <p data-i18n-id="Publikasi terindeks adalah maraton. Kami merancang ritme yang berkelanjutan — bukan sprint 30 hari yang melelahkan." data-i18n-en="Indexed publication is a marathon. We design a sustainable rhythm — not exhausting 30-day sprints.">Publikasi terindeks adalah maraton. Kami merancang ritme yang berkelanjutan — bukan sprint 30 hari yang melelahkan.</p>
+        </div>
+        <div class="value-card reveal" data-delay="3">
+          <span class="num">/ 04</span>
+          <div class="icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M4 19.5A2.5 2.5 0 016.5 22H20"/></svg>
+          </div>
+          <h4 data-i18n-id="Akademik, bukan transaksional" data-i18n-en="Academic, not transactional">Akademik, bukan transaksional</h4>
+          <p data-i18n-id="Mentor kami adalah peneliti aktif. Hubungan dengan peserta adalah hubungan akademik — bukan layanan pelanggan." data-i18n-en="Our mentors are active researchers. The relationship with participants is academic — not customer service.">Mentor kami adalah peneliti aktif. Hubungan dengan peserta adalah hubungan akademik — bukan layanan pelanggan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== QUOTE ===== -->
+  <section class="section-quote">
+    <div class="wrap">
+      <div class="reveal">
+        <svg class="quote-mark-svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M9 7H5C5 4.5 6 3 8 3l1-2C6 1 3 4 3 8v8h6V7zm10 0h-4c0-2.5 1-4 3-4l1-2c-3 0-6 3-6 7v8h6V7z"/></svg>
+        <blockquote data-html="true" data-i18n-id="Publikasi internasional bukan ujian akhir. <span class='accent'>Ia adalah percakapan</span> — dan setiap percakapan butuh teman." data-i18n-en="International publication is not a final exam. <span class='accent'>It's a conversation</span> — and every conversation needs partners.">Publikasi internasional bukan ujian akhir. <span class="accent">Ia adalah percakapan</span> — dan setiap percakapan butuh teman.</blockquote>
+        <div class="attr">
+          <div class="av">CP</div>
+          <div>
+            <div class="who" data-i18n-id="Tim Pendiri CoPublika" data-i18n-en="CoPublika Founding Team">Tim Pendiri CoPublika</div>
+            <div class="role" data-i18n-id="Yogyakarta · 2024" data-i18n-en="Yogyakarta · 2024">Yogyakarta · 2024</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TIMELINE ===== -->
+  <section class="section-timeline">
+    <div class="wrap">
+      <div class="timeline-head reveal">
+        <div class="tag"><span class="num">/ 03</span><span data-i18n-id="Perjalanan" data-i18n-en="Journey">Perjalanan</span></div>
+        <h2 data-i18n-id="Singkat, tapi berarti." data-i18n-en="Short, but meaningful.">Singkat, tapi berarti.</h2>
+      </div>
+      <div class="timeline-track">
+        <div class="tl-step reveal">
+          <div class="dot"></div>
+          <div class="yr">2023</div>
+          <div class="stage" data-i18n-id="Genesis" data-i18n-en="Genesis">Genesis</div>
+          <h4 data-i18n-id="Diskusi informal antar dosen muda" data-i18n-en="Informal discussions">Diskusi informal antar dosen muda</h4>
+          <p data-i18n-id="Lima dosen muda dari lima kampus berkumpul rutin untuk membaca draf manuskrip — tanpa nama, tanpa struktur." data-i18n-en="Five young lecturers from five campuses met to read manuscript drafts — no name, no structure.">Lima dosen muda dari lima kampus berkumpul rutin untuk membaca draf manuskrip — tanpa nama, tanpa struktur.</p>
+        </div>
+        <div class="tl-step reveal" data-delay="1">
+          <div class="dot"></div>
+          <div class="yr">2024</div>
+          <div class="stage" data-i18n-id="Berdiri" data-i18n-en="Founded">Berdiri</div>
+          <h4 data-i18n-id="CoPublika resmi berdiri" data-i18n-en="CoPublika officially launched">CoPublika resmi berdiri</h4>
+          <p data-i18n-id="Cohort #1 dibuka dengan 18 peserta dari 11 kampus. 14 di antaranya berhasil publikasi dalam 9 bulan." data-i18n-en="Cohort #1 launched with 18 participants from 11 universities. 14 published within 9 months.">Cohort #1 dibuka dengan 18 peserta dari 11 kampus. 14 di antaranya berhasil publikasi dalam 9 bulan.</p>
+        </div>
+        <div class="tl-step reveal" data-delay="2">
+          <div class="dot"></div>
+          <div class="yr">2024</div>
+          <div class="stage" data-i18n-id="Tumbuh" data-i18n-en="Grow">Tumbuh</div>
+          <h4 data-i18n-id="Cluster riset diluncurkan" data-i18n-en="Research clusters launched">Cluster riset diluncurkan</h4>
+          <p data-i18n-id="Forum mingguan, klinik manuskrip, dan 12 cluster lintas-disiplin mulai berjalan. Mentor aktif bertambah jadi 24." data-i18n-en="Weekly forums, manuscript clinics, and 12 cross-disciplinary clusters started. Active mentors grew to 24.">Forum mingguan, klinik manuskrip, dan 12 cluster lintas-disiplin mulai berjalan. Mentor aktif bertambah jadi 24.</p>
+        </div>
+        <div class="tl-step reveal" data-delay="3">
+          <div class="dot"></div>
+          <div class="yr">2025</div>
+          <div class="stage" data-i18n-id="Hari ini" data-i18n-en="Today">Hari ini</div>
+          <h4 data-i18n-id="1.240+ anggota, 318 publikasi" data-i18n-en="1,240+ members, 318 publications">1.240+ anggota, 318 publikasi</h4>
+          <p data-i18n-id="Cohort #07 mulai 15 September 2025. Kami terus tumbuh — bersama kampus dan akademisi dari seluruh Indonesia." data-i18n-en="Cohort #07 starts 15 September 2025. We keep growing — with campuses and academics from across Indonesia.">Cohort #07 mulai 15 September 2025. Kami terus tumbuh — bersama kampus dan akademisi dari seluruh Indonesia.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TEAM ===== -->
+  <section class="section-team">
+    <div class="wrap">
+      <div class="team-head reveal">
+        <div class="tag"><span class="num">/ 04</span><span data-i18n-id="Tim & Mentor" data-i18n-en="Team & Mentors">Tim & Mentor</span></div>
+        <h2 data-i18n-id="Peneliti aktif. Editor jurnal. Co-author yang sabar." data-i18n-en="Active researchers. Journal editors. Patient co-authors.">Peneliti aktif. Editor jurnal. Co-author yang sabar.</h2>
+        <p data-i18n-id="Mentor inti kami punya rekam jejak publikasi di jurnal Q1–Q3 dan pengalaman menjadi reviewer." data-i18n-en="Our core mentors have track records in Q1–Q3 journals and reviewer experience.">Mentor inti kami punya rekam jejak publikasi di jurnal Q1–Q3 dan pengalaman menjadi reviewer.</p>
+      </div>
+
+      <div class="team-grid">
+        <div class="member-card reveal">
+          <div class="ph">
+            <img src="https://i.pravatar.cc/400?img=8" alt="" loading="lazy">
+            <span class="badge accent">Founder</span>
+          </div>
+          <div class="info">
+            <div class="name">Dr. Ade Putranto</div>
+            <div class="role">EdTech · <span class="accent">h-index 14</span></div>
+          </div>
+        </div>
+        <div class="member-card reveal" data-delay="1">
+          <div class="ph">
+            <img src="https://i.pravatar.cc/400?img=20" alt="" loading="lazy">
+            <span class="badge">Head of Programs</span>
+          </div>
+          <div class="info">
+            <div class="name">Dr. Maya Rahmawati</div>
+            <div class="role">Public Health · Q2 Editor</div>
+          </div>
+        </div>
+        <div class="member-card reveal" data-delay="2">
+          <div class="ph">
+            <img src="https://i.pravatar.cc/400?img=11" alt="" loading="lazy">
+            <span class="badge">Lead Mentor</span>
+          </div>
+          <div class="info">
+            <div class="name">Dr. Bayu Setiawan</div>
+            <div class="role">Sustainability · Q1 Reviewer</div>
+          </div>
+        </div>
+        <div class="member-card reveal" data-delay="3">
+          <div class="ph">
+            <img src="https://i.pravatar.cc/400?img=44" alt="" loading="lazy">
+            <span class="badge">Lead Editor</span>
+          </div>
+          <div class="info">
+            <div class="name">Dr. Lina Kartika</div>
+            <div class="role">Linguistics · TEFLIN</div>
+          </div>
+        </div>
+        <div class="member-card reveal">
+          <div class="ph">
+            <img src="https://i.pravatar.cc/400?img=12" alt="" loading="lazy">
+            <span class="badge">Mentor</span>
+          </div>
+          <div class="info">
+            <div class="name">Fajar Ramadhan, Ph.D.</div>
+            <div class="role">Engineering · AI</div>
+          </div>
+        </div>
+        <div class="member-card reveal" data-delay="1">
+          <div class="ph">
+            <img src="https://i.pravatar.cc/400?img=49" alt="" loading="lazy">
+            <span class="badge">Mentor</span>
+          </div>
+          <div class="info">
+            <div class="name">Dr. Dewi Nirmala</div>
+            <div class="role">Sociology · Qualitative</div>
+          </div>
+        </div>
+        <div class="member-card reveal" data-delay="2">
+          <div class="ph">
+            <img src="https://i.pravatar.cc/400?img=33" alt="" loading="lazy">
+            <span class="badge">Mentor</span>
+          </div>
+          <div class="info">
+            <div class="name">Dr. Hadi Suryanto</div>
+            <div class="role">Economics · Policy</div>
+          </div>
+        </div>
+        <div class="member-card more reveal" data-delay="3">
+          <div class="ph">+</div>
+          <div class="info">
+            <div class="name" data-i18n-id="40+ Mentor lainnya" data-i18n-en="40+ More Mentors">40+ Mentor lainnya</div>
+            <div class="role" data-i18n-id="Lintas 15 bidang" data-i18n-en="Across 15 fields">Lintas 15 bidang</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-final">
+    <div class="cta-grid" aria-hidden="true"></div>
+    <div class="cta-orbit" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="cta-badge reveal">
+        <span class="pulse"></span>
+        <span data-i18n-id="Cohort #07 dibuka · 24 kursi tersisa" data-i18n-en="Cohort #07 open · 24 seats left">Cohort #07 dibuka · 24 kursi tersisa</span>
+      </div>
+      <h2 class="reveal" data-delay="1" data-html="true" data-i18n-id="Mau jadi bagian dari <em>cerita ini</em>?" data-i18n-en="Want to be part of <em>this story</em>?">Mau jadi bagian dari <em>cerita ini</em>?</h2>
+      <p class="reveal" data-delay="2" data-i18n-id="Pendaftaran terbuka untuk akademisi pemula dari kampus manapun di Indonesia. Tidak perlu menunggu siap." data-i18n-en="Registration is open to early-career academics from any campus in Indonesia. No need to wait until you feel ready.">Pendaftaran terbuka untuk akademisi pemula dari kampus manapun di Indonesia. Tidak perlu menunggu siap.</p>
+      <div class="group reveal" data-delay="3">
+        <a class="btn btn-accent btn-lg btn-arrow" href="register.html" data-i18n="cta.join">Gabung Komunitas</a>
+        <a class="btn btn-line btn-lg" href="contact.html" data-i18n-id="Hubungi Kami" data-i18n-en="Contact Us">Hubungi Kami</a>
+      </div>
+      <div class="cta-trust reveal" data-delay="4">
+        <div class="item">
+          <span class="v">1.240<span class="accent">+</span></span>
+          <span class="l" data-i18n-id="Anggota" data-i18n-en="Members">Anggota</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">318</span>
+          <span class="l" data-i18n-id="Publikasi" data-i18n-en="Publications">Publikasi</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">47</span>
+          <span class="l" data-i18n-id="Mentor" data-i18n-en="Mentors">Mentor</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">76<span class="accent">%</span></span>
+          <span class="l" data-i18n-id="Tingkat akseptasi" data-i18n-en="Acceptance rate">Tingkat akseptasi</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/main.js"></script>
+<script>
+  CoPublika.init('about');
+  // Render HTML for elements with data-html
+  document.querySelectorAll('[data-html="true"]').forEach(el => {
+    const lang = localStorage.getItem('cp_lang') || 'id';
+    const val = (lang === 'en' && el.hasAttribute('data-i18n-en'))
+      ? el.getAttribute('data-i18n-en')
+      : el.getAttribute('data-i18n-id');
+    if (val) el.innerHTML = val;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit & Keamanan — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .audit-row {
+    display: grid;
+    grid-template-columns: 28px 140px 1fr 180px 140px;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+    font-size: 13px;
+  }
+  .audit-row:last-child { border-bottom: 0; }
+  .audit-row:hover { background: var(--bg-alt); }
+  .audit-row .ico-c {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--bg-alt); color: var(--ink-3);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .audit-row.success .ico-c { background: #eaf6ed; color: #1f7a36; }
+  .audit-row.danger .ico-c { background: #fdebea; color: #a3201b; }
+  .audit-row.warn .ico-c { background: var(--accent-soft); color: var(--accent-ink); }
+  .audit-row .ts {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--muted); letter-spacing: 0.04em;
+  }
+  .audit-row .ts .full { display: block; color: var(--ink); font-size: 12px; font-family: var(--sans); }
+  .audit-row .desc { color: var(--ink-2); line-height: 1.5; }
+  .audit-row .desc strong { color: var(--ink); font-weight: 500; }
+  .audit-row .actor {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-3); letter-spacing: 0.04em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .audit-row .actor .av { width: 22px; height: 22px; font-size: 10px; }
+  .audit-row .ip {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--muted); letter-spacing: 0.04em;
+  }
+  @media (max-width: 980px) {
+    .audit-row { grid-template-columns: 28px 1fr; gap: 8px 12px; }
+    .audit-row .ts, .audit-row .actor, .audit-row .ip { grid-column: 2; }
+  }
+
+  /* Security cards */
+  .sec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  @media (max-width: 900px) { .sec-grid { grid-template-columns: 1fr 1fr; } }
+  .sec-card {
+    border: 1px solid var(--line); background: white;
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .sec-card .ico {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--bg-alt); color: var(--ink-2);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+  }
+  .sec-card.ok .ico { background: #eaf6ed; color: #1f7a36; }
+  .sec-card.warn .ico { background: var(--accent-soft); color: var(--accent-ink); }
+  .sec-card h4 { font-size: 14px; font-weight: 500; letter-spacing: -0.005em; }
+  .sec-card .status {
+    font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sec-card.ok .status { color: #1f7a36; }
+  .sec-card.warn .status { color: var(--accent-ink); }
+  .sec-card p {
+    font-size: 12px; color: var(--ink-3); line-height: 1.5;
+    text-wrap: pretty; margin-top: auto;
+  }
+</style>
+</head>
+<body data-page="audit" data-search="Cari aksi, actor, IP, resource…">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">System</a> <span class="sep">/</span> <span>Audit & Keamanan</span></div>
+      <h1>Audit &amp; <em>keamanan.</em></h1>
+      <p>Setiap aksi sensitif tercatat — verify, reject, publish, delete, dan login admin. Retensi 365 hari.</p>
+    </div>
+    <div class="head-cta">
+      <button class="vbtn ghost">Ekspor JSON</button>
+      <button class="vbtn ghost">Konfigurasi rule</button>
+    </div>
+  </div>
+
+  <!-- Security overview -->
+  <section class="sec-grid">
+    <div class="sec-card ok reveal">
+      <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+      <h4>Better Auth · Sesi</h4>
+      <div class="status">Aktif · CSRF on</div>
+      <p>2 admin login dalam 24 jam · 0 sesi mencurigakan.</p>
+    </div>
+    <div class="sec-card warn reveal">
+      <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <h4>Rate Limit · Login</h4>
+      <div class="status">3 trigger (7d)</div>
+      <p>IP 103.245.x.x diblok sementara setelah 12 percobaan login.</p>
+    </div>
+    <div class="sec-card ok reveal">
+      <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+      <h4>Data Scrambling</h4>
+      <div class="status">Live · 24 endpoint</div>
+      <p>Konten Guest dikunci di API layer — verified non-bypassable via inspect.</p>
+    </div>
+    <div class="sec-card ok reveal">
+      <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <h4>Ownership Check</h4>
+      <div class="status">100% coverage</div>
+      <p>Semua endpoint mutasi member terverifikasi own-data only.</p>
+    </div>
+  </section>
+
+  <!-- Filter -->
+  <div class="filter-bar reveal">
+    <div class="filter-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Cari aksi, actor, IP, resource…">
+    </div>
+    <div class="filter-select"><label>Aksi</label><select><option>Semua</option><option>verify.approve</option><option>verify.reject</option><option>project.approve</option><option>content.publish</option><option>auth.login</option><option>auth.fail</option></select></div>
+    <div class="filter-select"><label>Actor</label><select><option>Semua admin</option><option>Adi Wijaya</option><option>Dewi Larasati</option><option>System</option></select></div>
+    <div class="filter-select"><label>Periode</label><select><option>24 jam</option><option>7 hari</option><option>30 hari</option><option>Q2 2025</option></select></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs reveal" style="align-self: flex-start;">
+    <button class="tab active">Semua <span class="ct">428</span></button>
+    <button class="tab">Verifikasi <span class="ct">186</span></button>
+    <button class="tab">Proyek <span class="ct">62</span></button>
+    <button class="tab">CMS <span class="ct">94</span></button>
+    <button class="tab">Auth <span class="ct">82</span></button>
+    <button class="tab">Sistem <span class="ct">4</span></button>
+  </div>
+
+  <!-- Audit log -->
+  <section class="card tbl-card reveal">
+    <div class="card-head"><h3>Audit log — 428 event</h3><span class="meta">Urut waktu ↓</span></div>
+
+    <div>
+      <div class="audit-row success">
+        <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="ts">28 Mei · 09:42<span class="full">2m yang lalu</span></div>
+        <div class="desc"><strong>verify.approve</strong> · Pendaftar <strong>MBR-1240 — Dr. Wira Pradana</strong> disetujui. Scholar ID match 94%, H-Index 14 diverifikasi.</div>
+        <div class="actor"><span class="av">A</span> Adi Wijaya · super</div>
+        <div class="ip">192.168.42.18 · ID-JKT</div>
+      </div>
+
+      <div class="audit-row warn">
+        <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div>
+        <div class="ts">28 Mei · 09:24<span class="full">18m yang lalu</span></div>
+        <div class="desc"><strong>project.submit</strong> · Member <strong>Dr. Hadi Suryanto</strong> mengajukan proyek <strong>RP-052 "Doctoral Supervision in the Online Modality"</strong>. Status: Pending review.</div>
+        <div class="actor"><span class="av">HS</span> Hadi Suryanto · member</div>
+        <div class="ip">114.79.32.x · ID-SLO</div>
+      </div>
+
+      <div class="audit-row success">
+        <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/></svg></div>
+        <div class="ts">28 Mei · 08:43<span class="full">1h yang lalu</span></div>
+        <div class="desc"><strong>content.publish</strong> · Event <strong>"Strategi Memilih Jurnal Q1"</strong> dipublikasikan ke kalender publik. Visibility: public, capacity: unlimited.</div>
+        <div class="actor"><span class="av">D</span> Dewi Larasati · super</div>
+        <div class="ip">192.168.42.20</div>
+      </div>
+
+      <div class="audit-row danger">
+        <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+        <div class="ts">28 Mei · 06:18<span class="full">3h yang lalu</span></div>
+        <div class="desc"><strong>verify.reject</strong> · Pendaftar <strong>APP-2415 (Faisal Ardiansyah)</strong> ditolak otomatis. Scholar ID tidak ditemukan, skor 12%. Email penolakan dikirim.</div>
+        <div class="actor"><span class="av">S</span> System · auto</div>
+        <div class="ip">internal</div>
+      </div>
+
+      <div class="audit-row warn">
+        <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+        <div class="ts">28 Mei · 04:32<span class="full">5h yang lalu</span></div>
+        <div class="desc"><strong>template.download</strong> · Template <strong>"Cover Letter — Computers &amp; Education"</strong> diunduh 12× dalam 24 jam terakhir oleh 12 member berbeda. Watermark applied.</div>
+        <div class="actor"><span class="av">S</span> System</div>
+        <div class="ip">internal</div>
+      </div>
+
+      <div class="audit-row danger">
+        <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div class="ts">28 Mei · 02:14<span class="full">7h yang lalu</span></div>
+        <div class="desc"><strong>auth.fail · rate_limit_trigger</strong> · IP <strong>103.245.x.x</strong> diblokir sementara setelah 12 percobaan login gagal dalam 90 detik. Block expires: 02:44.</div>
+        <div class="actor"><span class="av">S</span> System · auto</div>
+        <div class="ip">103.245.x.x · ID-JKT</div>
+      </div>
+
+      <div class="audit-row success">
+        <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="ts">28 Mei · 01:08<span class="full">8h yang lalu</span></div>
+        <div class="desc"><strong>content.publish · scheduled</strong> · Artikel blog <strong>"7 Heuristik Memilih Reviewer"</strong> dipublikasikan otomatis oleh scheduler. Initial traffic burst: 1.240 visit.</div>
+        <div class="actor"><span class="av">S</span> System</div>
+        <div class="ip">internal</div>
+      </div>
+
+      <div class="audit-row success">
+        <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+        <div class="ts">28 Mei · 00:00<span class="full">9h yang lalu</span></div>
+        <div class="desc"><strong>scholar.sync</strong> · Cron job menyinkronkan metadata Google Scholar untuk <strong>1.240 anggota</strong>. 12 update H-index, 28 update citation count.</div>
+        <div class="actor"><span class="av">S</span> System · cron</div>
+        <div class="ip">internal</div>
+      </div>
+
+      <div class="audit-row">
+        <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="ts">27 Mei · 22:14<span class="full">11h yang lalu</span></div>
+        <div class="desc"><strong>settings.update</strong> · Feature flag <strong>"Linked Data Search"</strong> diaktifkan untuk beta cohort (16 member).</div>
+        <div class="actor"><span class="av">A</span> Adi Wijaya · super</div>
+        <div class="ip">192.168.42.18</div>
+      </div>
+
+      <div class="pagination">
+        <div class="info">Menampilkan <strong>1–9</strong> dari <strong>428</strong> event</div>
+        <div class="pages">
+          <button disabled>←</button>
+          <button class="active">1</button>
+          <button>2</button>
+          <button>3</button>
+          <button>…</button>
+          <button>48</button>
+          <button>→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>

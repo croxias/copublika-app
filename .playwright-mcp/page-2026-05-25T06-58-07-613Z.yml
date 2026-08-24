@@ -1,0 +1,273 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - strong [ref=e6]: "Cohort #07"
+      - text: — pendaftaran dibuka, 24 kursi tersisa.
+    - link "Daftar sekarang →" [ref=e7] [cursor=pointer]:
+      - /url: /siap-tembus-scopus
+    - button "Tutup pengumuman" [ref=e8] [cursor=pointer]: ×
+  - banner [ref=e9]:
+    - generic [ref=e10]:
+      - link "CoPublika" [ref=e11] [cursor=pointer]:
+        - /url: /
+        - img "CoPublika" [ref=e12]
+      - navigation "Primary" [ref=e13]:
+        - link "Home" [ref=e14] [cursor=pointer]:
+          - /url: /
+        - link "About" [ref=e15] [cursor=pointer]:
+          - /url: /about
+        - link "Research Project" [ref=e16] [cursor=pointer]:
+          - /url: /research
+        - generic [ref=e17]:
+          - button "Program" [ref=e18] [cursor=pointer]:
+            - generic [ref=e19]: Program
+          - generic:
+            - link "Siap Tembus Scopus Flagship Bootcamp 12 minggu untuk publikasi terindeks Scopus Q1–Q3.":
+              - /url: /siap-tembus-scopus
+              - generic:
+                - img
+              - generic:
+                - generic:
+                  - text: Siap Tembus Scopus
+                  - generic: Flagship
+                - generic: Bootcamp 12 minggu untuk publikasi terindeks Scopus Q1–Q3.
+              - generic: →
+        - link "Blog" [ref=e21] [cursor=pointer]:
+          - /url: /blog
+        - link "Event" [ref=e22] [cursor=pointer]:
+          - /url: /event
+        - link "Contact" [ref=e23] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - button "Pilih bahasa" [ref=e26] [cursor=pointer]:
+            - img [ref=e28]
+            - generic [ref=e31]: ID
+          - generic:
+            - button "Bahasa Indonesia ✓":
+              - generic:
+                - img
+              - generic: Bahasa Indonesia
+              - text: ✓
+            - button "English":
+              - generic:
+                - img
+              - generic: English
+        - link "Log In" [ref=e33] [cursor=pointer]:
+          - /url: /login
+        - link "Join Batch" [ref=e34] [cursor=pointer]:
+          - /url: /register
+          - generic [ref=e35]: Join Batch
+          - img [ref=e36]
+  - main [ref=e38]:
+    - generic [ref=e40]:
+      - link "Kembali ke Blog" [ref=e41] [cursor=pointer]:
+        - /url: /blog
+        - img [ref=e42]
+        - generic [ref=e44]: Kembali ke Blog
+      - generic [ref=e45]:
+        - generic [ref=e46]: Panduan
+        - 'heading "Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance" [level=1] [ref=e47]'
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - generic [ref=e50]: DA
+            - generic [ref=e51]: Dr. Ade Putranto
+          - generic [ref=e53]:
+            - img [ref=e54]
+            - generic [ref=e56]: Mei 2025
+          - generic [ref=e58]:
+            - img [ref=e59]
+            - generic [ref=e62]: 12 min read
+      - 'img "Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance" [ref=e64]'
+      - generic [ref=e65]:
+        - article [ref=e67]:
+          - 'heading "Pembedahan Mendalam Tiga Naskah Cohort #05" [level=2] [ref=e68]'
+          - paragraph [ref=e69]: "Tiga naskah peserta Cohort #05 berhasil menembus seleksi ketat di jurnal Q1 (terindeks Scopus dengan dampak tinggi) dalam waktu kurang dari 6 bulan. Melalui artikel ini, kami membedah anatomi dari ketiga naskah tersebut untuk menemukan kesamaan pola, strategi revisi, dan kerangka berpikir yang membuat mereka diterima."
+          - heading "1. Perumusan State of the Art (SOTA) yang Tajam" [level=3] [ref=e70]
+          - paragraph [ref=e71]:
+            - text: Ketiga naskah sukses ini memiliki benang merah yang sama pada bagian pendahuluan (
+            - emphasis [ref=e72]: Introduction
+            - text: ). Mereka tidak hanya menceritakan latar belakang masalah, tetapi secara eksplisit merumuskan kesenjangan penelitian (
+            - emphasis [ref=e73]: research gap
+            - text: ) di paragraf kedua dan ketiga.
+          - list [ref=e75]:
+            - listitem [ref=e76]:
+              - strong [ref=e77]: Pola Umum
+              - text: ": Penulis menyajikan tabel ringkasan penelitian terdahulu untuk memetakan apa yang sudah diteliti dan di mana letak posisi penelitian mereka saat ini."
+            - listitem [ref=e78]:
+              - strong [ref=e79]: Kesalahan yang Dihindari
+              - text: ": Menulis latar belakang yang terlalu umum (seperti sejarah subjek yang terlalu luas) tanpa mengerucut ke masalah spesifik yang ingin diselesaikan."
+          - heading "2. Metodologi yang Sangat Reproduksibel" [level=3] [ref=e80]
+          - paragraph [ref=e81]: Naskah yang diterima di Q1 selalu menyajikan metodologi secara transparan dan detail. Reviewer di jurnal bereputasi tinggi sangat sensitif terhadap validitas dan reproduksibilitas metode penelitian.
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - strong [ref=e85]: Pola Umum
+              - text: ": Penulis melampirkan diagram alur penelitian ("
+              - emphasis [ref=e86]: research flowchart
+              - text: ) dan menyediakan datasets atau instrumen penelitian di repositori publik (seperti OSF atau Zenodo).
+            - listitem [ref=e87]:
+              - strong [ref=e88]: Tindakan Revisi Penting
+              - text: ": Saat reviewer meminta klarifikasi mengenai penentuan ukuran sampel, penulis merespons dengan menyajikan analisis kekuatan statistik ("
+              - emphasis [ref=e89]: statistical power analysis
+              - text: ) tambahan yang kokoh.
+          - heading "3. Diskusi Temuan yang Berorientasi Teoretis (Bukan Sekadar Laporan Data)" [level=3] [ref=e90]
+          - paragraph [ref=e91]:
+            - text: Kesalahan fatal sebagian besar penulis pemula adalah menulis bagian
+            - emphasis [ref=e92]: Discussion
+            - text: seperti rangkuman hasil. Pada ketiga naskah ini, bagian diskusi merupakan porsi terberat dan paling mendalam.
+          - list [ref=e94]:
+            - listitem [ref=e95]:
+              - strong [ref=e96]: Pola Umum
+              - text: ": Penulis membandingkan temuan mereka dengan setidaknya 10-15 artikel kunci yang relevan dari jurnal internasional bereputasi dalam 3 tahun terakhir."
+            - listitem [ref=e97]:
+              - strong [ref=e98]: Kutipan Reviewer
+              - text: ":"
+              - emphasis [ref=e99]: "\"The discussion successfully positions the local empirical findings within the broader global theoretical framework of adaptive policy making.\""
+          - blockquote [ref=e100]: "\"Reviewer tidak mencari kesempurnaan absolut dalam metodologi Anda, melainkan kejujuran akademik, transparansi langkah, dan kemampuan memetakan kontribusi ilmiah Anda di panggung global.\" — Dr. Ade Putranto"
+          - heading "Langkah Menuju Naskah Q1 Anda" [level=3] [ref=e101]
+          - list [ref=e103]:
+            - listitem [ref=e104]:
+              - strong [ref=e105]: Petakan Literatur
+              - text: ": Identifikasi 5-10 artikel utama dari jurnal target Anda sebelum mulai menulis."
+            - listitem [ref=e106]:
+              - strong [ref=e107]: Gunakan IMRaD
+              - text: ": Disiplinkan struktur penulisan Anda sesuai standar internasional."
+            - listitem [ref=e108]:
+              - strong [ref=e109]: Siapkan Repositori Terbuka
+              - text: ": Publikasikan instrumen atau data mentah Anda jika memungkinkan untuk menumbuhkan kepercayaan reviewer."
+        - complementary [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]:
+              - generic [ref=e113]: Tindakan
+              - button "Salin Link" [ref=e114] [cursor=pointer]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - text: Salin Link
+                - img [ref=e119]
+            - generic [ref=e125]:
+              - generic [ref=e126]:
+                - img [ref=e127]
+                - generic [ref=e129]: Kategori
+              - heading "Panduan" [level=4] [ref=e130]
+              - paragraph [ref=e131]: Tulisan ini dikurasi secara khusus oleh dewan editor akademik CoPublika.
+      - generic [ref=e132]:
+        - heading "Rekomendasi Tulisan Lainnya" [level=3] [ref=e133]
+        - generic [ref=e134]:
+          - link "7 Kesalahan Umum Saat Memilih Jurnal Target Panduan 7 Kesalahan Umum Saat Memilih Jurnal Target Daftar kesalahan paling umum di tahap journal selection yang membuat naskah anda di-desk-reject sebelum dibaca reviewer. Tips dari editor jurnal Q1. Oleh Dr. Mei 2025" [ref=e135] [cursor=pointer]:
+            - /url: /blog/7-kesalahan-jurnal-target
+            - img "7 Kesalahan Umum Saat Memilih Jurnal Target" [ref=e137]
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - text: Panduan
+                - heading "7 Kesalahan Umum Saat Memilih Jurnal Target" [level=4] [ref=e140]
+                - paragraph [ref=e141]: Daftar kesalahan paling umum di tahap journal selection yang membuat naskah anda di-desk-reject sebelum dibaca reviewer. Tips dari editor jurnal Q1.
+              - generic [ref=e142]:
+                - generic [ref=e143]: Oleh Dr.
+                - generic [ref=e144]: Mei 2025
+          - 'link "Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin Panduan Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin IMRaD bukan kerangka kaku — IMRaD adalah perjanjian baca antara penulis dan reviewer. Panduan praktis menyusun naskah dengan ritme yang familiar. Oleh Dr. Mar 2025" [ref=e145] [cursor=pointer]':
+            - /url: /blog/imrad-disiplin-reviewer
+            - 'img "Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin" [ref=e147]'
+            - generic [ref=e148]:
+              - generic [ref=e149]:
+                - text: Panduan
+                - 'heading "Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin" [level=4] [ref=e150]'
+                - paragraph [ref=e151]: IMRaD bukan kerangka kaku — IMRaD adalah perjanjian baca antara penulis dan reviewer. Panduan praktis menyusun naskah dengan ritme yang familiar.
+              - generic [ref=e152]:
+                - generic [ref=e153]: Oleh Dr.
+                - generic [ref=e154]: Mar 2025
+          - link "Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda Panduan Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda Abstract adalah pintu — bukan ringkasan. Pola 4 kalimat sederhana yang membuat editor melanjutkan membaca naskah anda, lengkap dengan contoh sebelum/sesudah. Oleh Dr. Feb 2025" [ref=e155] [cursor=pointer]:
+            - /url: /blog/abstract-yang-membuat-reviewer-membuka
+            - img "Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda" [ref=e157]
+            - generic [ref=e158]:
+              - generic [ref=e159]:
+                - text: Panduan
+                - heading "Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda" [level=4] [ref=e160]
+                - paragraph [ref=e161]: Abstract adalah pintu — bukan ringkasan. Pola 4 kalimat sederhana yang membuat editor melanjutkan membaca naskah anda, lengkap dengan contoh sebelum/sesudah.
+              - generic [ref=e162]:
+                - generic [ref=e163]: Oleh Dr.
+                - generic [ref=e164]: Feb 2025
+  - contentinfo [ref=e165]:
+    - generic [ref=e166]:
+      - generic [ref=e167]:
+        - generic [ref=e168]:
+          - link "CoPublika" [ref=e169] [cursor=pointer]:
+            - /url: /
+            - img "CoPublika" [ref=e170]
+          - paragraph [ref=e171]: Digital Research Engine & Exclusive Community. Platform kolaborasi akademik terkurasi untuk menerbitkan publikasi berkualitas tinggi.
+        - generic [ref=e173]:
+          - generic [ref=e174]: Dapatkan notifikasi batch terbaru
+          - generic [ref=e176]:
+            - textbox "Email untuk newsletter" [ref=e177]:
+              - /placeholder: Email anda
+            - button "Subscribe" [ref=e178] [cursor=pointer]:
+              - text: Subscribe
+              - img [ref=e179]
+      - generic [ref=e182]:
+        - generic [ref=e183]:
+          - generic [ref=e184]: Menu
+          - list [ref=e185]:
+            - listitem [ref=e186]:
+              - link "Home" [ref=e187] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e188]:
+              - link "About" [ref=e189] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e190]:
+              - link "Research Project" [ref=e191] [cursor=pointer]:
+                - /url: /research
+            - listitem [ref=e192]:
+              - link "Blog" [ref=e193] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e194]:
+              - link "Event" [ref=e195] [cursor=pointer]:
+                - /url: /event
+        - generic [ref=e196]:
+          - generic [ref=e197]: Program
+          - list [ref=e198]:
+            - listitem [ref=e199]:
+              - link "Siap Tembus Scopus" [ref=e200] [cursor=pointer]:
+                - /url: /siap-tembus-scopus
+        - generic [ref=e201]:
+          - generic [ref=e202]: Contact
+          - list [ref=e203]:
+            - listitem [ref=e204]:
+              - link "hello@copublika.id" [ref=e205] [cursor=pointer]:
+                - /url: mailto:hello@copublika.id
+            - listitem [ref=e206]:
+              - link "Contact Form" [ref=e207] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e208]:
+              - link "Press" [ref=e209] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e210]:
+          - generic [ref=e211]: Legal
+          - list [ref=e212]:
+            - listitem [ref=e213]:
+              - link "Terms" [ref=e214] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e215]:
+              - link "Privacy" [ref=e216] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e217]:
+              - link "Council Charter" [ref=e218] [cursor=pointer]:
+                - /url: /curation-process
+        - generic [ref=e219]:
+          - generic [ref=e220]: Connect
+          - generic [ref=e221]:
+            - link "LinkedIn" [ref=e222] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e223]
+            - link "Twitter / X" [ref=e225] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e226]
+            - link "Instagram" [ref=e228] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e229]
+            - link "YouTube" [ref=e231] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e232]
+      - generic [ref=e235]:
+        - generic [ref=e236]: © 2026 CoPublika. All rights reserved.
+        - generic [ref=e237]: "Batch #04: Open — Jakarta · Singapore · Zürich"
+  - button "Open Next.js Dev Tools" [ref=e244] [cursor=pointer]:
+    - img [ref=e245]

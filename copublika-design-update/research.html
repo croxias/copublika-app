@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Project — CoPublika</title>
+<meta name="description" content="Cluster riset CoPublika, publikasi terbaru anggota, dan riset payung yang sedang berjalan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  /* =====================================================
+     Research page — polished layout
+     ===================================================== */
+
+  /* --- Hero counter strip --- */
+  .rh-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    padding-bottom: 24px;
+  }
+  @media (max-width: 800px) {
+    .rh-strip { grid-template-columns: 1fr 1fr; gap: 24px 0; padding-bottom: 28px; }
+  }
+  .rh-strip .cell { padding-right: 24px; border-right: 1px solid rgba(255, 255, 255, 0.08); }
+  .rh-strip .cell:last-child { border-right: 0; }
+  .rh-strip .cell + .cell { padding-left: 24px; }
+  @media (max-width: 800px) {
+    .rh-strip .cell:nth-child(2n) { border-right: 0; }
+    .rh-strip .cell:nth-child(odd) { padding-left: 0; }
+  }
+  .rh-strip .k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .rh-strip .v {
+    font-size: clamp(30px, 4vw, 44px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-top: 10px;
+    color: white;
+    font-variant-numeric: tabular-nums;
+  }
+  .rh-strip .v .accent { color: var(--accent); }
+
+  /* --- Section head --- */
+  .sh-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 20px;
+  }
+  .sh-tag .bar { width: 22px; height: 1px; background: var(--accent); }
+  .sh-tag .num { color: var(--accent); font-weight: 500; }
+  .sh-h {
+    font-size: clamp(34px, 4.4vw, 60px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+  .sh-h em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .sh-deck {
+    font-size: 15.5px;
+    color: var(--ink-3);
+    line-height: 1.55;
+    max-width: 38ch;
+    text-wrap: pretty;
+    margin-top: 6px;
+  }
+
+  /* --- Cluster bento (improved) --- */
+  .clusters {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 220px;
+    gap: 14px;
+  }
+  @media (max-width: 900px) { .clusters { grid-template-columns: repeat(2, 1fr); } }
+  .cluster {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--bg);
+    transition: border-color 0.3s var(--ease), transform 0.3s var(--ease), background 0.3s var(--ease);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+  }
+  .cluster:hover { border-color: var(--ink); transform: translateY(-4px); }
+  .cluster .ctop {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .cluster .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .cluster .papers {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cluster .papers::before {
+    content: "";
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .cluster .cmain h4 {
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    font-weight: 500;
+    text-wrap: balance;
+  }
+  .cluster .cmain p {
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.5;
+    margin-top: 8px;
+    text-wrap: pretty;
+  }
+  .cluster .cbot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .cluster .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .cluster .arrow {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s var(--ease);
+    flex-shrink: 0;
+  }
+  .cluster:hover .arrow {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    transform: rotate(-45deg);
+  }
+
+  /* Featured (flagship) */
+  .cluster.featured {
+    grid-column: span 3;
+    grid-row: span 2;
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+  }
+  .cluster.featured::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(233, 113, 28, 0.22), transparent 55%);
+    pointer-events: none;
+  }
+  .cluster.featured::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: radial-gradient(ellipse 80% 70% at 80% 30%, black 20%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 80% 30%, black 20%, transparent 70%);
+    pointer-events: none;
+  }
+  .cluster.featured > * { position: relative; z-index: 1; }
+  .cluster.featured .cmain h4 { font-size: 44px; letter-spacing: -0.025em; }
+  .cluster.featured .num { color: #888; }
+  .cluster.featured .papers { color: var(--accent); }
+  .cluster.featured .cmain p { color: #c8c8c8; font-size: 15px; max-width: 36ch; margin-top: 12px; }
+  .cluster.featured .arrow { border-color: rgba(255, 255, 255, 0.18); color: white; }
+  .cluster.featured .tag-dark { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.12); color: rgba(255, 255, 255, 0.85); }
+
+  .cluster.large { grid-column: span 3; }
+  .cluster.med { grid-column: span 2; }
+  .cluster.sm { grid-column: span 2; }
+  @media (max-width: 900px) {
+    .cluster.featured, .cluster.large, .cluster.med, .cluster.sm {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+    .cluster.featured .cmain h4 { font-size: 30px; }
+  }
+
+  /* "More" tile */
+  .cluster.cmore {
+    background: var(--bg-alt);
+    border-style: dashed;
+    border-color: var(--line);
+  }
+  .cluster.cmore:hover { border-color: var(--ink); background: var(--bg); }
+
+  /* --- Process diagram (refined) --- */
+  .process {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-alt);
+  }
+  @media (max-width: 800px) { .process { grid-template-columns: 1fr 1fr; } }
+  .pstep {
+    padding: 36px 28px 32px;
+    border-right: 1px solid var(--line);
+    position: relative;
+    transition: background 0.3s;
+  }
+  .pstep:hover { background: var(--bg); }
+  .pstep:last-child { border-right: 0; }
+  @media (max-width: 800px) {
+    .pstep:nth-child(2n) { border-right: 0; }
+    .pstep:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  }
+  .pstep .pnum {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pstep .pnum::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .pstep h4 {
+    font-size: 22px;
+    letter-spacing: -0.015em;
+    margin-bottom: 10px;
+    line-height: 1.15;
+    font-weight: 500;
+  }
+  .pstep p {
+    color: var(--ink-3);
+    font-size: 14px;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+  .pstep .pdur {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* =====================================================
+     PUBLICATIONS — search + filter + sort + pagination
+     ===================================================== */
+  .pubs-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  @media (max-width: 980px) { .pubs-shell { grid-template-columns: 1fr; gap: 32px; } }
+
+  /* Side rail filters */
+  .pubs-rail {
+    position: sticky;
+    top: 130px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  @media (max-width: 980px) { .pubs-rail { position: relative; top: 0; } }
+
+  .rail-group h5 {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .rail-group .opts {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+  .rail-opt {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: padding-left 0.25s var(--ease), color 0.2s;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+  }
+  .rail-opt:hover { padding-left: 6px; color: var(--ink); }
+  .rail-opt .ct {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .rail-opt.active { color: var(--accent); font-weight: 500; }
+  .rail-opt.active .ct { color: var(--accent); }
+  .rail-opt.active::before {
+    content: "→";
+    margin-right: 8px;
+    font-family: var(--mono);
+    color: var(--accent);
+  }
+
+  /* Search + toolbar */
+  .pubs-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .pubs-search {
+    position: relative;
+    flex: 1;
+    min-width: 260px;
+  }
+  .pubs-search svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .pubs-search input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg);
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .pubs-search input:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 4px rgba(10, 10, 10, 0.04);
+  }
+  .pubs-search .clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    color: var(--muted);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-alt);
+    cursor: pointer;
+  }
+  .pubs-search.has-query .clear { display: flex; }
+  .pubs-search .clear:hover { background: var(--ink); color: white; }
+
+  .sort-select {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg);
+    height: 42px;
+    font-size: 13px;
+    color: var(--ink-2);
+    transition: border-color 0.2s;
+  }
+  .sort-select:hover { border-color: var(--ink); }
+  .sort-select label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sort-select select {
+    border: 0;
+    background: transparent;
+    font-size: 13px;
+    cursor: pointer;
+    padding-right: 4px;
+  }
+  .sort-select select:focus { outline: none; }
+
+  .pubs-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .pubs-count strong { color: var(--ink); font-weight: 500; }
+
+  /* Publication list */
+  .pub-list { border-top: 1px solid var(--line); }
+  .pub {
+    display: grid;
+    grid-template-columns: 90px 1fr 200px 100px;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+    transition: padding 0.3s var(--ease), background 0.3s;
+    cursor: pointer;
+  }
+  .pub:hover { padding-left: 16px; background: linear-gradient(90deg, var(--bg-alt) 0%, transparent 80%); }
+  .pub .date {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    padding-top: 4px;
+    text-transform: uppercase;
+  }
+  .pub .title {
+    font-size: 17px;
+    line-height: 1.35;
+    letter-spacing: -0.005em;
+    font-weight: 500;
+    margin-bottom: 6px;
+    text-wrap: pretty;
+  }
+  .pub .authors {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    font-style: italic;
+  }
+  .pub .topic {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 6px;
+    display: inline-block;
+  }
+  .pub .journal {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+    letter-spacing: 0.02em;
+    padding-top: 4px;
+  }
+  .pub .quartile {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    justify-self: end;
+    align-self: start;
+    white-space: nowrap;
+  }
+  .pub .quartile.q2 { background: #fef3c7; color: #92400e; }
+  .pub .quartile.q3 { background: #dbeafe; color: #1e40af; }
+  .pub .quartile.sinta { background: var(--bg-alt); color: var(--ink-2); }
+  @media (max-width: 800px) {
+    .pub { grid-template-columns: 80px 1fr; gap: 8px 16px; }
+    .pub .journal, .pub .quartile { grid-column: 2; }
+    .pub .journal { margin-top: 4px; padding-top: 0; }
+    .pub .quartile { justify-self: start; margin-top: 4px; }
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap;
+  }
+  .page-info {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .page-info strong { color: var(--ink); font-weight: 500; }
+  .page-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .page-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .page-btn:hover:not(:disabled) {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  .page-btn.active {
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+  }
+  .page-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .page-btn.nav-btn { padding: 0 14px; gap: 6px; font-weight: 500; }
+  .page-ellipsis {
+    padding: 0 4px;
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  /* Empty state */
+  .pubs-empty {
+    padding: 64px 0;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .pubs-empty .icon {
+    width: 56px; height: 56px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: var(--bg-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+  }
+  .pubs-empty h4 {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .pubs-empty p {
+    font-size: 13.5px;
+    color: var(--ink-3);
+  }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main data-screen-label="Research Project">
+
+  <!-- HERO -->
+  <section class="page-hero">
+    <div class="ph-orb" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="breadcrumb reveal">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <span class="sep">/</span>
+        <span data-i18n="nav.research">Research Project</span>
+      </div>
+      <h1 class="page-h reveal" data-delay="1" data-i18n-id="Riset yang berdampak. Bersama." data-i18n-en="Research with impact. Together.">Riset yang <em>berdampak.</em><br>Bersama.</h1>
+      <p class="page-sub reveal" data-delay="2" data-i18n-id="24 cluster riset aktif lintas disiplin — sosial, kesehatan, pendidikan, teknik, ekonomi, dan lingkungan. Temukan teman seperjuangan dan co-author di bidang anda." data-i18n-en="24 active research clusters across disciplines — social, health, education, engineering, economics, and environment. Find peers and co-authors in your field.">24 cluster riset aktif lintas disiplin — sosial, kesehatan, pendidikan, teknik, ekonomi, dan lingkungan. Temukan teman seperjuangan dan co-author di bidang anda.</p>
+
+      <div class="rh-strip reveal" data-delay="3">
+        <div class="cell">
+          <div class="k">Cluster Aktif</div>
+          <div class="v">24</div>
+        </div>
+        <div class="cell">
+          <div class="k">Publikasi Alumni</div>
+          <div class="v">318<span class="accent">+</span></div>
+        </div>
+        <div class="cell">
+          <div class="k">Riset Berjalan</div>
+          <div class="v">62</div>
+        </div>
+        <div class="cell">
+          <div class="k">Akseptasi Q1/Q2</div>
+          <div class="v">76<span class="accent">%</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLUSTERS -->
+  <section class="section" id="clusters">
+    <div class="wrap">
+      <div class="section-head two-col reveal">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">R.01</span><span data-i18n-id="Cluster Riset" data-i18n-en="Research Clusters">Cluster Riset</span></div>
+          <h2 class="sh-h" data-i18n-id="Pilih bidang anda." data-i18n-en="Pick your field."><em>Pilih</em> bidang anda.</h2>
+        </div>
+        <div class="head-right" style="text-align: left;">
+          <p class="sh-deck" data-i18n-id="Klik kartu untuk melihat cluster lead, anggota, dan riset yang sedang berjalan di bidang tersebut." data-i18n-en="Click a card to see the cluster lead, members, and ongoing research in that field.">Klik kartu untuk melihat cluster lead, anggota, dan riset yang sedang berjalan di bidang tersebut.</p>
+        </div>
+      </div>
+
+      <div class="clusters">
+        <a class="cluster featured reveal" href="cluster-detail.html?id=01">
+          <div class="ctop">
+            <span class="num">/ 01 — Flagship</span>
+            <span class="papers">68 papers</span>
+          </div>
+          <div class="cmain">
+            <h4 data-i18n-id="Pendidikan & Teknologi Pembelajaran" data-i18n-en="Education & Learning Technology">Pendidikan & Teknologi Pembelajaran</h4>
+            <p data-i18n-id="AI dalam kelas, asesmen autentik, dan kebijakan pendidikan tinggi Indonesia." data-i18n-en="AI in classrooms, authentic assessment, and Indonesian higher-education policy.">AI dalam kelas, asesmen autentik, dan kebijakan pendidikan tinggi Indonesia.</p>
+          </div>
+          <div class="cbot">
+            <div class="tags">
+              <span class="tag tag-dark">EdTech</span>
+              <span class="tag tag-dark">Policy</span>
+              <span class="tag tag-dark">Assessment</span>
+            </div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+
+        <a class="cluster large reveal" data-delay="1" href="cluster-detail.html?id=02">
+          <div class="ctop"><span class="num">/ 02</span><span class="papers">42 papers</span></div>
+          <div class="cmain">
+            <h4 data-i18n-id="Kesehatan Masyarakat" data-i18n-en="Public Health">Kesehatan Masyarakat</h4>
+            <p data-i18n-id="Literasi kesehatan digital, intervensi komunitas, dan studi pasca-pandemi." data-i18n-en="Digital health literacy, community interventions, and post-pandemic studies.">Literasi kesehatan digital, intervensi komunitas, dan studi pasca-pandemi.</p>
+          </div>
+          <div class="cbot">
+            <div></div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+
+        <a class="cluster med reveal" data-delay="2" href="cluster-detail.html?id=03">
+          <div class="ctop"><span class="num">/ 03</span><span class="papers">28 papers</span></div>
+          <div class="cmain">
+            <h4 data-i18n-id="Ekonomi Sirkular" data-i18n-en="Circular Economy">Ekonomi Sirkular</h4>
+          </div>
+          <div class="cbot">
+            <div></div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+
+        <a class="cluster sm reveal" data-delay="3" href="cluster-detail.html?id=04">
+          <div class="ctop"><span class="num">/ 04</span><span class="papers">19 papers</span></div>
+          <div class="cmain">
+            <h4 data-i18n-id="AI & Etika" data-i18n-en="AI & Ethics">AI & Etika</h4>
+          </div>
+          <div class="cbot">
+            <div></div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+
+        <a class="cluster med reveal" href="cluster-detail.html?id=05">
+          <div class="ctop"><span class="num">/ 05</span><span class="papers">34 papers</span></div>
+          <div class="cmain">
+            <h4 data-i18n-id="Kebijakan Publik" data-i18n-en="Public Policy">Kebijakan Publik</h4>
+          </div>
+          <div class="cbot">
+            <div></div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+
+        <a class="cluster med reveal" data-delay="1" href="cluster-detail.html?id=06">
+          <div class="ctop"><span class="num">/ 06</span><span class="papers">23 papers</span></div>
+          <div class="cmain">
+            <h4 data-i18n-id="Linguistik Terapan" data-i18n-en="Applied Linguistics">Linguistik Terapan</h4>
+          </div>
+          <div class="cbot">
+            <div></div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+
+        <a class="cluster sm reveal" data-delay="2" href="cluster-detail.html?id=07">
+          <div class="ctop"><span class="num">/ 07</span><span class="papers">17 papers</span></div>
+          <div class="cmain">
+            <h4 data-i18n-id="Sustainability" data-i18n-en="Sustainability">Sustainability</h4>
+          </div>
+          <div class="cbot">
+            <div></div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+
+        <a class="cluster med reveal" data-delay="3" href="cluster-detail.html?id=08">
+          <div class="ctop"><span class="num">/ 08</span><span class="papers">21 papers</span></div>
+          <div class="cmain">
+            <h4 data-i18n-id="Manajemen & Bisnis" data-i18n-en="Management & Business">Manajemen & Bisnis</h4>
+          </div>
+          <div class="cbot">
+            <div></div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+
+        <a class="cluster med reveal" href="cluster-detail.html?id=09">
+          <div class="ctop"><span class="num">/ 09</span><span class="papers">15 papers</span></div>
+          <div class="cmain">
+            <h4 data-i18n-id="Hukum & Tata Kelola" data-i18n-en="Law & Governance">Hukum & Tata Kelola</h4>
+          </div>
+          <div class="cbot">
+            <div></div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+
+        <a class="cluster sm cmore reveal" data-delay="1" href="cluster-detail.html?id=10">
+          <div class="ctop"><span class="num">/ 10</span><span class="papers" data-i18n-id="14 cluster lain" data-i18n-en="14 more clusters">14 cluster lain</span></div>
+          <div class="cmain">
+            <h4 data-i18n-id="+14 Cluster" data-i18n-en="+14 Clusters">+14 Cluster</h4>
+            <p style="font-size:12px;" data-i18n-id="Klik untuk lihat semua bidang" data-i18n-en="Click to see all fields">Klik untuk lihat semua bidang</p>
+          </div>
+          <div class="cbot">
+            <div></div>
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="section-head two-col reveal" style="margin-bottom: 0;">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">R.02</span><span data-i18n-id="Cara Kerja" data-i18n-en="How It Works">Cara Kerja</span></div>
+          <h2 class="sh-h" data-i18n-id="Empat tahapan, satu naskah." data-i18n-en="Four stages, one manuscript.">Empat tahapan, <em>satu naskah.</em></h2>
+        </div>
+        <div class="head-right" style="text-align: left;">
+          <p class="sh-deck">Setiap riset CoPublika mengikuti alur yang sama — dirancang agar naskah selesai dalam 16–20 minggu.</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:48px;"></div>
+    <div class="process">
+      <div class="pstep reveal">
+        <div class="pnum">01 / Onboarding</div>
+        <h4 data-i18n-id="Pilih Cluster" data-i18n-en="Choose Cluster">Pilih Cluster</h4>
+        <p data-i18n-id="Bergabung ke 1–2 cluster, bertemu cluster lead, dan kenali rekan riset di bidang yang sama." data-i18n-en="Join 1–2 clusters, meet the cluster lead, and connect with peers in the same field.">Bergabung ke 1–2 cluster, bertemu cluster lead, dan kenali rekan riset di bidang yang sama.</p>
+        <div class="pdur">Minggu 1–2</div>
+      </div>
+      <div class="pstep reveal" data-delay="1">
+        <div class="pnum">02 / Discover</div>
+        <h4 data-i18n-id="Bangun Ide" data-i18n-en="Build the Idea">Bangun Ide</h4>
+        <p data-i18n-id="Workshop ide, scoping, dan validasi research question. Output: 1-page concept note." data-i18n-en="Ideation workshop, scoping, and research-question validation. Output: a 1-page concept note.">Workshop ide, scoping, dan validasi research question. Output: 1-page concept note.</p>
+        <div class="pdur">Minggu 3–6</div>
+      </div>
+      <div class="pstep reveal" data-delay="2">
+        <div class="pnum">03 / Write</div>
+        <h4 data-i18n-id="Tulis Bersama" data-i18n-en="Write Together">Tulis Bersama</h4>
+        <p data-i18n-id="Sprint penulisan dengan klinik manuskrip mingguan dan peer-review internal sebelum submission." data-i18n-en="A writing sprint with weekly manuscript clinics and internal peer review before submission.">Sprint penulisan dengan klinik manuskrip mingguan dan peer-review internal sebelum submission.</p>
+        <div class="pdur">Minggu 7–14</div>
+      </div>
+      <div class="pstep reveal" data-delay="3">
+        <div class="pnum">04 / Submit</div>
+        <h4 data-i18n-id="Kirim & Revisi" data-i18n-en="Submit & Revise">Kirim & Revisi</h4>
+        <p data-i18n-id="Strategi pemilihan jurnal, submission, dan pendampingan revision letter pasca peer-review." data-i18n-en="Journal selection strategy, submission, and revision-letter support after peer review.">Strategi pemilihan jurnal, submission, dan pendampingan revision letter pasca peer-review.</p>
+        <div class="pdur">Minggu 15–20+</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PUBLICATIONS -->
+  <section class="section" id="publications">
+    <div class="wrap">
+      <div class="section-head two-col reveal">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">R.03</span><span data-i18n-id="Publikasi Alumni" data-i18n-en="Alumni Publications">Publikasi Alumni</span></div>
+          <h2 class="sh-h" data-i18n-id="Karya yang sudah tayang." data-i18n-en="Work that's already out.">Karya yang <em>sudah tayang.</em></h2>
+        </div>
+        <div class="head-right" style="text-align: left;">
+          <p class="sh-deck">318 publikasi alumni — terindeks Scopus Q1–Q3 dan Sinta. Cari, filter, atau urutkan untuk menemukan paper yang relevan.</p>
+        </div>
+      </div>
+
+      <div class="pubs-shell">
+        <!-- Sidebar filters -->
+        <aside class="pubs-rail">
+          <div class="rail-group">
+            <h5>Indeks</h5>
+            <div class="opts" id="indexFilter">
+              <button class="rail-opt active" data-f="all">Semua <span class="ct">52</span></button>
+              <button class="rail-opt" data-f="q1">Scopus Q1 <span class="ct">14</span></button>
+              <button class="rail-opt" data-f="q2">Scopus Q2 <span class="ct">15</span></button>
+              <button class="rail-opt" data-f="q3">Scopus Q3 <span class="ct">12</span></button>
+              <button class="rail-opt" data-f="sinta">Sinta 1–2 <span class="ct">11</span></button>
+            </div>
+          </div>
+          <div class="rail-group">
+            <h5>Tahun</h5>
+            <div class="opts" id="yearFilter">
+              <button class="rail-opt active" data-y="all">Semua <span class="ct">52</span></button>
+              <button class="rail-opt" data-y="2025">2025 <span class="ct">14</span></button>
+              <button class="rail-opt" data-y="2024">2024 <span class="ct">18</span></button>
+              <button class="rail-opt" data-y="2023">2023 <span class="ct">12</span></button>
+              <button class="rail-opt" data-y="2022">2022 <span class="ct">8</span></button>
+            </div>
+          </div>
+          <div class="rail-group">
+            <h5>Cluster</h5>
+            <div class="opts" id="clusterFilter">
+              <button class="rail-opt active" data-c="all">Semua</button>
+              <button class="rail-opt" data-c="edtech">Pendidikan & EdTech</button>
+              <button class="rail-opt" data-c="health">Kesehatan</button>
+              <button class="rail-opt" data-c="circular">Ekonomi Sirkular</button>
+              <button class="rail-opt" data-c="ai">AI & Etika</button>
+              <button class="rail-opt" data-c="policy">Kebijakan Publik</button>
+              <button class="rail-opt" data-c="ling">Linguistik</button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main: search + sort + list + pagination -->
+        <div>
+          <div class="pubs-toolbar reveal">
+            <div class="pubs-search" id="pubsSearchWrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+              <input type="text" id="pubsSearch" placeholder="Cari judul, penulis, atau jurnal…" autocomplete="off">
+              <button class="clear" id="pubsClear" aria-label="Clear">×</button>
+            </div>
+
+            <div class="sort-select">
+              <label for="pubsSort">Urutkan</label>
+              <select id="pubsSort">
+                <option value="newest">Terbaru</option>
+                <option value="oldest">Terlama</option>
+                <option value="title">Judul A–Z</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pubs-count" id="pubsCount" style="margin-bottom: 16px;">
+            Menampilkan <strong>1–8</strong> dari <strong>52</strong> publikasi
+          </div>
+
+          <div class="pub-list" id="pubList">
+            <!-- Rendered by JS -->
+          </div>
+
+          <div class="pubs-empty" id="pubsEmpty" style="display:none;">
+            <div class="icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+            </div>
+            <h4>Tidak ada hasil</h4>
+            <p>Coba ubah kata kunci, indeks, atau tahun. Reset filter untuk melihat semua publikasi.</p>
+          </div>
+
+          <div class="pagination" id="pubsPagination">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-final">
+    <div class="cta-grid" aria-hidden="true"></div>
+    <div class="cta-orbit" aria-hidden="true"></div>
+    <div class="wrap">
+      <span class="cta-badge"><span class="pulse"></span>Recruiting · Cohort September 2025</span>
+      <h2 class="reveal" data-i18n-id="Ide anda sudah lama menunggu." data-i18n-en="Your idea has been waiting.">Ide anda sudah lama <em>menunggu.</em></h2>
+      <p class="reveal" data-delay="1" data-i18n-id="Bergabunglah ke cluster riset yang sesuai dan mulai menulis bersama hari ini." data-i18n-en="Join a relevant research cluster and start writing together today.">Bergabunglah ke cluster riset yang sesuai dan mulai menulis bersama hari ini.</p>
+      <div class="group reveal" data-delay="2">
+        <a class="btn btn-accent btn-lg btn-arrow" href="register.html" data-i18n="cta.join">Gabung Komunitas</a>
+        <a class="btn btn-line btn-lg" href="#clusters">Telusuri Cluster</a>
+      </div>
+      <div class="cta-trust reveal" data-delay="4">
+        <div class="item">
+          <span class="v">1.240<span class="accent">+</span></span>
+          <span class="l">Anggota</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">318</span>
+          <span class="l">Publikasi</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">47</span>
+          <span class="l">Mentor</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">76<span class="accent">%</span></span>
+          <span class="l">Tingkat Akseptasi</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/publications.js"></script>
+<script>
+  CoPublika.init('research');
+</script>
+</body>
+</html>

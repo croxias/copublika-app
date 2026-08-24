@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Curation Process — CoPublika</title>
+<link rel="icon" href="assets/favicon-black.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="components/Nav.jsx"></script>
+<script type="text/babel" src="components/Footer.jsx"></script>
+
+<script type="text/babel">
+const phases = [
+  ['I', 'Application Window', 'Open intake. Submit CV, statement of intent, and one representative work.', ['72 hours to confirm', 'Self-attestation']],
+  ['II', 'Identity Verification', 'Manual confirmation against institutional records and ORCID.', ['Manual review', '5 working days']],
+  ['III', 'Curation Council', 'Three-reviewer panel reads each application end-to-end. Decisions issued in writing.', ['3 reviewers', 'Written rationale']],
+  ['IV', 'Onboarding & Pairing', 'Accepted applicants are paired with collaborators and editors based on field and method.', ['1:1 onboarding', 'Pairing memo']],
+  ['V', 'Cohort Active', 'Live program begins. Studios meet weekly. Database access is unlocked.', ['Weekly studios', 'Database access']],
+];
+
+function App() {
+  return (
+    <div className="cp-app">
+      <Nav active="curation" />
+      <main className="cp-page">
+        <a href="index.html" className="cp-page__back">← Back to home</a>
+        <div style={{ marginBottom: 8 }} className="cp-mono">§ Curation Process</div>
+        <h1 className="cp-page__title">
+          Reviewed in writing.<br/>
+          <span className="cp-page__title-mute">Not at scale.</span>
+        </h1>
+        <p className="cp-page__deck">
+          We do not auto-onboard. Every applicant is read end-to-end by the
+          Curation Council. Decisions arrive by letter — accept, hold, or decline —
+          with rationale.
+        </p>
+
+        <div className="cp-timeline">
+          {phases.map(([n, t, d, meta]) => (
+            <div key={n} className="cp-timeline__row">
+              <div className="cp-timeline__num">{n}</div>
+              <div>
+                <h3 className="cp-timeline__t">{t}</h3>
+                <p className="cp-timeline__d">{d}</p>
+                <div className="cp-timeline__meta">
+                  {meta.map((m) => <span key={m} className="cp-timeline__chip">{m}</span>)}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 96, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <a href="join-batch.html" className="cp-btn cp-btn--solid cp-btn--lg">Begin application <span className="cp-btn__arrow">→</span></a>
+          <a href="siap-tembus-scopus.html" className="cp-btn cp-btn--outline cp-btn--lg">Explore the program</a>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

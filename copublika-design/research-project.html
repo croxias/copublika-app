@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Research Projects — CoPublika</title>
+<link rel="icon" href="assets/favicon-black.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,500;0,600;0,700;0,800;0,900;1,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .rp-hero { max-width: var(--max); margin: 0 auto; padding: 56px var(--pad) 24px; position: relative; }
+  .rp-hero__eyebrow { color: var(--mute); display: inline-flex; gap: 12px; margin-bottom: 20px; }
+  .rp-hero__eyebrow span:first-child { color: var(--scopus); }
+  .rp-hero__title { font-family: var(--display); font-weight: 800; font-size: clamp(48px, 9vw, 132px); line-height: 0.93; letter-spacing: -0.045em; margin: 0; text-wrap: balance; }
+  .rp-hero__title em { font-style: italic; color: var(--scopus); font-weight: 800; }
+  .rp-hero__title-mute { color: var(--mute); }
+  .rp-hero__deck { margin-top: 28px; max-width: 64ch; font-size: clamp(17px, 1.3vw, 20px); line-height: 1.55; opacity: 0.82; }
+  .rp-stats { max-width: var(--max); margin: 24px auto 0; padding: 0 var(--pad); display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .rp-stats__cell { padding: 28px 24px; border-right: 1px solid var(--hair); }
+  .rp-stats__cell:last-child { border-right: none; }
+  .rp-stats__lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; font-weight: 600; color: var(--mute); }
+  .rp-stats__val { font-family: var(--display); font-size: clamp(32px, 4vw, 48px); font-weight: 800; letter-spacing: -0.025em; line-height: 1; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  @media (max-width: 880px) { .rp-stats { grid-template-columns: repeat(2, 1fr); } .rp-stats__cell:nth-child(2n) { border-right: none; } .rp-stats__cell:nth-child(-n+2) { border-bottom: 1px solid var(--hair); } }
+
+  .rp-filter { max-width: var(--max); margin: 56px auto 32px; padding: 0 var(--pad); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .rp-filter__lbl { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--mute); margin-right: 8px; }
+  .rp-chip { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; padding: 8px 14px; border: 1px solid var(--hair-strong); background: transparent; color: var(--ink); cursor: pointer; transition: background 180ms, color 180ms, border-color 180ms; }
+  .rp-chip:hover { border-color: var(--ink); }
+  .rp-chip--on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .rp-grid { max-width: var(--max); margin: 0 auto 120px; padding: 0 var(--pad); display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--ink); border-left: 1px solid var(--hair); }
+  @media (max-width: 1080px) { .rp-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 680px) { .rp-grid { grid-template-columns: 1fr; border-left: none; } }
+  .rp-card { padding: 28px; border-right: 1px solid var(--hair); border-bottom: 1px solid var(--hair); display: flex; flex-direction: column; gap: 14px; min-height: 320px; position: relative; transition: background 240ms ease; }
+  .rp-card:hover { background: var(--bone); }
+  .rp-card__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .rp-card__id { color: var(--mute); }
+  .rp-card__status { padding: 4px 10px; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; background: var(--scopus); color: #fff; flex-shrink: 0; }
+  .rp-card__status--review { background: var(--ink); }
+  .rp-card__status--recruit { background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 3px 9px; }
+  .rp-card__title { font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em; margin: 4px 0 0; text-wrap: balance; }
+  .rp-card__lead { display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--hair); }
+  .rp-card__avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--paper); display: inline-flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: 11px; flex-shrink: 0; }
+  .rp-card__lead-name { font-size: 13px; font-weight: 600; }
+  .rp-card__lead-inst { font-size: 11.5px; color: var(--mute); }
+  .rp-card__meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--hair); }
+  .rp-card__meta-cell { padding-right: 8px; }
+  .rp-card__meta-lbl { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; color: var(--mute); }
+  .rp-card__meta-val { font-family: var(--display); font-size: 18px; font-weight: 800; letter-spacing: -0.015em; margin-top: 2px; }
+  .rp-card__tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rp-card__tag { font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: 0.06em; padding: 4px 9px; border: 1px solid var(--hair-strong); }
+
+  /* Recruiting outro — project-page-specific */
+  .rp-recruit { background: #050505; color: #fff; padding: 100px var(--pad); position: relative; overflow: hidden; }
+  .rp-recruit::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 80% 0%, rgba(233,113,28,0.18), transparent 50%); pointer-events: none; }
+  .rp-recruit__inner { max-width: var(--max); margin: 0 auto; position: relative; z-index: 1; display: grid; grid-template-columns: 1.1fr 1fr; gap: 64px; }
+  .rp-recruit__head { display: flex; flex-direction: column; gap: 22px; }
+  .rp-recruit__lbl { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; font-weight: 600; color: var(--scopus); display: inline-flex; align-items: center; gap: 12px; }
+  .rp-recruit__lbl::before { content: ''; width: 24px; height: 1px; background: var(--scopus); }
+  .rp-recruit__h { font-family: var(--display); font-weight: 800; font-size: clamp(36px, 5vw, 64px); line-height: 0.97; letter-spacing: -0.035em; margin: 0; text-wrap: balance; }
+  .rp-recruit__h em { font-style: italic; color: var(--scopus); }
+  .rp-recruit__d { color: rgba(255,255,255,0.72); font-size: 16px; line-height: 1.65; max-width: 50ch; margin: 0; }
+  .rp-recruit__counts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid rgba(255,255,255,0.18); padding-top: 20px; }
+  .rp-recruit__count-cell { padding-right: 16px; border-right: 1px solid rgba(255,255,255,0.12); }
+  .rp-recruit__count-cell:last-child { border-right: none; }
+  .rp-recruit__count-cell + .rp-recruit__count-cell { padding-left: 16px; }
+  .rp-recruit__count-k { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; color: rgba(255,255,255,0.55); }
+  .rp-recruit__count-v { font-family: var(--display); font-weight: 800; font-size: 36px; letter-spacing: -0.025em; line-height: 1; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .rp-recruit__list { display: flex; flex-direction: column; gap: 0; border-top: 1px solid rgba(255,255,255,0.18); }
+  .rp-recruit__row { display: grid; grid-template-columns: 60px 1fr auto; gap: 16px; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.12); transition: padding-left 220ms ease; }
+  .rp-recruit__row:hover { padding-left: 8px; }
+  .rp-recruit__row-id { font-family: var(--mono); font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; color: var(--scopus); }
+  .rp-recruit__row-t { font-family: var(--display); font-size: 17px; font-weight: 700; letter-spacing: -0.012em; line-height: 1.25; }
+  .rp-recruit__row-meta { font-family: var(--mono); font-size: 10.5px; color: rgba(255,255,255,0.55); margin-top: 4px; letter-spacing: 0.06em; }
+  .rp-recruit__row-cta { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #fff; border: 1px solid rgba(255,255,255,0.28); padding: 8px 14px; transition: background 200ms ease, border-color 200ms ease; }
+  .rp-recruit__row-cta:hover { background: var(--scopus); border-color: var(--scopus); }
+  .rp-recruit__foot { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .rp-recruit__btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 24px; font-size: 14.5px; font-weight: 600; transition: background 200ms ease, transform 200ms ease; }
+  .rp-recruit__btn--p { background: #fff; color: #050505; border: 1px solid #fff; }
+  .rp-recruit__btn--p:hover { background: var(--scopus); border-color: var(--scopus); color: #fff; transform: translateY(-1px); }
+  .rp-recruit__btn--g { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.28); }
+  .rp-recruit__btn--g:hover { background: rgba(255,255,255,0.08); border-color: #fff; }
+  @media (max-width: 980px) { .rp-recruit__inner { grid-template-columns: 1fr; gap: 40px; } }
+  @media (max-width: 540px) { .rp-recruit__row { grid-template-columns: 1fr; gap: 4px; } .rp-recruit__row-cta { justify-self: flex-start; margin-top: 6px; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="components/Nav.jsx"></script>
+<script type="text/babel" src="components/Footer.jsx"></script>
+
+<script type="text/babel">
+const PROJECTS = [
+  { id: 'RP-018', status: 'Active', title: 'Maritime AI Routing for Eastern Indonesia', lead: 'Dr. Rini Hapsari', inst: 'ITS Surabaya', tags: ['AI', 'Maritime'], domain: 'AI', collabs: '5/7', phase: '3/5', target: 'Q1' },
+  { id: 'RP-021', status: 'In Review', title: 'Genomic Markers in Tropical Public Health', lead: 'Prof. M. Hartono', inst: 'UGM', tags: ['Bio', 'Health'], domain: 'Health', collabs: '4/4', phase: '5/5', target: 'Q1' },
+  { id: 'RP-024', status: 'Active', title: 'Edge-Compute Models for Coastal Climate', lead: 'Dr. A. Setyawan', inst: 'ITB', tags: ['Climate', 'ML'], domain: 'Climate', collabs: '6/8', phase: '3/5', target: 'Q1' },
+  { id: 'RP-027', status: 'Recruiting', title: 'Quantum Optics for Secure Telemetry', lead: 'Dr. Ananya Iyer', inst: 'IIT Bombay', tags: ['Quantum', 'Telecom'], domain: 'Physics', collabs: '2/6', phase: '1/5', target: 'Q1' },
+  { id: 'RP-029', status: 'Active', title: 'LLM-Assisted Code Review in Open Source', lead: 'Dr. Felix Chen', inst: 'NUS', tags: ['AI', 'SE'], domain: 'AI', collabs: '4/5', phase: '4/5', target: 'Q2' },
+  { id: 'RP-031', status: 'Recruiting', title: 'Microplastic Transport in Mangrove Estuaries', lead: 'Dr. K. Wijaya', inst: 'IPB University', tags: ['Climate', 'Bio'], domain: 'Climate', collabs: '3/6', phase: '2/5', target: 'Q1' },
+  { id: 'RP-034', status: 'In Review', title: 'Federated Diagnostics for Rural Clinics', lead: 'Prof. L. Andersen', inst: 'Lund University', tags: ['AI', 'Health'], domain: 'Health', collabs: '6/6', phase: '5/5', target: 'Q1' },
+  { id: 'RP-036', status: 'Active', title: 'Heterogeneous Catalysis for Green Hydrogen', lead: 'Dr. P. Subagio', inst: 'BRIN', tags: ['Chem', 'Energy'], domain: 'Energy', collabs: '5/8', phase: '3/5', target: 'Q1' },
+  { id: 'RP-039', status: 'Active', title: 'Bayesian Methods in Education Outcomes', lead: 'Dr. Mei Lin Tan', inst: 'NUS', tags: ['Stats', 'EdSci'], domain: 'Stats', collabs: '4/4', phase: '4/5', target: 'Q2' },
+];
+
+const DOMAINS = ['All', 'AI', 'Health', 'Climate', 'Energy', 'Physics', 'Stats'];
+
+function StatusPill({ status }) {
+  const cls = status === 'In Review' ? 'rp-card__status--review' : status === 'Recruiting' ? 'rp-card__status--recruit' : '';
+  return <span className={`rp-card__status ${cls}`}>{status.toUpperCase()}</span>;
+}
+
+function App() {
+  const [filter, setFilter] = React.useState('All');
+  const list = filter === 'All' ? PROJECTS : PROJECTS.filter(p => p.domain === filter);
+  const active = PROJECTS.filter(p => p.status === 'Active').length;
+  const review = PROJECTS.filter(p => p.status === 'In Review').length;
+  const recruit = PROJECTS.filter(p => p.status === 'Recruiting').length;
+  return (
+    <div className="cp-app">
+      <Nav active="research" />
+      <main>
+        <section className="rp-hero">
+          <div className="rp-hero__eyebrow cp-mono"><span>§ Research Projects</span><span>{PROJECTS.length} active threads</span></div>
+          <h1 className="rp-hero__title">
+            Real work,<br/>
+            <em>in progress.</em>
+          </h1>
+          <p className="rp-hero__deck">
+            A live registry of research moving inside the CoPublika network. Every
+            project is led by a senior researcher, paired with vetted co-authors,
+            and routed toward a real venue — not a metric.
+          </p>
+        </section>
+        <section className="rp-stats">
+          <div className="rp-stats__cell"><div className="rp-stats__lbl">Total Projects</div><div className="rp-stats__val">{PROJECTS.length}</div></div>
+          <div className="rp-stats__cell"><div className="rp-stats__lbl">Active</div><div className="rp-stats__val">{active}</div></div>
+          <div className="rp-stats__cell"><div className="rp-stats__lbl">In Review</div><div className="rp-stats__val">{review}</div></div>
+          <div className="rp-stats__cell"><div className="rp-stats__lbl">Recruiting</div><div className="rp-stats__val">{recruit}</div></div>
+        </section>
+        <div className="rp-filter">
+          <div className="rp-filter__lbl">FILTER ·</div>
+          {DOMAINS.map(d => (
+            <button key={d} className={`rp-chip ${filter === d ? 'rp-chip--on' : ''}`} onClick={() => setFilter(d)}>{d}</button>
+          ))}
+        </div>
+        <div className="rp-grid">
+          {list.map(p => (
+            <div key={p.id} className="rp-card">
+              <div className="rp-card__top">
+                <span className="cp-mono rp-card__id">{p.id}</span>
+                <StatusPill status={p.status} />
+              </div>
+              <h3 className="rp-card__title">{p.title}</h3>
+              <div className="rp-card__tags">{p.tags.map(t => <span key={t} className="rp-card__tag">{t}</span>)}</div>
+              <div className="rp-card__lead">
+                <span className="rp-card__avatar">{p.lead.split(' ').slice(-2).map(w => w[0]).join('')}</span>
+                <div>
+                  <div className="rp-card__lead-name">{p.lead}</div>
+                  <div className="rp-card__lead-inst">{p.inst}</div>
+                </div>
+              </div>
+              <div className="rp-card__meta">
+                <div className="rp-card__meta-cell"><div className="rp-card__meta-lbl">COLLAB</div><div className="rp-card__meta-val">{p.collabs}</div></div>
+                <div className="rp-card__meta-cell"><div className="rp-card__meta-lbl">PHASE</div><div className="rp-card__meta-val">{p.phase}</div></div>
+                <div className="rp-card__meta-cell"><div className="rp-card__meta-lbl">TARGET</div><div className="rp-card__meta-val">{p.target}</div></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <section className="rp-recruit">
+          <div className="rp-recruit__inner">
+            <div className="rp-recruit__head">
+              <div className="rp-recruit__lbl">§ Currently Recruiting</div>
+              <h2 className="rp-recruit__h">Two threads <em>looking for co-authors</em> right now.</h2>
+              <p className="rp-recruit__d">
+                Senior researchers with relevant method experience are invited to express interest. Each lead reads every letter; a 20-minute call is scheduled if the fit is plausible.
+              </p>
+              <div className="rp-recruit__counts">
+                <div className="rp-recruit__count-cell">
+                  <div className="rp-recruit__count-k">OPEN SEATS</div>
+                  <div className="rp-recruit__count-v">04</div>
+                </div>
+                <div className="rp-recruit__count-cell">
+                  <div className="rp-recruit__count-k">CLOSES</div>
+                  <div className="rp-recruit__count-v">14 JUN</div>
+                </div>
+                <div className="rp-recruit__count-cell">
+                  <div className="rp-recruit__count-k">FIRST CALL</div>
+                  <div className="rp-recruit__count-v">≤ 7 D</div>
+                </div>
+              </div>
+              <div className="rp-recruit__foot">
+                <a href="contact.html" className="rp-recruit__btn rp-recruit__btn--p">Express Interest →</a>
+                <a href="about.html" className="rp-recruit__btn rp-recruit__btn--g">How we work</a>
+              </div>
+            </div>
+            <div className="rp-recruit__list">
+              {PROJECTS.filter(p => p.status === 'Recruiting').map(p => (
+                <div key={p.id} className="rp-recruit__row">
+                  <div className="rp-recruit__row-id">{p.id}</div>
+                  <div>
+                    <div className="rp-recruit__row-t">{p.title}</div>
+                    <div className="rp-recruit__row-meta">{p.lead.toUpperCase()} · {p.inst.toUpperCase()} · {p.collabs} SEATS</div>
+                  </div>
+                  <a href="contact.html" className="rp-recruit__row-cta">APPLY →</a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

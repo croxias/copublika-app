@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event — CoPublika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  /* ===== Next event featured card ===== */
+  .next-event {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 0;
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a0e07 100%);
+    color: white;
+    border-radius: 24px;
+    overflow: hidden;
+    margin-bottom: 80px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 24px 64px -24px rgba(0, 0, 0, 0.4);
+  }
+  .next-event::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(233, 113, 28, 0.25), transparent 55%),
+      radial-gradient(circle at 0% 100%, rgba(40, 80, 180, 0.12), transparent 50%);
+    pointer-events: none;
+  }
+  .next-event::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 60% 70% at 50% 50%, black 30%, transparent 85%);
+    -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 50%, black 30%, transparent 85%);
+    pointer-events: none;
+  }
+  @media (max-width: 900px) { .next-event { grid-template-columns: 1fr; } }
+  .ne-left {
+    padding: clamp(36px, 5vw, 60px);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    position: relative;
+    z-index: 1;
+  }
+  .ne-tag {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    width: max-content;
+    padding: 6px 14px 6px 12px;
+    background: rgba(233, 113, 28, 0.12);
+    border: 1px solid rgba(233, 113, 28, 0.3);
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+  }
+  .ne-tag::before {
+    content: ""; width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(233,113,28,0.22);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(233, 113, 28, 0.06); } }
+  .ne-left h2 {
+    font-size: clamp(28px, 3.6vw, 44px);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  .ne-left .lead { font-size: 15px; color: rgba(255, 255, 255, 0.7); line-height: 1.55; max-width: 50ch; }
+  .ne-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 28px;
+    padding: 22px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .ne-meta > div { display: flex; flex-direction: column; gap: 6px; }
+  .ne-meta .l { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45); }
+  .ne-meta .v { font-size: 16px; font-weight: 600; letter-spacing: -0.005em; }
+  .ne-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+  .ne-left .btn-accent { background: white; color: var(--ink); }
+  .ne-left .btn-accent:hover { background: var(--accent); color: white; }
+  .ne-left .btn-line { border-color: rgba(255, 255, 255, 0.2); color: white; }
+  .ne-left .btn-line:hover { background: white; color: var(--ink); border-color: white; }
+
+  /* Right — countdown */
+  .ne-right {
+    padding: clamp(36px, 5vw, 60px);
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 28px;
+    position: relative;
+    z-index: 1;
+  }
+  @media (max-width: 900px) { .ne-right { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.06); } }
+  .countdown {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .cd {
+    text-align: center;
+    padding: 18px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(6px);
+  }
+  .cd .n {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .cd .l {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 10px;
+  }
+  .ne-stats {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+  }
+  .ne-stats > div { flex: 1; }
+  .ne-stats strong { color: white; font-family: var(--sans); font-size: 20px; font-weight: 600; letter-spacing: -0.02em; display: block; margin-bottom: 4px; }
+  .capacity-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .capacity-bar::after {
+    content: "";
+    display: block;
+    height: 100%;
+    width: 87%;
+    background: linear-gradient(90deg, var(--accent), #ff8a3d);
+    border-radius: 2px;
+  }
+
+  /* ===== Mode tabs ===== */
+  .mode-tabs {
+    display: inline-flex;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px;
+    gap: 2px;
+  }
+  .mode-tab {
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-3);
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    transition: color 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mode-tab svg { opacity: 0.6; }
+  .mode-tab:hover { color: var(--ink); }
+  .mode-tab.active { background: var(--ink); color: white; }
+  .mode-tab.active svg { opacity: 1; }
+
+  /* ===== Event list ===== */
+  .ev-list { display: none; }
+  .ev-list.active { display: block; border-top: 1px solid var(--line); }
+  .ev {
+    display: grid;
+    grid-template-columns: 100px 90px 1fr 220px 60px;
+    gap: 28px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+    transition: padding 0.3s, background 0.3s;
+    position: relative;
+  }
+  .ev::before {
+    content: "";
+    position: absolute;
+    left: -16px; top: 8px; bottom: 8px;
+    width: 3px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transition: transform 0.3s var(--ease-out);
+    border-radius: 0 3px 3px 0;
+  }
+  .ev:hover { padding-left: 24px; background: var(--bg-alt); }
+  .ev:hover::before { transform: scaleY(1); }
+  .ev .when {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .ev .when .day { color: var(--accent); display: block; margin-bottom: 4px; font-weight: 500; }
+  .ev .type {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--bg-alt);
+    color: var(--ink-2);
+    text-align: center;
+    width: max-content;
+  }
+  .ev .type.workshop { background: var(--accent-soft); color: var(--accent-ink); }
+  .ev .type.webinar { background: #e0f2fe; color: #075985; }
+  .ev .type.forum { background: #f0fdf4; color: #166534; }
+  .ev .type.clinic { background: var(--accent-soft); color: var(--accent-ink); }
+  .ev h4 { font-size: 18px; letter-spacing: -0.01em; line-height: 1.25; font-weight: 600; }
+  .ev .sub { font-size: 13px; color: var(--ink-3); margin-top: 6px; line-height: 1.4; }
+  .ev .loc {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ev .loc .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .ev .go {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s var(--ease);
+    justify-self: end;
+    color: var(--ink-2);
+  }
+  .ev:hover .go { background: var(--ink); border-color: var(--ink); color: white; transform: rotate(-45deg); }
+  @media (max-width: 900px) {
+    .ev { grid-template-columns: 1fr; gap: 12px; padding: 22px 0; }
+    .ev .go { justify-self: start; }
+    .ev:hover { padding-left: 16px; }
+  }
+
+  /* ===== Calendar view ===== */
+  .ev-cal { display: none; }
+  .ev-cal.active { display: block; }
+  .cal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .cal-head .month-label {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .cal-head .month-label .yr {
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 6px;
+  }
+  .cal-nav { display: flex; gap: 8px; }
+  .cal-nav button {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--ink-2);
+    transition: all 0.2s;
+  }
+  .cal-nav button:hover { background: var(--ink); border-color: var(--ink); color: white; }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: white;
+  }
+  .cal-dayname {
+    padding: 14px 8px;
+    text-align: center;
+    background: var(--bg-alt);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+  }
+  .cal-dayname:nth-child(7n) { border-right: 0; }
+  .cal-day {
+    aspect-ratio: 1.1 / 1;
+    padding: 8px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 88px;
+    background: white;
+    transition: background 0.2s;
+  }
+  .cal-day:nth-child(7n) { border-right: 0; }
+  .cal-day.out { background: var(--bg-alt); color: var(--muted); }
+  .cal-day.today { background: rgba(233, 113, 28, 0.04); }
+  .cal-day .dnum {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-2);
+    line-height: 1;
+  }
+  .cal-day.today .dnum {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .cal-day.out .dnum { color: var(--muted); }
+  .cal-day .ev-dot {
+    display: block;
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    line-height: 1.2;
+    background: var(--accent);
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: transform 0.2s;
+  }
+  .cal-day .ev-dot:hover { transform: translateX(2px); }
+  .cal-day .ev-dot.webinar { background: #075985; }
+  .cal-day .ev-dot.forum { background: #166534; }
+  .cal-day .ev-more {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* Calendar legend */
+  .cal-legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .cal-legend .item { display: inline-flex; align-items: center; gap: 8px; }
+  .cal-legend .swatch { width: 12px; height: 12px; border-radius: 3px; }
+  .cal-legend .sw1 { background: var(--accent); }
+  .cal-legend .sw2 { background: #075985; }
+  .cal-legend .sw3 { background: #166534; }
+
+  /* Filter chips */
+  .ev-filter {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .ev-chip {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: white;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ev-chip:hover { border-color: var(--ink); }
+  .ev-chip.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .ev-chip .ct {
+    font-family: var(--mono);
+    font-size: 10px;
+    margin-left: 8px;
+    color: var(--accent);
+  }
+  .ev-chip.active .ct { color: rgba(255, 255, 255, 0.7); }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main data-screen-label="Event">
+
+  <section class="page-hero">
+    <div class="ph-orb" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="breadcrumb reveal">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <span class="sep">/</span>
+        <span data-i18n="nav.event">Event</span>
+      </div>
+      <h1 class="page-h reveal" data-delay="1">Agenda <em>komunitas</em>.</h1>
+      <p class="page-sub reveal" data-delay="2">Webinar, klinik manuskrip, dan forum doctoral — sebagian besar gratis untuk anggota komunitas.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <!-- Featured next event -->
+      <a class="next-event reveal" href="event-detail.html" style="text-decoration:none; color:inherit; display:grid;">
+        <div class="ne-left">
+          <div class="ne-tag">Acara berikutnya · Pendaftaran dibuka</div>
+          <h2>Klinik Manuskrip: Membedah Reviewer Comments</h2>
+          <p class="lead">Bersama Dr. Aulia Rahmawati, Editor Asia Pacific Journal of Education. Kami akan membedah 4 reviewer reports asli — kerangka berpikir, pilihan bahasa, dan strategi merespons.</p>
+          <div class="ne-meta">
+            <div><span class="l">Tanggal</span><span class="v">12 Juni 2025</span></div>
+            <div><span class="l">Waktu</span><span class="v">19.30 WIB</span></div>
+            <div><span class="l">Format</span><span class="v">Daring · Zoom</span></div>
+            <div><span class="l">Biaya</span><span class="v">Gratis untuk anggota</span></div>
+          </div>
+          <div class="ne-ctas">
+            <span class="btn btn-accent btn-lg btn-arrow">Lihat Detail</span>
+            <span class="btn btn-line btn-lg">Tambah ke Kalender</span>
+          </div>
+        </div>
+        <div class="ne-right">
+          <div>
+            <div class="ne-tag" style="margin-bottom:16px; background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7);">Hitung mundur</div>
+            <div class="countdown" id="countdown">
+              <div class="cd"><div class="n" id="cd-d">--</div><div class="l">Hari</div></div>
+              <div class="cd"><div class="n" id="cd-h">--</div><div class="l">Jam</div></div>
+              <div class="cd"><div class="n" id="cd-m">--</div><div class="l">Menit</div></div>
+              <div class="cd"><div class="n" id="cd-s">--</div><div class="l">Detik</div></div>
+            </div>
+          </div>
+          <div>
+            <div class="ne-stats">
+              <div><strong>347</strong><span>Terdaftar</span></div>
+              <div><strong>153</strong><span>Tersisa</span></div>
+              <div><strong>87%</strong><span>Kapasitas</span></div>
+            </div>
+            <div class="capacity-bar" aria-label="Kapasitas 87%"></div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Heading + mode tabs -->
+      <div style="display:flex; justify-content:space-between; align-items:end; margin-bottom:32px; flex-wrap: wrap; gap: 16px;">
+        <div class="reveal">
+          <div class="sh-tag"><span class="bar"></span><span class="num">E.01</span><span>Mendatang</span></div>
+          <h2 class="sh-h">12 acara berikutnya.</h2>
+        </div>
+        <div class="mode-tabs reveal" data-delay="1" id="modeTabs">
+          <button class="mode-tab active" data-mode="list">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Daftar
+          </button>
+          <button class="mode-tab" data-mode="cal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Kalender
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="ev-filter reveal" id="evFilter">
+        <button class="ev-chip active" data-f="all">Semua <span class="ct">12</span></button>
+        <button class="ev-chip" data-f="webinar">Webinar <span class="ct">5</span></button>
+        <button class="ev-chip" data-f="workshop">Workshop <span class="ct">4</span></button>
+        <button class="ev-chip" data-f="clinic">Klinik <span class="ct">2</span></button>
+        <button class="ev-chip" data-f="forum">Forum <span class="ct">1</span></button>
+      </div>
+
+      <!-- LIST view -->
+      <div class="ev-list active" id="evList">
+        <a class="ev reveal" href="event-detail.html" data-cat="clinic" data-day="12" data-month="5">
+          <div class="when"><span class="day">Kamis</span>12 Jun 2025<br>19.30 WIB</div>
+          <div class="type clinic">Klinik</div>
+          <div>
+            <h4>Klinik Manuskrip: Membedah Reviewer Comments</h4>
+            <div class="sub">Dr. Aulia Rahmawati · Editor Asia Pacific Journal of Education</div>
+          </div>
+          <div class="loc"><span class="dot"></span> Daring · Zoom</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <a class="ev reveal" data-delay="1" href="event-detail.html" data-cat="webinar" data-day="24" data-month="5">
+          <div class="when"><span class="day">Selasa</span>24 Jun 2025<br>19.30 WIB</div>
+          <div class="type webinar">Webinar</div>
+          <div>
+            <h4>Editor Roundtable: Strategi Memilih Jurnal Q1–Q2</h4>
+            <div class="sub">Diskusi panel dengan 3 editor jurnal Scopus dari Asia Tenggara</div>
+          </div>
+          <div class="loc"><span class="dot"></span> Daring · Webinar</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <a class="ev reveal" data-delay="2" href="event-detail.html" data-cat="workshop" data-day="8" data-month="6">
+          <div class="when"><span class="day">Sabtu</span>08 Jul 2025<br>09.00 WIB</div>
+          <div class="type workshop">Workshop</div>
+          <div>
+            <h4>Workshop Luring: Academic Writing dengan Anchor Sentences</h4>
+            <div class="sub">2 hari intensif · Yogyakarta · termasuk makan siang dan modul cetak</div>
+          </div>
+          <div class="loc"><span class="dot"></span> Luring · Yogyakarta</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <a class="ev reveal" href="event-detail.html" data-cat="forum" data-day="22" data-month="6">
+          <div class="when"><span class="day">Selasa</span>22 Jul 2025<br>19.30 WIB</div>
+          <div class="type forum">Forum</div>
+          <div>
+            <h4>Doctoral Forum: Membangun Jejaring Internasional Sejak S3</h4>
+            <div class="sub">Sharing dari 4 alumni S3 ITB, UI, UGM, dan Universitas Indonesia</div>
+          </div>
+          <div class="loc"><span class="dot"></span> Hybrid · Jakarta</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <a class="ev reveal" data-delay="1" href="event-detail.html" data-cat="webinar" data-day="7" data-month="7">
+          <div class="when"><span class="day">Kamis</span>07 Agu 2025<br>19.30 WIB</div>
+          <div class="type webinar">Webinar</div>
+          <div>
+            <h4>Riset Kualitatif untuk Pemula: Dari Wawancara hingga Coding</h4>
+            <div class="sub">Bersama Dr. Dewi Nirmala, spesialis grounded theory</div>
+          </div>
+          <div class="loc"><span class="dot"></span> Daring · Zoom</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <a class="ev reveal" data-delay="2" href="event-detail.html" data-cat="workshop" data-day="16" data-month="7">
+          <div class="when"><span class="day">Sabtu</span>16 Agu 2025<br>09.00 WIB</div>
+          <div class="type workshop">Workshop</div>
+          <div>
+            <h4>Workshop Bandung: Submission Portal & Cover Letter</h4>
+            <div class="sub">1 hari intensif · ITB · simulasi submission Elsevier dan Springer</div>
+          </div>
+          <div class="loc"><span class="dot"></span> Luring · Bandung</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+      </div>
+
+      <!-- CALENDAR view -->
+      <div class="ev-cal" id="evCal">
+        <div class="cal-head">
+          <div class="month-label" id="calMonth">Juni <span class="yr">2025</span></div>
+          <div class="cal-nav">
+            <button id="prevMonth" aria-label="Previous month">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button id="nextMonth" aria-label="Next month">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend">
+          <span class="item"><span class="swatch sw1"></span>Klinik / Workshop</span>
+          <span class="item"><span class="swatch sw2"></span>Webinar</span>
+          <span class="item"><span class="swatch sw3"></span>Forum</span>
+        </div>
+      </div>
+
+      <div style="margin-top:40px; text-align:center;">
+        <a class="btn btn-line btn-lg" href="#">Lihat semua agenda</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-final">
+    <div class="cta-grid" aria-hidden="true"></div>
+    <div class="cta-orbit" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="cta-badge reveal"><span class="pulse"></span><span>Cohort #07 dibuka · 24 kursi tersisa</span></div>
+      <h2 class="reveal" data-delay="1">Mau jadi <em>pembicara</em>?</h2>
+      <p class="reveal" data-delay="2">Kami selalu terbuka untuk editor, peneliti, dan praktisi yang ingin berbagi ilmu kepada komunitas.</p>
+      <div class="group reveal" data-delay="3">
+        <a class="btn btn-accent btn-lg btn-arrow" href="contact.html">Ajukan Topik</a>
+        <a class="btn btn-line btn-lg" href="register.html">Gabung Komunitas</a>
+      </div>
+      <div class="cta-trust reveal" data-delay="4">
+        <div class="item"><span class="v">1.240<span class="accent">+</span></span><span class="l">Anggota</span></div>
+        <div class="div"></div>
+        <div class="item"><span class="v">318</span><span class="l">Publikasi</span></div>
+        <div class="div"></div>
+        <div class="item"><span class="v">47</span><span class="l">Mentor</span></div>
+        <div class="div"></div>
+        <div class="item"><span class="v">76<span class="accent">%</span></span><span class="l">Akseptasi</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/main.js"></script>
+<script>
+  CoPublika.init('event');
+
+  // Render em italic in pageHero h1
+  document.querySelectorAll('.page-h em, .cta-final em, .next-event em').forEach(el => {
+    if (!el.style.color) {
+      el.style.color = 'var(--accent)';
+      el.style.fontStyle = 'italic';
+      el.style.fontWeight = '400';
+    }
+  });
+
+  // ===== Countdown =====
+  const target = new Date('2025-06-12T19:30:00+07:00').getTime();
+  function tick() {
+    let diff = target - Date.now();
+    if (diff < 0) diff = 0;
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff / 3600000) % 24);
+    const m = Math.floor((diff / 60000) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    document.getElementById('cd-d').textContent = String(d).padStart(2, '0');
+    document.getElementById('cd-h').textContent = String(h).padStart(2, '0');
+    document.getElementById('cd-m').textContent = String(m).padStart(2, '0');
+    document.getElementById('cd-s').textContent = String(s).padStart(2, '0');
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // ===== Mode tabs (List / Calendar) =====
+  const modeTabs = document.querySelectorAll('#modeTabs .mode-tab');
+  const evList = document.getElementById('evList');
+  const evCal = document.getElementById('evCal');
+  const evFilter = document.getElementById('evFilter');
+  modeTabs.forEach(t => t.addEventListener('click', () => {
+    modeTabs.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const mode = t.dataset.mode;
+    evList.classList.toggle('active', mode === 'list');
+    evCal.classList.toggle('active', mode === 'cal');
+    evFilter.style.display = mode === 'list' ? 'flex' : 'none';
+  }));
+
+  // ===== Filter chips =====
+  document.querySelectorAll('#evFilter .ev-chip').forEach(c => c.addEventListener('click', () => {
+    document.querySelectorAll('#evFilter .ev-chip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    const f = c.dataset.f;
+    document.querySelectorAll('#evList .ev').forEach(ev => {
+      ev.style.display = (f === 'all' || ev.dataset.cat === f) ? '' : 'none';
+    });
+  }));
+
+  // ===== Calendar view =====
+  const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const DAYS = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  // Events keyed by YYYY-M-D
+  const EVENTS = {
+    '2025-5-12': [{ t: 'Klinik Manuskrip', cat: '', href: 'event-detail.html' }],
+    '2025-5-24': [{ t: 'Editor Roundtable', cat: 'webinar', href: 'event-detail.html' }],
+    '2025-6-8':  [{ t: 'Workshop Yogya', cat: '', href: 'event-detail.html' }],
+    '2025-6-22': [{ t: 'Doctoral Forum', cat: 'forum', href: 'event-detail.html' }],
+    '2025-7-7':  [{ t: 'Riset Kualitatif', cat: 'webinar', href: 'event-detail.html' }],
+    '2025-7-16': [{ t: 'Workshop Bandung', cat: '', href: 'event-detail.html' }],
+  };
+  let curYear = 2025, curMonth = 5; // June
+
+  function renderCal() {
+    const monthLabel = document.getElementById('calMonth');
+    monthLabel.innerHTML = `${MONTHS[curMonth]} <span class="yr">${curYear}</span>`;
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+    // day name headers
+    DAYS.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'cal-dayname';
+      el.textContent = d;
+      grid.appendChild(el);
+    });
+    // first day of month
+    const firstDay = new Date(curYear, curMonth, 1).getDay();
+    const daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
+    const prevMonthDays = new Date(curYear, curMonth, 0).getDate();
+    const today = new Date();
+    // leading empty cells from previous month
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const day = prevMonthDays - i;
+      const cell = document.createElement('div');
+      cell.className = 'cal-day out';
+      cell.innerHTML = `<div class="dnum">${day}</div>`;
+      grid.appendChild(cell);
+    }
+    // days in month
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      cell.className = 'cal-day';
+      const isToday = today.getDate() === d && today.getMonth() === curMonth && today.getFullYear() === curYear;
+      if (isToday) cell.classList.add('today');
+      let html = `<div class="dnum">${d}</div>`;
+      const evs = EVENTS[`${curYear}-${curMonth}-${d}`] || [];
+      evs.slice(0, 2).forEach(e => {
+        html += `<a class="ev-dot ${e.cat}" href="${e.href}">${e.t}</a>`;
+      });
+      if (evs.length > 2) html += `<span class="ev-more">+${evs.length - 2} lagi</span>`;
+      cell.innerHTML = html;
+      grid.appendChild(cell);
+    }
+    // trailing empty cells to complete grid (always 6 rows)
+    const totalCells = firstDay + daysInMonth;
+    const trailing = (7 - (totalCells % 7)) % 7;
+    for (let i = 1; i <= trailing; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'cal-day out';
+      cell.innerHTML = `<div class="dnum">${i}</div>`;
+      grid.appendChild(cell);
+    }
+  }
+  renderCal();
+  document.getElementById('prevMonth').addEventListener('click', () => {
+    curMonth--;
+    if (curMonth < 0) { curMonth = 11; curYear--; }
+    renderCal();
+  });
+  document.getElementById('nextMonth').addEventListener('click', () => {
+    curMonth++;
+    if (curMonth > 11) { curMonth = 0; curYear++; }
+    renderCal();
+  });
+</script>
+</body>
+</html>

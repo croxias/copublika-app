@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — CoPublika Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  /* Page-specific styles */
+  .verify-card .card-head { margin-bottom: 6px; }
+  .vrow {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+  }
+  .vrow:last-child { border-bottom: 0; padding-bottom: 0; }
+  .vapp { display: grid; grid-template-columns: 44px 1fr; gap: 14px; min-width: 0; }
+  .vapp .nm { font-size: 14.5px; font-weight: 500; letter-spacing: -0.005em; margin-bottom: 3px; }
+  .vapp .meta {
+    font-size: 12px; color: var(--ink-3);
+    display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center;
+  }
+  .vapp .meta .pip { font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; }
+  .vapp .meta .dot { width: 3px; height: 3px; background: var(--muted); border-radius: 50%; display: inline-block; }
+  .vchips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .vchip {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em;
+    padding: 3px 8px; border-radius: 999px;
+    background: var(--bg-alt); color: var(--ink-2);
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .vchip .k { color: var(--muted); }
+  .vchip.match { background: #eaf6ed; color: #1f7a36; }
+  .vchip.match .k { color: #4a9959; }
+  .vchip.mismatch { background: #fdebea; color: #a3201b; }
+  .vchip.mismatch .k { color: #b9544f; }
+  .vchip.scholar { background: var(--accent-soft); color: var(--accent-ink); }
+  .vchip.scholar .k { color: var(--accent); }
+  .vchip svg { width: 10px; height: 10px; }
+  .vact { display: flex; gap: 6px; align-self: start; flex-shrink: 0; }
+  @media (max-width: 700px) {
+    .vrow { grid-template-columns: 1fr; }
+    .vact { width: 100%; }
+    .vact .vbtn { flex: 1; justify-content: center; }
+  }
+
+  /* Batch widget */
+  .batch-widget .ring {
+    width: 124px; height: 124px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) 0% 68%, var(--bg-alt) 68% 100%);
+    position: relative;
+    margin: 6px auto 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .batch-widget .ring::after {
+    content: ""; position: absolute; inset: 14px;
+    border-radius: 50%; background: white; border: 1px solid var(--line);
+  }
+  .batch-widget .ring .num {
+    position: relative; z-index: 1;
+    font-size: 30px; font-weight: 600; letter-spacing: -0.02em; line-height: 1;
+    text-align: center; font-variant-numeric: tabular-nums;
+  }
+  .batch-widget .ring .num small {
+    display: block; font-family: var(--mono); font-size: 9.5px;
+    letter-spacing: 0.08em; color: var(--muted);
+    text-transform: uppercase; font-weight: 400; margin-top: 4px;
+  }
+  .batch-rows { display: flex; flex-direction: column; margin-top: 6px; border-top: 1px solid var(--line); }
+  .brow { padding: 11px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .brow:last-child { border-bottom: 0; }
+  .brow .l { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .brow .v { font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .brow .v .accent { color: var(--accent); }
+  .brow .v.ok { color: #2f8a40; }
+  .batch-cta { margin-top: 16px; display: flex; gap: 8px; }
+  .batch-cta .vbtn { flex: 1; justify-content: center; }
+
+  /* Project governance */
+  .gov-table { margin: 8px -20px -20px; border-top: 1px solid var(--line); }
+  .gov-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 200px 110px 36px;
+    gap: 18px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+  .gov-row:hover { background: var(--bg-alt); }
+  .gov-row:last-child { border-bottom: 0; }
+  .gov-row .pinfo .pt {
+    font-size: 13.5px; font-weight: 500; letter-spacing: -0.005em; line-height: 1.3;
+    margin-bottom: 3px; text-wrap: pretty;
+  }
+  .gov-row .pinfo .pa { font-size: 11.5px; color: var(--ink-3); font-style: italic; }
+  .gov-row .pfield { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.04em; color: var(--ink-2); }
+  .gov-row .pcta {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--line); background: white; color: var(--ink-3);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .gov-row:hover .pcta { border-color: var(--ink); color: var(--ink); }
+  @media (max-width: 900px) {
+    .gov-row { grid-template-columns: 50px 1fr auto; gap: 8px 16px; }
+    .gov-row .pfield, .gov-row .pinfo + div { grid-column: 2; }
+    .gov-row .pfield { margin-top: 4px; }
+  }
+
+  /* CMS rows */
+  .cms-row {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+    align-items: center;
+  }
+  .cms-row:first-of-type { border-top: 0; }
+  .cms-row .day {
+    width: 56px; border-radius: 8px;
+    background: var(--bg-alt);
+    padding: 8px 0; text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .cms-row .day .d { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
+  .cms-row .day .m {
+    font-family: var(--mono); font-size: 9.5px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); margin-top: 4px; display: block;
+  }
+  .cms-row.live .day { background: var(--accent-soft); }
+  .cms-row.live .day .d { color: var(--accent-ink); }
+  .cms-row.live .day .m { color: var(--accent); }
+  .cms-row .info .ti { font-size: 13.5px; font-weight: 500; letter-spacing: -0.005em; line-height: 1.3; margin-bottom: 4px; text-wrap: pretty; }
+  .cms-row .info .me {
+    font-family: var(--mono); font-size: 10.5px; color: var(--muted);
+    letter-spacing: 0.04em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .cms-row .info .me .pip { padding: 2px 7px; border-radius: 999px; background: var(--bg-alt); color: var(--ink-2); }
+  .cms-row .info .me .pip.live { background: var(--accent); color: white; }
+  .cms-row .info .me .pip.live::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: white; display: inline-block; margin-right: 5px; vertical-align: middle;
+    animation: pulseDot 1.4s infinite;
+  }
+  .cms-row .info .me .pip.blog { background: #e7ecf5; color: #2a4a90; }
+  .cms-row .info .me .pip.event { background: #fef3c7; color: #92400e; }
+
+  /* Feed */
+  .feed-row {
+    display: grid; grid-template-columns: 28px 1fr auto;
+    gap: 12px; padding: 12px 0;
+    border-top: 1px solid var(--line); align-items: start;
+  }
+  .feed-row:first-of-type { border-top: 0; }
+  .feed-row .ico-c {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--bg-alt); display: flex; align-items: center; justify-content: center;
+    color: var(--ink-3); flex-shrink: 0;
+  }
+  .feed-row.accent .ico-c { background: var(--accent-soft); color: var(--accent-ink); }
+  .feed-row.success .ico-c { background: #eaf6ed; color: #1f7a36; }
+  .feed-row.danger .ico-c { background: #fdebea; color: #a3201b; }
+  .feed-row .body { font-size: 13px; line-height: 1.45; color: var(--ink-2); text-wrap: pretty; }
+  .feed-row .body strong { color: var(--ink); font-weight: 500; }
+  .feed-row .ts {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--muted); letter-spacing: 0.04em;
+    text-transform: uppercase; white-space: nowrap; padding-top: 2px;
+  }
+</style>
+</head>
+<body data-page="dashboard" data-screen-label="Superadmin Dashboard">
+
+  <!-- Page head -->
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><span>Overview</span> <span class="sep">/</span> <span>Dashboard</span></div>
+      <h1>Selamat pagi, <em>Adi.</em></h1>
+      <p>14 pendaftar menunggu verifikasi · 8 proyek di antrian review · Batch #4 ditutup dalam 18 hari.</p>
+    </div>
+    <div class="seg">
+      <button>Hari ini</button>
+      <button>Minggu</button>
+      <button class="active">Bulan</button>
+      <button>Q2</button>
+    </div>
+  </div>
+
+  <!-- KPI bento -->
+  <section class="kpis">
+    <div class="kpi feat span5 reveal">
+      <div class="ktop">
+        <div>
+          <div class="klabel">Pendaftar batch #4</div>
+          <div style="margin-top: 14px;">
+            <span class="kbig">204<span class="acc">/300</span></span>
+            <span class="kdelta">↑ 18 minggu ini</span>
+          </div>
+        </div>
+        <div class="kico">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </div>
+      </div>
+      <div class="ksub"><strong>68%</strong> kuota terisi · 96 slot tersisa · ditutup 18 hari lagi</div>
+      <div class="trend">
+        <span class="bar" style="height: 18%;"></span>
+        <span class="bar" style="height: 28%;"></span>
+        <span class="bar" style="height: 24%;"></span>
+        <span class="bar" style="height: 40%;"></span>
+        <span class="bar" style="height: 32%;"></span>
+        <span class="bar" style="height: 48%;"></span>
+        <span class="bar hi" style="height: 62%;"></span>
+        <span class="bar" style="height: 44%;"></span>
+        <span class="bar hi" style="height: 70%;"></span>
+        <span class="bar hi" style="height: 85%;"></span>
+        <span class="bar hi" style="height: 92%;"></span>
+        <span class="bar hi" style="height: 100%;"></span>
+      </div>
+    </div>
+
+    <div class="kpi span3 accent reveal">
+      <div class="ktop">
+        <div class="klabel">Menunggu verifikasi</div>
+        <div class="kico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+      </div>
+      <div class="kbig sm">14 <span class="kdelta">+5</span></div>
+      <div class="ksub">SLA rata-rata: <strong>1.2 hari</strong> · <a class="link-mono" href="verifications.html">Buka antrian →</a></div>
+    </div>
+
+    <div class="kpi span4 reveal">
+      <div class="ktop">
+        <div class="klabel">Proyek di antrian review</div>
+        <div class="kico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 18px;">
+        <span class="kbig sm">8</span>
+        <span style="font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); letter-spacing: 0.04em;">3 Q1 · 4 Q2 · 1 Sinta</span>
+      </div>
+      <div class="ksub"><strong>62</strong> proyek aktif · <strong>76%</strong> akseptasi Q1/Q2</div>
+    </div>
+
+    <div class="kpi span4 reveal">
+      <div class="ktop">
+        <div class="klabel">Publikasi alumni</div>
+        <div class="kico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+      </div>
+      <div class="kbig sm">318<span class="acc">+</span> <span class="kdelta">↑ 12</span></div>
+      <div class="ksub"><strong>+12</strong> bulan ini · target Q2 2025: <strong>340</strong></div>
+    </div>
+
+    <div class="kpi span4 reveal">
+      <div class="ktop">
+        <div class="klabel">Member aktif</div>
+        <div class="kico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M16 21v-2a4 4 0 0 0-4-4 4 4 0 0 0-4 4v2"/></svg></div>
+      </div>
+      <div class="kbig sm">1.240 <span class="kdelta">↑ 4.8%</span></div>
+      <div class="ksub">H-Index rata-rata: <strong>11.4</strong> · 24 cluster aktif</div>
+    </div>
+
+    <div class="kpi span4 reveal">
+      <div class="ktop">
+        <div class="klabel">Traffic blog (30d)</div>
+        <div class="kico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></svg></div>
+      </div>
+      <div class="kbig sm">42.8K</div>
+      <div class="ksub"><strong>23%</strong> registrasi dari blog · <a class="link-mono" href="analytics.html">Lihat detail →</a></div>
+    </div>
+  </section>
+
+  <!-- Verification + Batch -->
+  <section class="grid-2">
+    <div class="card verify-card reveal">
+      <div class="card-head">
+        <h3>Verifikasi pendaftar — Google Scholar one-click</h3>
+        <a class="link-mono" href="verifications.html">Lihat 14 antrian →</a>
+      </div>
+      <div class="tabs" style="margin-bottom: 4px;">
+        <button class="tab active">Menunggu <span class="ct">14</span></button>
+        <button class="tab">Auto-matched <span class="ct">9</span></button>
+        <button class="tab">Perlu Cek <span class="ct">3</span></button>
+        <button class="tab">Mismatch <span class="ct">2</span></button>
+      </div>
+
+      <div>
+        <div class="vrow">
+          <div class="vapp">
+            <span class="av lg">RD</span>
+            <div>
+              <div class="nm">Dr. Reza Dwianto, M.Si.</div>
+              <div class="meta">
+                <span class="pip">APP-2418</span><span class="dot"></span>
+                <span>Universitas Diponegoro · Kebijakan Publik</span><span class="dot"></span>
+                <span>2 jam lalu</span>
+              </div>
+              <div class="vchips">
+                <span class="vchip scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.31 11.142 14.815 9.5 12 9.5s-5.31 1.642-6.758 4.269zM12 10c-3.137 0-6.026 1.292-8.106 3.405l8.106 6.595 8.106-6.595C18.026 11.292 15.137 10 12 10z"/></svg>Scholar ID <span class="k">·</span> 7XQrK2pAAAAJ</span>
+                <span class="vchip match">H-Index <span class="k">·</span> 18 ✓</span>
+                <span class="vchip match">Afiliasi <span class="k">·</span> UNDIP ✓</span>
+                <span class="vchip match">Sitasi <span class="k">·</span> 1.420</span>
+                <span class="vchip">Skor kecocokan <span class="k">·</span> 96%</span>
+              </div>
+            </div>
+          </div>
+          <div class="vact">
+            <button class="vbtn ghost">Detail</button>
+            <button class="vbtn ghost danger">Tolak</button>
+            <button class="vbtn approve"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Verify &amp; Approve</button>
+          </div>
+        </div>
+
+        <div class="vrow">
+          <div class="vapp">
+            <span class="av lg">SP</span>
+            <div>
+              <div class="nm">Siti Putri Anggraini, M.Pd.</div>
+              <div class="meta">
+                <span class="pip">APP-2417</span><span class="dot"></span>
+                <span>UPI · Pendidikan &amp; EdTech</span><span class="dot"></span>
+                <span>4 jam lalu</span>
+              </div>
+              <div class="vchips">
+                <span class="vchip scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.31 11.142 14.815 9.5 12 9.5s-5.31 1.642-6.758 4.269zM12 10c-3.137 0-6.026 1.292-8.106 3.405l8.106 6.595 8.106-6.595C18.026 11.292 15.137 10 12 10z"/></svg>Scholar ID <span class="k">·</span> q9KsmW2AAAAJ</span>
+                <span class="vchip match">H-Index <span class="k">·</span> 6 ✓</span>
+                <span class="vchip mismatch">Afiliasi <span class="k">·</span> mismatch</span>
+                <span class="vchip">Skor kecocokan <span class="k">·</span> 72%</span>
+              </div>
+            </div>
+          </div>
+          <div class="vact">
+            <button class="vbtn ghost">Detail</button>
+            <button class="vbtn ghost">Klarifikasi</button>
+            <button class="vbtn approve">Verify &amp; Approve</button>
+          </div>
+        </div>
+
+        <div class="vrow">
+          <div class="vapp">
+            <span class="av lg">BH</span>
+            <div>
+              <div class="nm">Bayu Hermawan, Ph.D.</div>
+              <div class="meta">
+                <span class="pip">APP-2416</span><span class="dot"></span>
+                <span>UGM · AI &amp; Etika</span><span class="dot"></span>
+                <span>9 jam lalu</span>
+              </div>
+              <div class="vchips">
+                <span class="vchip scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.31 11.142 14.815 9.5 12 9.5s-5.31 1.642-6.758 4.269zM12 10c-3.137 0-6.026 1.292-8.106 3.405l8.106 6.595 8.106-6.595C18.026 11.292 15.137 10 12 10z"/></svg>Scholar ID <span class="k">·</span> mNb3HQ8AAAAJ</span>
+                <span class="vchip match">H-Index <span class="k">·</span> 23 ✓</span>
+                <span class="vchip match">Afiliasi <span class="k">·</span> UGM ✓</span>
+                <span class="vchip match">Sitasi <span class="k">·</span> 2.860</span>
+                <span class="vchip">Skor kecocokan <span class="k">·</span> 98%</span>
+              </div>
+            </div>
+          </div>
+          <div class="vact">
+            <button class="vbtn ghost">Detail</button>
+            <button class="vbtn ghost danger">Tolak</button>
+            <button class="vbtn approve">Verify &amp; Approve</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card batch-widget reveal">
+      <div class="card-head">
+        <h3>Batch #4 — September 2025</h3>
+        <a class="link-mono" href="batches.html">Atur →</a>
+      </div>
+      <div class="ring"><div class="num">68%<small>Kuota terisi</small></div></div>
+      <div class="batch-rows">
+        <div class="brow"><span class="l">Pendaftar</span><span class="v">204 <span style="color:var(--muted); font-weight:400;">/ 300</span></span></div>
+        <div class="brow"><span class="l">Terverifikasi</span><span class="v ok">186</span></div>
+        <div class="brow"><span class="l">Menunggu</span><span class="v"><span class="accent">14</span></span></div>
+        <div class="brow"><span class="l">Ditolak</span><span class="v" style="color: var(--ink-3);">4</span></div>
+        <div class="brow"><span class="l">Pendaftaran ditutup</span><span class="v">14 Juni 2025</span></div>
+      </div>
+      <div class="batch-cta">
+        <button class="vbtn ghost">Pause</button>
+        <a class="vbtn approve" href="batches.html">Buka Batch #5</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="card reveal">
+    <div class="card-head">
+      <div>
+        <h3 style="margin-bottom: 6px;">Project Governance — antrian persetujuan</h3>
+        <div class="tabs">
+          <button class="tab active">Pending <span class="ct">8</span></button>
+          <button class="tab">Review <span class="ct">12</span></button>
+          <button class="tab">Published <span class="ct">62</span></button>
+        </div>
+      </div>
+      <a class="link-mono" href="projects.html">Buka modul →</a>
+    </div>
+
+    <div class="gov-table">
+      <a class="gov-row" href="projects.html">
+        <span class="pid">RP-052</span>
+        <div class="pinfo">
+          <div class="pt">Doctoral Supervision in the Online Modality: Voices from 60 Indonesian PhD Candidates</div>
+          <div class="pa">Lead: Dr. Hadi Suryanto · 3 co-author · UNS, UGM</div>
+        </div>
+        <div class="pfield">Pendidikan &amp; EdTech</div>
+        <div><span class="pill pending">Pending</span></div>
+        <button class="pcta" aria-label="Open">→</button>
+      </a>
+      <a class="gov-row" href="projects.html">
+        <span class="pid">RP-051</span>
+        <div class="pinfo">
+          <div class="pt">Industrial Symbiosis in Indonesian Manufacturing Clusters: Barriers and Enablers</div>
+          <div class="pa">Lead: Dr. Nirmala D. · 4 co-author · ITB, UI</div>
+        </div>
+        <div class="pfield">Ekonomi Sirkular</div>
+        <div><span class="pill review">Review</span></div>
+        <button class="pcta" aria-label="Open">→</button>
+      </a>
+      <a class="gov-row" href="projects.html">
+        <span class="pid">RP-050</span>
+        <div class="pinfo">
+          <div class="pt">Federated Learning for Clinical NLP in Low-Resource Languages: An Indonesian Case</div>
+          <div class="pa">Lead: Dr. Anastasia L. · 5 co-author · UI, UGM, UNAIR</div>
+        </div>
+        <div class="pfield">AI &amp; Etika</div>
+        <div><span class="pill pending">Pending</span></div>
+        <button class="pcta" aria-label="Open">→</button>
+      </a>
+      <a class="gov-row" href="projects.html">
+        <span class="pid">RP-049</span>
+        <div class="pinfo">
+          <div class="pt">Translanguaging in EMI Classrooms: A Comparative Study of Engineering &amp; Humanities Faculty</div>
+          <div class="pa">Lead: Dr. Sari Nurhaliza · 6 co-author · UPI, UNS, UNDIP</div>
+        </div>
+        <div class="pfield">Linguistik Terapan</div>
+        <div><span class="pill draft">Draft</span></div>
+        <button class="pcta" aria-label="Open">→</button>
+      </a>
+      <a class="gov-row" href="projects.html">
+        <span class="pid">RP-048</span>
+        <div class="pinfo">
+          <div class="pt">Vaccine Hesitancy in Indonesian Urban Mothers: A Mixed-Methods Replication</div>
+          <div class="pa">Lead: Dr. Rahmawati M. · 3 co-author · UNAIR, UPN</div>
+        </div>
+        <div class="pfield">Kesehatan Masyarakat</div>
+        <div><span class="pill pending">Pending</span></div>
+        <button class="pcta" aria-label="Open">→</button>
+      </a>
+    </div>
+  </section>
+
+  <!-- CMS + activity -->
+  <section class="grid-2">
+    <div class="card reveal">
+      <div class="card-head">
+        <h3>Konten terjadwal — 7 hari ke depan</h3>
+        <a class="link-mono" href="blog.html">Buka CMS →</a>
+      </div>
+      <div>
+        <a class="cms-row live" href="events.html">
+          <div class="day"><div class="d">28</div><span class="m">Mei</span></div>
+          <div class="info">
+            <div class="ti">Webinar — Strategi Memilih Jurnal Q1 di Era GenAI</div>
+            <div class="me"><span class="pip event">Event</span><span class="pip live">Live now</span><span>· 480 registran</span></div>
+          </div>
+          <span class="link-mono">Kelola →</span>
+        </a>
+        <a class="cms-row" href="blog.html">
+          <div class="day"><div class="d">30</div><span class="m">Mei</span></div>
+          <div class="info">
+            <div class="ti">Anatomy of an Accepted Paper: 5 Kebiasaan Penulis Q1</div>
+            <div class="me"><span class="pip blog">Blog</span><span>· Anwar Putranto</span><span>· 09:00 WIB</span></div>
+          </div>
+          <span class="link-mono">Edit →</span>
+        </a>
+        <a class="cms-row" href="events.html">
+          <div class="day"><div class="d">02</div><span class="m">Jun</span></div>
+          <div class="info">
+            <div class="ti">Workshop Penulisan Sistematic Review — Cluster Kesehatan</div>
+            <div class="me"><span class="pip event">Event</span><span>· Upcoming</span><span>· 64 / 80 kuota</span></div>
+          </div>
+          <span class="link-mono">Edit →</span>
+        </a>
+        <a class="cms-row" href="blog.html">
+          <div class="day"><div class="d">04</div><span class="m">Jun</span></div>
+          <div class="info">
+            <div class="ti">Mengapa Reviewer 2 Selalu Galak? Membaca Antara Baris Komentar</div>
+            <div class="me"><span class="pip blog">Blog</span><span>· Draft 70%</span><span>· 10:00 WIB</span></div>
+          </div>
+          <span class="link-mono">Edit →</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-head">
+        <h3>Aktivitas terbaru</h3>
+        <a class="link-mono" href="audit.html">Audit log →</a>
+      </div>
+      <div>
+        <div class="feed-row success">
+          <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="body"><strong>Adi Wijaya</strong> menyetujui pendaftar <strong>Dr. Wira Pradana</strong> (Scholar ID terverifikasi otomatis, skor 94%).</div>
+          <span class="ts">2m</span>
+        </div>
+        <div class="feed-row accent">
+          <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+          <div class="body">Proyek baru diajukan: <strong>"Doctoral Supervision in the Online Modality"</strong> oleh Dr. Hadi Suryanto.</div>
+          <span class="ts">18m</span>
+        </div>
+        <div class="feed-row">
+          <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <div class="body">Event <strong>"Strategi Memilih Jurnal Q1"</strong> dipublikasikan dan tampil di kalender publik.</div>
+          <span class="ts">1h</span>
+        </div>
+        <div class="feed-row danger">
+          <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          <div class="body">Pendaftar <strong>APP-2415</strong> ditolak otomatis — Scholar ID tidak ditemukan.</div>
+          <span class="ts">3h</span>
+        </div>
+        <div class="feed-row accent">
+          <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+          <div class="body">Template <strong>"Cover Letter — Computers &amp; Education"</strong> diunduh 12 kali dalam 24 jam.</div>
+          <span class="ts">5h</span>
+        </div>
+        <div class="feed-row success">
+          <div class="ico-c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></div>
+          <div class="body">Artikel <strong>"7 Heuristik Memilih Reviewer"</strong> dipublikasi otomatis. Traffic awal: 1.240 visit.</div>
+          <span class="ts">8h</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<script src="_shell.js"></script>
+</body>
+</html>

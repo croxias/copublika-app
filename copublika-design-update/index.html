@@ -1,0 +1,3405 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoPublika — Komunitas Riset & Publikasi Akademisi Pemula</title>
+<meta name="description" content="CoPublika adalah komunitas akademisi pemula yang berfokus pada riset kolaboratif dan publikasi terindeks Scopus.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  /* ========== HERO — Dark Animated ========== */
+  .hero {
+    position: relative;
+    background: #0a0a0a;
+    color: white;
+    padding: 0;
+    overflow: hidden;
+    min-height: 88vh;
+    display: flex;
+    align-items: stretch;
+    margin-top: -122px;
+  }
+
+  /* Animated background layers */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  /* Layer 1: dot grid */
+  .hero-bg .dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 75%);
+    animation: dots-drift 60s linear infinite;
+  }
+  @keyframes dots-drift {
+    to { background-position: 32px 32px; }
+  }
+  /* Layer 2: drifting orbs */
+  .hero-bg .orb {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.5;
+  }
+  .hero-bg .orb-1 {
+    background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
+    top: -10%; left: -10%;
+    animation: orb-1 22s ease-in-out infinite alternate;
+  }
+  .hero-bg .orb-2 {
+    background: radial-gradient(circle, #2a4f8f 0%, transparent 60%);
+    bottom: -20%; right: -10%;
+    animation: orb-2 28s ease-in-out infinite alternate;
+    opacity: 0.4;
+  }
+  @keyframes orb-1 {
+    to { transform: translate(40vw, 30vh) scale(0.7); }
+  }
+  @keyframes orb-2 {
+    to { transform: translate(-30vw, -20vh) scale(1.2); }
+  }
+  /* Layer 3: horizontal scan line */
+  .hero-bg .scan {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(233, 113, 28, 0.6), transparent);
+    animation: scan 8s ease-in-out infinite;
+  }
+  @keyframes scan {
+    0%   { top: 18%; opacity: 0; }
+    20%  { opacity: 0.6; }
+    50%  { top: 75%; opacity: 0.4; }
+    80%  { opacity: 0.6; }
+    100% { top: 18%; opacity: 0; }
+  }
+  /* Layer 4: vignette */
+  .hero-bg .vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, transparent, rgba(0,0,0,0.5)),
+      radial-gradient(ellipse 60% 50% at 50% 100%, transparent, rgba(0,0,0,0.4));
+  }
+  /* Layer 5: noise */
+  .hero-bg .noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.6'/></svg>");
+  }
+
+  /* Hero content layout */
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: clamp(110px, 11vw, 130px) 0 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 88vh;
+  }
+  .hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 16px 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .hero-eyebrow .pulse {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(233, 113, 28, 0.22);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  .hero-eyebrow .div { width: 1px; height: 12px; background: rgba(255, 255, 255, 0.15); }
+  .hero-eyebrow .num { color: var(--accent); }
+
+  .hero-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .hero-meta-top .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .hero-meta-top .live::before {
+    content: "";
+    width: 6px; height: 6px;
+    background: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+
+  /* Slides area */
+  .hero-stage {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
+  }
+  @media (max-width: 1000px) {
+    .hero-stage { grid-template-columns: 1fr; gap: 36px; }
+  }
+
+  .hero-headline {
+    position: relative;
+    display: grid;
+  }
+  .hero-slide {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s var(--ease-out), transform 0.9s var(--ease-out);
+    pointer-events: none;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-self: start;
+  }
+  .hero-slide.active {
+    opacity: 1; transform: translateY(0);
+    pointer-events: auto;
+    visibility: visible;
+  }
+  .hero-slide .slide-kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-slide .slide-kicker::before {
+    content: "";
+    width: 24px; height: 1px;
+    background: var(--accent);
+  }
+  .hero-slide h1 {
+    font-size: clamp(40px, 6vw, 88px);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    text-wrap: balance;
+    color: white;
+  }
+  .hero-slide h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+    position: relative;
+  }
+  .hero-slide h1 .accent {
+    color: var(--accent);
+    position: relative;
+    display: inline-block;
+  }
+  .hero-slide h1 .accent::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 4%;
+    height: 6%;
+    background: var(--accent);
+    opacity: 0.22;
+  }
+  .hero-slide .sub {
+    font-size: clamp(15px, 1.2vw, 17px);
+    color: rgba(255, 255, 255, 0.62);
+    max-width: 48ch;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+  .hero-slide .ctas {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 12px;
+  }
+  .hero-slide .ctas .btn-primary {
+    background: white;
+    color: var(--ink);
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background 0.25s var(--ease);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-slide .ctas .btn-primary:hover { background: var(--accent); color: white; }
+  .hero-slide .ctas .btn-primary .arr {
+    font-family: var(--mono);
+    transition: transform 0.25s;
+  }
+  .hero-slide .ctas .btn-primary:hover .arr { transform: translateX(4px); }
+  .hero-slide .ctas .btn-text {
+    color: rgba(255, 255, 255, 0.75);
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-slide .ctas .btn-text:hover { color: white; }
+
+  /* RIGHT — preview card stack */
+  .hero-side {
+    position: relative;
+    display: grid;
+  }
+  .hero-card {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    transition: opacity 0.7s var(--ease-out), transform 0.9s var(--ease-out);
+    pointer-events: none;
+    visibility: hidden;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 22px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+    min-height: 340px;
+  }
+  .hero-card.active {
+    opacity: 1; transform: translateY(0) scale(1);
+    pointer-events: auto;
+    visibility: visible;
+  }
+  .hero-card.active {
+    opacity: 1; transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .hero-card .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .hero-card .card-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-card .card-tag::before {
+    content: "";
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .hero-card .card-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.08em;
+  }
+
+  /* Card 1: Members marquee */
+  .members-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .av-stack {
+    display: flex;
+    align-items: center;
+  }
+  .av-stack .av {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2px solid #0a0a0a;
+    background-size: cover;
+    background-position: center;
+    margin-left: -10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  .av-stack .av:first-child { margin-left: 0; }
+  .av-stack .av.more {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+  .members-meta {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .members-meta strong { color: white; font-weight: 600; font-size: 18px; display: block; }
+  .activity {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  .activity .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    animation: slideIn 0.6s var(--ease-out) backwards;
+  }
+  .activity .row:nth-child(1) { animation-delay: 0.1s; }
+  .activity .row:nth-child(2) { animation-delay: 0.25s; }
+  .activity .row:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .activity .av-mini {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+  }
+  .activity .dot-accent { color: var(--accent); }
+
+  /* Card 2: About — three stat tiles */
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    flex: 1;
+  }
+  .about-stat {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .about-stat.tall { grid-row: span 2; }
+  .about-stat .as-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .about-stat .as-value {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    color: white;
+  }
+  .about-stat.tall .as-value { font-size: 56px; }
+  .about-stat .as-value .acc { color: var(--accent); }
+
+  /* Card 3: Research — chart bars */
+  .chart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  .chart-bar {
+    display: grid;
+    grid-template-columns: 80px 1fr 40px;
+    gap: 12px;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .chart-bar .label { letter-spacing: 0.04em; }
+  .chart-bar .track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .chart-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(233, 113, 28, 0.6), var(--accent));
+    border-radius: 3px;
+    width: 0;
+    animation: barGrow 1.6s var(--ease-out) forwards;
+  }
+  .hero-card.active .chart-bar .fill { animation-play-state: running; }
+  @keyframes barGrow {
+    to { width: var(--w); }
+  }
+  .chart-bar .num { color: white; text-align: right; }
+
+  /* Card 4: Event — date card with countdown */
+  .event-mini {
+    background: linear-gradient(135deg, var(--accent), #b8580f);
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .event-mini .date {
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .event-mini .date .d { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; line-height: 0.9; }
+  .event-mini .date .m { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; }
+  .event-mini .info h5 { font-size: 14px; font-weight: 600; line-height: 1.2; margin-bottom: 6px; }
+  .event-mini .info .meta { font-size: 11px; opacity: 0.85; font-family: var(--mono); letter-spacing: 0.04em; }
+  .event-list-mini {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .event-list-mini .row {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    align-items: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .event-list-mini .row:last-child { border-bottom: 0; }
+  .event-list-mini .row .dd {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .event-list-mini .row .tt { color: white; font-size: 13px; }
+  .event-list-mini .row .type {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Hero bottom controls */
+  .hero-bottom {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 40px;
+  }
+  @media (max-width: 800px) {
+    .hero-bottom { grid-template-columns: 1fr; gap: 20px; }
+  }
+  .hero-dots { display: flex; gap: 8px; }
+  .hero-dot {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .hero-dot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .hero-dot:hover { color: white; }
+  .hero-dot.active { color: white; }
+  .hero-dot.active::before { border-color: rgba(255, 255, 255, 0.2); }
+  .hero-dot svg {
+    position: absolute; inset: 0;
+    transform: rotate(-90deg);
+  }
+  .hero-dot circle {
+    fill: none; stroke: var(--accent); stroke-width: 1.5;
+    stroke-dasharray: 105;
+    stroke-dashoffset: 105;
+  }
+  .hero-dot.active circle { animation: progress 6s linear forwards; }
+  @keyframes progress { to { stroke-dashoffset: 0; } }
+
+  .hero-arrows {
+    display: flex;
+    gap: 8px;
+    justify-self: end;
+  }
+  @media (max-width: 800px) { .hero-arrows { justify-self: start; } }
+  .hero-arrow {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s var(--ease);
+    color: rgba(255, 255, 255, 0.7);
+    background: transparent;
+  }
+  .hero-arrow:hover { background: white; border-color: white; color: var(--ink); }
+
+  .scroll-cue {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    justify-self: center;
+  }
+  .scroll-cue .line {
+    width: 24px; height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-cue .line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: translateX(-100%);
+    animation: scrollline 2.5s ease-in-out infinite;
+  }
+  @keyframes scrollline {
+    50% { transform: translateX(0); }
+    100% { transform: translateX(110%); }
+  }
+
+  /* ========== STATS ========== */
+  .stats-section {
+    background:
+      linear-gradient(135deg, #fff7ed 0%, #ffffff 45%, #fef3e7 100%);
+    color: var(--ink);
+    padding: clamp(80px, 9vw, 130px) 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .stats-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(233, 113, 28, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(233, 113, 28, 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 30%, transparent 90%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 30%, transparent 90%);
+    pointer-events: none;
+  }
+  .stats-section::after {
+    content: "";
+    position: absolute;
+    top: -20%; right: -10%;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(233, 113, 28, 0.18) 0%, transparent 60%);
+    filter: blur(60px);
+    pointer-events: none;
+    animation: statsDrift 18s ease-in-out infinite alternate;
+  }
+  @keyframes statsDrift {
+    to { transform: translate(-20vw, 18vh) scale(1.2); }
+  }
+  .stats-section .wrap { position: relative; z-index: 1; }
+  .stats-section .sh-h { color: var(--ink); }
+  .stats-section .sh-sub { color: var(--ink-2); }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  @media (max-width: 800px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat {
+    padding: 32px 28px 36px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(233, 113, 28, 0.12);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s var(--ease), border-color 0.3s, box-shadow 0.3s;
+  }
+  .stat::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s var(--ease-out);
+  }
+  .stat.in-view::before { transform: scaleX(1); }
+  .stat:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 24px 40px -16px rgba(233, 113, 28, 0.2);
+  }
+  .stat .stat-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .stat .stat-label::before {
+    content: "";
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(233, 113, 28, 0.18);
+  }
+  .stat .stat-value {
+    font-size: clamp(48px, 6vw, 84px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat .stat-value .suffix { font-size: 0.5em; color: var(--accent); margin-left: 4px; font-weight: 500; }
+  .stat .stat-desc { margin-top: 16px; color: var(--ink-3); font-size: 13px; line-height: 1.4; }
+  .stat .stat-spark {
+    margin-top: 18px;
+    height: 28px;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .stat .stat-spark span {
+    flex: 1;
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+    opacity: 0.35;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    transition: transform 0.6s var(--ease-out), opacity 0.3s;
+  }
+  .stat.in-view .stat-spark span { transform: scaleY(var(--h, 0.5)); }
+  .stat:hover .stat-spark span { opacity: 0.8; }
+  .stat .stat-spark span:nth-child(1) { transition-delay: 0.05s; }
+  .stat .stat-spark span:nth-child(2) { transition-delay: 0.1s; }
+  .stat .stat-spark span:nth-child(3) { transition-delay: 0.15s; }
+  .stat .stat-spark span:nth-child(4) { transition-delay: 0.2s; }
+  .stat .stat-spark span:nth-child(5) { transition-delay: 0.25s; }
+  .stat .stat-spark span:nth-child(6) { transition-delay: 0.3s; }
+  .stat .stat-spark span:nth-child(7) { transition-delay: 0.35s; }
+  .stat .stat-spark span:nth-child(8) { transition-delay: 0.4s; }
+
+  /* ========== ABOUT / PROGRAM (Bento Grid) ========== */
+  .pillars-section {
+    background: var(--bg-alt);
+    padding: clamp(80px, 9vw, 140px) 0;
+    position: relative;
+  }
+  .pillars-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 50%, black 40%, transparent 90%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 50%, black 40%, transparent 90%);
+    pointer-events: none;
+  }
+  .pillars-section .wrap, .bento { position: relative; z-index: 1; }
+  .pillars-section .head-center {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(40px, 5vw, 64px);
+  }
+  .pillars-section .head-center .sh-tag { justify-content: center; }
+  .pillars-section .head-center .sh-tag .bar { display: none; }
+  .pillars-section .head-center .sh-h {
+    font-size: clamp(36px, 5.5vw, 64px);
+    margin-bottom: 18px;
+  }
+  .pillars-section .head-center .sh-sub {
+    color: var(--ink-3);
+    font-size: clamp(16px, 1.4vw, 19px);
+    line-height: 1.5;
+    margin: 0 auto;
+    max-width: 56ch;
+  }
+
+  /* Bento Grid */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: minmax(280px, auto);
+    gap: 18px;
+  }
+  @media (max-width: 900px) { .bento { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .bento { grid-template-columns: 1fr; } }
+  .bento-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s var(--ease), border-color 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .bento-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--ink);
+    box-shadow: 0 24px 40px -16px rgba(0, 0, 0, 0.14);
+  }
+  .bento-card.span-2 { grid-column: span 2; }
+  .bento-card.span-3 { grid-column: span 3; }
+  .bento-card.span-4 { grid-column: span 4; }
+  @media (max-width: 900px) {
+    .bento-card.span-2, .bento-card.span-3, .bento-card.span-4 { grid-column: span 2; }
+  }
+  @media (max-width: 560px) {
+    .bento-card.span-2, .bento-card.span-3, .bento-card.span-4 { grid-column: span 1; }
+  }
+
+  /* Card 1: Big stat with handwritten circle */
+  .bento-card.stat-card {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(180deg, #ffffff 0%, #fef9f5 100%);
+  }
+  .bento-card.stat-card .big-num-wrap {
+    position: relative;
+    display: inline-block;
+    padding: 18px 40px;
+    margin-bottom: 22px;
+  }
+  .bento-card.stat-card .big-num {
+    font-size: clamp(60px, 7vw, 92px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--ink);
+    position: relative;
+    z-index: 1;
+  }
+  .bento-card.stat-card .circle-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .bento-card.stat-card .circle-svg ellipse {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    transition: stroke-dashoffset 1.4s var(--ease-out) 0.2s;
+  }
+  .bento-card.stat-card.in-view .circle-svg ellipse { stroke-dashoffset: 0; }
+  .bento-card.stat-card h3 {
+    font-size: clamp(22px, 2.4vw, 28px);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  /* Generic icon-top card */
+  .bento-card .b-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+    color: var(--ink);
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .bento-card:hover .b-icon { background: var(--accent); color: white; border-color: var(--accent); }
+  .bento-card h3 {
+    font-size: clamp(18px, 1.7vw, 22px);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .bento-card p {
+    color: var(--ink-3);
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .bento-card.icon-only { align-items: center; text-align: center; }
+  .bento-card.icon-only h3, .bento-card.icon-only p { text-align: center; }
+  .bento-card.icon-only .b-content { display: flex; flex-direction: column; align-items: center; }
+
+  /* Card with visual (sparkline chart) */
+  .bento-card.with-chart {
+    align-items: center;
+    text-align: center;
+    padding: 30px 28px;
+  }
+  .bento-card.with-chart .chart-wrap {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .bento-card.with-chart .chart-wrap .speed-label {
+    position: absolute;
+    top: 0; left: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .bento-card.with-chart .chart-wrap .speed-label::before {
+    content: "↓";
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ink);
+  }
+  .bento-card.with-chart .chart-wrap .speed-value {
+    position: absolute;
+    top: 0; right: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .bento-card.with-chart svg.spark {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 70%;
+  }
+  .bento-card.with-chart svg.spark path.line {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    transition: stroke-dashoffset 1.8s var(--ease-out) 0.3s;
+  }
+  .bento-card.with-chart.in-view svg.spark path.line { stroke-dashoffset: 0; }
+
+  /* Wide card with icon left + visual right */
+  .bento-card.wide-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    padding: 30px;
+    align-items: stretch;
+  }
+  @media (max-width: 700px) { .bento-card.wide-split { grid-template-columns: 1fr; } }
+  .bento-card.wide-split .ws-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .bento-card.wide-split .ws-left h3 { text-align: left; }
+  .bento-card.wide-split .ws-left p { text-align: left; }
+  .bento-card.wide-split .ws-left .b-icon { margin-bottom: 20px; }
+  .bento-card.wide-split .ws-right {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+  /* Browser-style frame on right */
+  .bento-card.wide-split .ws-right::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid var(--line);
+  }
+  .bento-card.wide-split .ws-right::after {
+    content: "";
+    position: absolute;
+    top: 9px; left: 14px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+    box-shadow: 14px 0 var(--line), 28px 0 var(--line);
+  }
+  .bento-card.wide-split .growth-chart {
+    width: 100%;
+    height: 140px;
+    margin-top: 28px;
+  }
+  .bento-card.wide-split .growth-chart path.area {
+    fill: rgba(233, 113, 28, 0.12);
+  }
+  .bento-card.wide-split .growth-chart path.line {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 800;
+    stroke-dashoffset: 800;
+    transition: stroke-dashoffset 2s var(--ease-out) 0.3s;
+  }
+  .bento-card.in-view .growth-chart path.line { stroke-dashoffset: 0; }
+
+  /* Avatars stack on right */
+  .bento-card.wide-split .avatars-list {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 16px;
+  }
+  .bento-card.wide-split .av-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    width: max-content;
+    font-size: 12px;
+    color: var(--ink-2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    animation: avRow 0.6s var(--ease-out) backwards;
+  }
+  .bento-card.wide-split .av-row .av {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background-size: cover; background-position: center;
+    flex-shrink: 0;
+    border: 1px solid var(--line);
+  }
+  .bento-card.wide-split .av-row.r1 { align-self: flex-end; animation-delay: 0.1s; }
+  .bento-card.wide-split .av-row.r2 { align-self: center; animation-delay: 0.25s; }
+  .bento-card.wide-split .av-row.r3 { align-self: flex-start; animation-delay: 0.4s; }
+  @keyframes avRow {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ========== FEATURED PROGRAM ========== */
+  .feature-section {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(233, 113, 28, 0.18), transparent 55%),
+      radial-gradient(ellipse 60% 50% at 100% 100%, rgba(184, 88, 15, 0.14), transparent 55%),
+      linear-gradient(180deg, #0a0a0a 0%, #131313 100%);
+    color: white;
+    padding: clamp(80px, 9vw, 140px) 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 90% 90% at 70% 50%, black 30%, transparent 85%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 90% at 70% 50%, black 30%, transparent 85%);
+    pointer-events: none;
+  }
+  .feature-section .wrap { position: relative; z-index: 1; }
+  .feature-section .sh-h { color: white; }
+  .feature-section .sh-sub { color: rgba(255, 255, 255, 0.65); }
+  .feature-section .sh-tag span:not(.bar):not(.num) { color: rgba(255, 255, 255, 0.6); }
+  .feature-section .sh-tag .bar { background: rgba(255, 255, 255, 0.4); }
+
+  .program-feature {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+  @media (max-width: 900px) { .program-feature { grid-template-columns: 1fr; } }
+  .program-feature .pf-left {
+    padding: clamp(40px, 5vw, 72px);
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .program-feature .pf-right {
+    position: relative;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(233, 113, 28, 0.14), transparent 50%),
+      rgba(0, 0, 0, 0.25);
+    padding: clamp(40px, 5vw, 72px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 460px;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  @media (max-width: 900px) {
+    .program-feature .pf-right { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.06); }
+  }
+  .program-feature .pf-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .program-feature h2 {
+    font-size: clamp(40px, 5vw, 64px);
+    letter-spacing: -0.025em;
+    line-height: 1;
+  }
+  .program-feature .pf-lead {
+    font-size: 17px;
+    color: #d0d0d0;
+    line-height: 1.55;
+    max-width: 44ch;
+  }
+  .program-feature .pf-meta {
+    display: flex;
+    gap: 32px;
+    margin-top: 16px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
+  }
+  .program-feature .pf-meta div { display: flex; flex-direction: column; gap: 4px; }
+  .program-feature .pf-meta .l {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .program-feature .pf-meta .v {
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+  }
+  .program-feature .pf-curriculum {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .program-feature .pf-curriculum .item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: padding 0.3s var(--ease);
+  }
+  .program-feature .pf-curriculum .item:last-child { border-bottom: 0; }
+  .program-feature .pf-curriculum .item:hover { padding-left: 8px; }
+  .program-feature .pf-curriculum .n {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    width: 24px;
+  }
+  .program-feature .pf-curriculum .t {
+    font-size: 15px;
+    color: white;
+    font-weight: 500;
+  }
+  .program-feature .pf-curriculum .d {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  /* ========== RESEARCH + BLOG mixed grid ========== */
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: transform 0.3s var(--ease);
+  }
+  .article-card:hover { transform: translateY(-4px); }
+  .article-card .thumb {
+    aspect-ratio: 16 / 11;
+    border-radius: var(--radius-lg);
+    background: var(--bg-alt);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--line);
+  }
+  .article-card .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%) contrast(1.02);
+    transition: transform 0.7s var(--ease), filter 0.4s var(--ease);
+  }
+  .article-card:hover .thumb img { transform: scale(1.05); filter: grayscale(0%) contrast(1); }
+  .article-card .thumb::after {
+    content: attr(data-cat);
+    position: absolute;
+    top: 14px; left: 14px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    z-index: 2;
+  }
+  .article-card .meta {
+    display: flex;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .article-card .meta .sep { color: var(--accent); }
+  .article-card h3 {
+    font-size: 22px;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    color: var(--ink);
+    transition: color 0.2s;
+  }
+  .article-card:hover h3 { color: var(--accent-ink); }
+  .article-card p {
+    font-size: 14px;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+
+  /* Event cards */
+  .events {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--line);
+  }
+  .event {
+    display: grid;
+    grid-template-columns: 110px 1fr auto auto;
+    align-items: center;
+    gap: 32px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+    transition: padding 0.35s var(--ease), background 0.35s var(--ease);
+    position: relative;
+  }
+  .event::before {
+    content: "";
+    position: absolute;
+    left: -16px; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .event:hover { padding-left: 24px; background: linear-gradient(90deg, var(--bg-alt) 0%, transparent 80%); }
+  .event:hover::before { transform: scaleY(1); }
+  .event .date {
+    font-family: var(--mono);
+    text-align: left;
+  }
+  .event .date .d { font-size: 32px; font-weight: 600; letter-spacing: -0.02em; display: block; }
+  .event .date .m { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .event .info h4 {
+    font-size: 22px;
+    letter-spacing: -0.015em;
+    margin-bottom: 6px;
+  }
+  .event .info .sub { color: var(--ink-3); font-size: 14px; }
+  .event .where {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .event .where::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .event .go {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s var(--ease);
+  }
+  .event:hover .go { background: var(--ink); border-color: var(--ink); color: white; transform: rotate(-45deg); }
+  @media (max-width: 700px) {
+    .event { grid-template-columns: 80px 1fr; gap: 20px; }
+    .event .where, .event .go { display: none; }
+  }
+
+  /* ========== TESTIMONIALS ========== */
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 900px) { .testi-grid { grid-template-columns: 1fr; } }
+  .testi {
+    padding: 32px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative;
+  }
+  .testi:hover { border-color: var(--ink); transform: translateY(-4px); }
+  .testi .quote-mark {
+    font-size: 56px;
+    line-height: 0.7;
+    color: var(--accent);
+    font-family: serif;
+  }
+  .testi blockquote {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    text-wrap: pretty;
+    flex: 1;
+  }
+  .testi .who {
+    display: flex; align-items: center; gap: 14px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .testi .who .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .testi .who .name { font-size: 14px; font-weight: 600; }
+  .testi .who .role { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+  /* ========== PARTNERS ========== */
+  .partners {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 900px) { .partners { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 540px) { .partners { grid-template-columns: repeat(2, 1fr); } }
+  .partner {
+    padding: 32px 24px;
+    border-right: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 110px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    transition: color 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .partner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent-soft);
+    transform: translateY(100%);
+    transition: transform 0.4s var(--ease-out);
+  }
+  .partner > span { position: relative; z-index: 1; }
+  .partner:hover { color: var(--accent-ink); }
+  .partner:hover::before { transform: translateY(0); }
+  .partner:last-child { border-right: 0; }
+  @media (max-width: 900px) {
+    .partner:nth-child(3n) { border-right: 0; }
+  }
+  @media (max-width: 540px) {
+    .partner:nth-child(2n) { border-right: 0; }
+  }
+
+  /* ========== FAQ ========== */
+  .faq {
+    border-top: 1px solid var(--line);
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--line);
+  }
+  .faq-q {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: center;
+    padding: 28px 0;
+    cursor: pointer;
+    transition: padding 0.3s var(--ease);
+  }
+  .faq-q:hover { padding-left: 8px; }
+  .faq-q .num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .faq-q .q {
+    font-size: clamp(20px, 1.8vw, 26px);
+    letter-spacing: -0.015em;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .faq-q .plus {
+    width: 36px; height: 36px;
+    position: relative;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    transition: all 0.3s var(--ease);
+  }
+  .faq-q .plus::before, .faq-q .plus::after {
+    content: "";
+    position: absolute;
+    background: var(--ink);
+    transition: transform 0.3s var(--ease);
+  }
+  .faq-q .plus::before { top: 50%; left: 25%; right: 25%; height: 1.5px; transform: translateY(-50%); }
+  .faq-q .plus::after { left: 50%; top: 25%; bottom: 25%; width: 1.5px; transform: translateX(-50%); }
+  .faq-item.open .faq-q .plus { background: var(--ink); border-color: var(--ink); }
+  .faq-item.open .faq-q .plus::before, .faq-item.open .faq-q .plus::after { background: white; }
+  .faq-item.open .faq-q .plus::after { transform: translateX(-50%) rotate(90deg); }
+  .faq-a {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s var(--ease);
+  }
+  .faq-item.open .faq-a { grid-template-rows: 1fr; }
+  .faq-a > div {
+    overflow: hidden;
+  }
+  .faq-a > div > div {
+    padding: 0 60px 32px 44px;
+    color: var(--ink-3);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 70ch;
+  }
+
+  /* ========== TICKER specific ========== */
+  .ticker .ticker-track .scopus {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ========== Section headers helper ========== */
+  .sh-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 24px;
+  }
+  .sh-tag .num { color: var(--accent); }
+  .sh-tag .bar { width: 28px; height: 1px; background: var(--ink); }
+
+  .sh-h {
+    font-size: clamp(38px, 5vw, 64px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-weight: 600;
+  }
+  .sh-sub {
+    color: var(--ink-3);
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 48ch;
+  }
+
+  /* ============================================================
+     RESEARCH — horizontal marquee (scroll left)
+     ============================================================ */
+  .marquee {
+    --gap: 24px;
+    --speed: 50s;
+    overflow: hidden;
+    position: relative;
+    margin: 0 calc(var(--gutter) * -1);
+    padding: 0 var(--gutter);
+    mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%);
+  }
+  .marquee-track {
+    display: flex;
+    gap: var(--gap);
+    width: max-content;
+    animation: marquee-l var(--speed) linear infinite;
+  }
+  .marquee-track.reverse { animation-name: marquee-r; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee-l { to { transform: translateX(calc(-50% - var(--gap) / 2)); } }
+  @keyframes marquee-r {
+    from { transform: translateX(calc(-50% - var(--gap) / 2)); }
+    to { transform: translateX(0); }
+  }
+
+  .research-card {
+    flex: 0 0 360px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    display: flex;
+    flex-direction: column;
+  }
+  .research-card:hover { border-color: var(--ink); }
+  .research-card .rc-thumb {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg-alt);
+  }
+  .research-card .rc-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(35%) contrast(1.02);
+    transition: transform 0.7s var(--ease), filter 0.4s var(--ease);
+  }
+  .research-card:hover .rc-thumb img { transform: scale(1.05); filter: grayscale(0%); }
+  .research-card .rc-q {
+    position: absolute;
+    top: 12px; left: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: white;
+    font-weight: 500;
+  }
+  .research-card .rc-q.q2 { background: var(--ink); }
+  .research-card .rc-q.q3 { background: rgba(255, 255, 255, 0.92); color: var(--ink); border: 1px solid var(--line); }
+  .research-card .rc-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .research-card .rc-meta {
+    display: flex; gap: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .research-card .rc-meta .sep { color: var(--accent); }
+  .research-card h4 {
+    font-size: 17px;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    font-weight: 500;
+    color: var(--ink);
+    text-wrap: pretty;
+    transition: color 0.2s;
+  }
+  .research-card:hover h4 { color: var(--accent-ink); }
+  .research-card .rc-journal {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-2);
+    letter-spacing: 0.02em;
+    font-style: italic;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* ============================================================
+     BLOG — featured horizontal (rotating) + portrait card marquee
+     ============================================================ */
+  .blog-hero-wrap {
+    position: relative;
+    display: grid;
+  }
+  .blog-hero {
+    grid-area: 1 / 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out), border-color 0.3s;
+    opacity: 0;
+    transform: translateY(16px);
+    pointer-events: none;
+    visibility: hidden;
+  }
+  .blog-hero.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    visibility: visible;
+  }
+  .blog-hero:hover { border-color: var(--ink); }
+  @media (max-width: 800px) { .blog-hero { grid-template-columns: 1fr; } }
+  .blog-hero .bh-img {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--bg-alt);
+  }
+  @media (max-width: 800px) { .blog-hero .bh-img { aspect-ratio: 16 / 10; } }
+  .blog-hero .bh-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(15%);
+    transition: transform 0.8s var(--ease);
+  }
+  .blog-hero:hover .bh-img img { transform: scale(1.05); }
+  .blog-hero .bh-tag {
+    position: absolute;
+    top: 18px; left: 18px;
+    background: var(--accent);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    z-index: 2;
+  }
+  .blog-hero .bh-body {
+    padding: clamp(28px, 4vw, 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    justify-content: center;
+  }
+  .blog-hero .bh-meta {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .blog-hero .bh-meta .sep { color: var(--accent); }
+  .blog-hero h3 {
+    font-size: clamp(24px, 3.2vw, 38px);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    font-weight: 600;
+    text-wrap: pretty;
+    color: var(--ink);
+    transition: color 0.2s;
+  }
+  .blog-hero:hover h3 { color: var(--accent-ink); }
+  .blog-hero .bh-body p {
+    font-size: 15px;
+    color: var(--ink-3);
+    line-height: 1.55;
+    max-width: 52ch;
+  }
+  .blog-hero .bh-author {
+    display: flex; gap: 12px; align-items: center;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .blog-hero .bh-author .av {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background-size: cover; background-position: center;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .blog-hero .bh-author .name { font-size: 14px; font-weight: 600; }
+  .blog-hero .bh-author .role { font-size: 11px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.04em; text-transform: uppercase; margin-top: 3px; }
+  .blog-hero .bh-cta {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    transition: transform 0.2s var(--ease);
+  }
+  .blog-hero:hover .bh-cta { transform: translateX(4px); }
+
+  /* Blog hero pagination dots */
+  .bh-dots {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    border-radius: 999px;
+    box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--line);
+  }
+  .bh-dot {
+    width: 22px; height: 4px;
+    border-radius: 999px;
+    background: var(--line);
+    transition: background 0.3s var(--ease), width 0.4s var(--ease);
+    cursor: pointer;
+    border: 0; padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .bh-dot:hover { background: var(--ink-3); }
+  .bh-dot.active {
+    width: 48px;
+    background: var(--line-2);
+  }
+  .bh-dot.active::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform-origin: left;
+    animation: bhProgress 6s linear forwards;
+  }
+  @keyframes bhProgress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  /* Blog cards in marquee (portrait — image top, body bottom) */
+  .blog-card {
+    flex: 0 0 300px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .blog-card:hover { border-color: var(--ink); transform: translateY(-4px); }
+  .blog-card .bc-thumb {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--bg-alt);
+  }
+  .blog-card .bc-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(30%);
+    transition: transform 0.7s var(--ease), filter 0.4s var(--ease);
+  }
+  .blog-card:hover .bc-thumb img { transform: scale(1.06); filter: grayscale(0%); }
+  .blog-card .bc-cat {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+  }
+  .blog-card .bc-cat.accent { background: var(--accent); color: white; }
+  .blog-card .bc-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+  .blog-card .bc-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .blog-card h4 {
+    font-size: 15px;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    font-weight: 500;
+    color: var(--ink);
+    text-wrap: pretty;
+    transition: color 0.2s;
+    flex: 1;
+  }
+  .blog-card:hover h4 { color: var(--accent-ink); }
+  .blog-card .bc-author {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.02em;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    margin-top: 4px;
+  }
+
+  /* ============================================================
+     TESTIMONIALS — clean two-row marquee
+     ============================================================ */
+  .testi-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .testi-card {
+    flex: 0 0 380px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 26px 26px 22px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    text-align: left;
+  }
+  .testi-card:hover {
+    border-color: var(--ink);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.1);
+  }
+  .testi-card .top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .testi-card .qmark {
+    font-family: 'Times New Roman', serif;
+    font-size: 64px;
+    line-height: 0.5;
+    color: var(--accent);
+    user-select: none;
+  }
+  .testi-card .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-top: 6px;
+  }
+  .testi-card .quote {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    text-wrap: pretty;
+    margin-bottom: 22px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+  .testi-card .person {
+    display: flex; gap: 12px; align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .testi-card .person .av {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background-size: cover; background-position: center;
+    flex-shrink: 0;
+    border: 1px solid var(--line);
+  }
+  .testi-card .person .info { flex: 1; min-width: 0; }
+  .testi-card .person .name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+  .testi-card .person .role {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main data-screen-label="Home">
+
+  <!-- ========== HERO (Dark, Animated, 4 slides → 4 destinations) ========== -->
+  <section class="hero" data-screen-label="Hero">
+    <!-- Animated background layers -->
+    <div class="hero-bg" aria-hidden="true">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="dots"></div>
+      <div class="scan"></div>
+      <div class="vignette"></div>
+      <div class="noise"></div>
+    </div>
+
+    <div class="wrap hero-inner">
+      <!-- Top meta strip -->
+      <div class="hero-top">
+        <div class="hero-eyebrow">
+          <span class="pulse"></span>
+          <span data-i18n-id="Komunitas Akademisi Pemula" data-i18n-en="Early-Career Academic Community">Komunitas Akademisi Pemula</span>
+          <span class="div"></span>
+          <span class="num">EST. 2024</span>
+        </div>
+        <div class="hero-meta-top">
+          <span class="live"><span data-i18n-id="Cohort #07 dibuka" data-i18n-en="Cohort #07 open">Cohort #07 dibuka</span></span>
+          <span>·</span>
+          <span data-i18n-id="24 kursi tersisa" data-i18n-en="24 seats left">24 kursi tersisa</span>
+        </div>
+      </div>
+
+      <!-- Slides stage -->
+      <div class="hero-stage">
+        <!-- LEFT — rotating big headline (4 slides → 4 destinations) -->
+        <div class="hero-headline">
+
+          <!-- Slide 1 — Join Community -->
+          <div class="hero-slide active" data-slide="0">
+            <span class="slide-kicker"><span data-i18n-id="01 — Komunitas" data-i18n-en="01 — Community">01 — Komunitas</span></span>
+            <h1><span data-i18n-id="Tidak perlu menunggu <em>siap</em>. Mulai dari sini." data-i18n-en="You don't have to feel <em>ready</em>. Just start here." data-html="true">Tidak perlu menunggu <em>siap</em>. Mulai dari sini.</span></h1>
+            <p class="sub" data-i18n-id="Bergabunglah dengan 1.240+ akademisi pemula yang sedang membangun rekam jejak publikasi mereka — bersama." data-i18n-en="Join 1,240+ early-career academics building their publication track record — together.">Bergabunglah dengan 1.240+ akademisi pemula yang sedang membangun rekam jejak publikasi mereka — bersama.</p>
+            <div class="ctas">
+              <a class="btn-primary" href="register.html">
+                <span data-i18n-id="Gabung Komunitas" data-i18n-en="Join the Community">Gabung Komunitas</span>
+                <span class="arr">→</span>
+              </a>
+              <a class="btn-text" href="login.html">
+                <span data-i18n-id="Sudah punya akun?" data-i18n-en="Already a member?">Sudah punya akun?</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Slide 2 — About -->
+          <div class="hero-slide" data-slide="1">
+            <span class="slide-kicker"><span data-i18n-id="02 — Tentang Kami" data-i18n-en="02 — About">02 — Tentang Kami</span></span>
+            <h1><span data-i18n-id="Bukan platform. <em>Sebuah komunitas.</em>" data-i18n-en="Not a platform. <em>A community.</em>" data-html="true">Bukan platform. <em>Sebuah komunitas.</em></span></h1>
+            <p class="sub" data-i18n-id="Kami lahir dari pengamatan sederhana: akademisi pemula tidak kurang ide. Yang sering kurang adalah teman seperjuangan dan mentor yang sabar." data-i18n-en="We grew from a simple observation: early-career academics don't lack ideas. What's missing are peers and patient mentors.">Kami lahir dari pengamatan sederhana: akademisi pemula tidak kurang ide. Yang sering kurang adalah teman seperjuangan dan mentor yang sabar.</p>
+            <div class="ctas">
+              <a class="btn-primary" href="about.html">
+                <span data-i18n-id="Pelajari Kami" data-i18n-en="Our Story">Pelajari Kami</span>
+                <span class="arr">→</span>
+              </a>
+              <a class="btn-text" href="#values">
+                <span data-i18n-id="Empat nilai kami" data-i18n-en="Our four values">Empat nilai kami</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Slide 3 — Research -->
+          <div class="hero-slide" data-slide="2">
+            <span class="slide-kicker"><span data-i18n-id="03 — Riset" data-i18n-en="03 — Research">03 — Riset</span></span>
+            <h1><span data-i18n-id="24 cluster. <span class='accent'>Lintas disiplin.</span>" data-i18n-en="24 clusters. <span class='accent'>Cross-disciplinary.</span>" data-html="true">24 cluster. <span class="accent">Lintas disiplin.</span></span></h1>
+            <p class="sub" data-i18n-id="Pendidikan, kesehatan, lingkungan, AI, kebijakan publik, dan 19 bidang lainnya. Temukan co-author yang sefrekuensi." data-i18n-en="Education, health, environment, AI, public policy, and 19 more fields. Find co-authors on your wavelength.">Pendidikan, kesehatan, lingkungan, AI, kebijakan publik, dan 19 bidang lainnya. Temukan co-author yang sefrekuensi.</p>
+            <div class="ctas">
+              <a class="btn-primary" href="research.html">
+                <span data-i18n-id="Lihat Research Project" data-i18n-en="Explore Research">Lihat Research Project</span>
+                <span class="arr">→</span>
+              </a>
+              <a class="btn-text" href="research.html#clusters">
+                <span data-i18n-id="318 publikasi alumni" data-i18n-en="318 alumni publications">318 publikasi alumni</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Slide 4 — Event -->
+          <div class="hero-slide" data-slide="3">
+            <span class="slide-kicker"><span data-i18n-id="04 — Acara" data-i18n-en="04 — Events">04 — Acara</span></span>
+            <h1><span data-i18n-id="Klinik, webinar, <em>forum doctoral.</em>" data-i18n-en="Clinics, webinars, <em>doctoral forums.</em>" data-html="true">Klinik, webinar, <em>forum doctoral.</em></span></h1>
+            <p class="sub" data-i18n-id="Setiap minggu kami berkumpul — daring maupun luring — untuk membedah naskah, mendengarkan editor, dan menulis bersama." data-i18n-en="Every week we meet — online or in-person — to dissect manuscripts, hear from editors, and write together.">Setiap minggu kami berkumpul — daring maupun luring — untuk membedah naskah, mendengarkan editor, dan menulis bersama.</p>
+            <div class="ctas">
+              <a class="btn-primary" href="event.html">
+                <span data-i18n-id="Lihat Agenda" data-i18n-en="View Calendar">Lihat Agenda</span>
+                <span class="arr">→</span>
+              </a>
+              <a class="btn-text" href="event.html">
+                <span data-i18n-id="6 acara bulan ini" data-i18n-en="6 events this month">6 acara bulan ini</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT — preview cards synced with slides -->
+        <div class="hero-side">
+
+          <!-- Card 1: Members preview -->
+          <div class="hero-card active" data-slide="0">
+            <div class="card-top">
+              <span class="card-tag" data-i18n-id="LIVE COMMUNITY" data-i18n-en="LIVE COMMUNITY">LIVE COMMUNITY</span>
+              <span class="card-num">01 / 04</span>
+            </div>
+            <div class="members-row">
+              <div class="av-stack">
+                <div class="av" style="background-image:url('https://i.pravatar.cc/80?img=12');"></div>
+                <div class="av" style="background-image:url('https://i.pravatar.cc/80?img=32');"></div>
+                <div class="av" style="background-image:url('https://i.pravatar.cc/80?img=47');"></div>
+                <div class="av" style="background-image:url('https://i.pravatar.cc/80?img=23');"></div>
+                <div class="av more">+1.2k</div>
+              </div>
+              <div class="members-meta">
+                <strong>1.240+</strong>
+                <span data-i18n-id="anggota aktif" data-i18n-en="active members">anggota aktif</span>
+              </div>
+            </div>
+            <div class="activity">
+              <div class="row">
+                <div class="av-mini" style="background-image:url('https://i.pravatar.cc/40?img=15');"></div>
+                <div><strong style="color:white; font-weight:500;">Rini P.</strong> <span data-i18n-id="bergabung ke cluster" data-i18n-en="joined cluster">bergabung ke cluster</span> <span class="dot-accent">EdTech</span></div>
+              </div>
+              <div class="row">
+                <div class="av-mini" style="background-image:url('https://i.pravatar.cc/40?img=33');"></div>
+                <div><strong style="color:white; font-weight:500;">dr. Andika H.</strong> <span data-i18n-id="submit naskah ke" data-i18n-en="submitted to">submit naskah ke</span> <span class="dot-accent">Scopus Q2</span></div>
+              </div>
+              <div class="row">
+                <div class="av-mini" style="background-image:url('https://i.pravatar.cc/40?img=51');"></div>
+                <div><strong style="color:white; font-weight:500;">Siti N.</strong> <span data-i18n-id="diterima di" data-i18n-en="accepted at">diterima di</span> <span class="dot-accent">Sustainability Q1</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: About — value tiles -->
+          <div class="hero-card" data-slide="1">
+            <div class="card-top">
+              <span class="card-tag" data-i18n-id="OUR DNA" data-i18n-en="OUR DNA">OUR DNA</span>
+              <span class="card-num">02 / 04</span>
+            </div>
+            <div class="about-stats">
+              <div class="about-stat tall">
+                <span class="as-label" data-i18n-id="Berdiri di" data-i18n-en="Founded in">Berdiri di</span>
+                <span class="as-value">2024<span class="acc">.</span></span>
+              </div>
+              <div class="about-stat">
+                <span class="as-label" data-i18n-id="Mentor" data-i18n-en="Mentors">Mentor</span>
+                <span class="as-value">47</span>
+              </div>
+              <div class="about-stat">
+                <span class="as-label" data-i18n-id="Kampus mitra" data-i18n-en="Partner unis">Kampus mitra</span>
+                <span class="as-value">12</span>
+              </div>
+            </div>
+            <div style="font-size:13px; color:rgba(255,255,255,0.55); line-height:1.5; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08);" data-i18n-id="Yogyakarta, Indonesia · 4 nilai inti yang membentuk semua yang kami lakukan." data-i18n-en="Yogyakarta, Indonesia · 4 core values shaping everything we do.">Yogyakarta, Indonesia · 4 nilai inti yang membentuk semua yang kami lakukan.</div>
+          </div>
+
+          <!-- Card 3: Research — quartile chart -->
+          <div class="hero-card" data-slide="2">
+            <div class="card-top">
+              <span class="card-tag" data-i18n-id="PUBLICATION INDEX" data-i18n-en="PUBLICATION INDEX">PUBLICATION INDEX</span>
+              <span class="card-num">03 / 04</span>
+            </div>
+            <div class="chart">
+              <div class="chart-bar"><span class="label">Scopus Q1</span><span class="track"><span class="fill" style="--w: 35%;"></span></span><span class="num">42</span></div>
+              <div class="chart-bar"><span class="label">Scopus Q2</span><span class="track"><span class="fill" style="--w: 70%;"></span></span><span class="num">87</span></div>
+              <div class="chart-bar"><span class="label">Scopus Q3</span><span class="track"><span class="fill" style="--w: 92%;"></span></span><span class="num">112</span></div>
+              <div class="chart-bar"><span class="label">Sinta 1–2</span><span class="track"><span class="fill" style="--w: 63%;"></span></span><span class="num">77</span></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); font-family:var(--mono); font-size:11px; color:rgba(255,255,255,0.5); letter-spacing:0.06em;">
+              <span data-i18n-id="TOTAL · 2024" data-i18n-en="TOTAL · 2024">TOTAL · 2024</span>
+              <span style="color:white; font-size:18px; font-family:var(--sans); font-weight:600; letter-spacing:-0.02em;">318</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Event — upcoming list -->
+          <div class="hero-card" data-slide="3">
+            <div class="card-top">
+              <span class="card-tag" data-i18n-id="NEXT UP" data-i18n-en="NEXT UP">NEXT UP</span>
+              <span class="card-num">04 / 04</span>
+            </div>
+            <div class="event-mini">
+              <div class="date">
+                <div class="d">12</div>
+                <div class="m">JUN</div>
+              </div>
+              <div class="info">
+                <h5 data-i18n-id="Klinik Manuskrip: Membedah Reviewer Comments" data-i18n-en="Manuscript Clinic: Dissecting Reviewer Comments">Klinik Manuskrip: Membedah Reviewer Comments</h5>
+                <div class="meta">Dr. Aulia · Zoom · 19.30 WIB</div>
+              </div>
+            </div>
+            <div class="event-list-mini">
+              <div class="row">
+                <div class="dd">24 Jun</div>
+                <div class="tt" data-i18n-id="Editor Roundtable Q1–Q2" data-i18n-en="Editor Roundtable Q1–Q2">Editor Roundtable Q1–Q2</div>
+                <div class="type">Webinar</div>
+              </div>
+              <div class="row">
+                <div class="dd">08 Jul</div>
+                <div class="tt" data-i18n-id="Workshop Academic Writing" data-i18n-en="Academic Writing Workshop">Workshop Academic Writing</div>
+                <div class="type">Luring</div>
+              </div>
+              <div class="row">
+                <div class="dd">22 Jul</div>
+                <div class="tt" data-i18n-id="Doctoral Forum" data-i18n-en="Doctoral Forum">Doctoral Forum</div>
+                <div class="type">Hybrid</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bottom controls -->
+      <div class="hero-bottom">
+        <div class="hero-dots" id="heroDots">
+          <button class="hero-dot active" data-i="0">
+            <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16.7"/></svg>
+            01
+          </button>
+          <button class="hero-dot" data-i="1">
+            <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16.7"/></svg>
+            02
+          </button>
+          <button class="hero-dot" data-i="2">
+            <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16.7"/></svg>
+            03
+          </button>
+          <button class="hero-dot" data-i="3">
+            <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16.7"/></svg>
+            04
+          </button>
+        </div>
+        <div class="scroll-cue" aria-hidden="true">
+          <span data-i18n-id="Gulir untuk eksplor" data-i18n-en="Scroll to explore">Gulir untuk eksplor</span>
+          <span class="line"></span>
+        </div>
+        <div class="hero-arrows">
+          <button class="hero-arrow" id="heroPrev" aria-label="Previous">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="hero-arrow" id="heroNext" aria-label="Next">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STATS ========== -->
+  <section class="stats-section" data-screen-label="Stats">
+    <div class="wrap">
+      <div class="section-head two-col reveal" style="margin-bottom: clamp(32px, 4vw, 60px);">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">02</span><span data-i18n-id="Dampak" data-i18n-en="Impact">Dampak</span></div>
+          <h2 class="sh-h" data-i18n-id="Angka yang berbicara." data-i18n-en="Numbers that speak.">Angka yang berbicara.</h2>
+        </div>
+        <div class="head-right">
+          <p class="sh-sub" data-i18n-id="Dalam dua tahun terakhir, anggota CoPublika menerbitkan ratusan artikel di jurnal terindeks dan membangun puluhan kelompok riset baru." data-i18n-en="Over the past two years, CoPublika members have published hundreds of indexed articles and built dozens of new research groups.">Dalam dua tahun terakhir, anggota CoPublika menerbitkan ratusan artikel di jurnal terindeks dan membangun puluhan kelompok riset baru.</p>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="stats-grid">
+        <div class="stat reveal">
+          <div class="stat-label" data-i18n-id="Anggota komunitas" data-i18n-en="Community members">Anggota komunitas</div>
+          <div class="stat-value"><span data-count="1240">0</span><span class="suffix">+</span></div>
+          <div class="stat-desc" data-i18n-id="Akademisi dari 80+ kampus" data-i18n-en="Academics from 80+ universities">Akademisi dari 80+ kampus</div>
+          <div class="stat-spark" aria-hidden="true">
+            <span style="--h:0.3"></span><span style="--h:0.42"></span><span style="--h:0.55"></span><span style="--h:0.48"></span><span style="--h:0.7"></span><span style="--h:0.82"></span><span style="--h:0.78"></span><span style="--h:1"></span>
+          </div>
+        </div>
+        <div class="stat reveal" data-delay="1">
+          <div class="stat-label" data-i18n-id="Publikasi terindeks" data-i18n-en="Indexed publications">Publikasi terindeks</div>
+          <div class="stat-value"><span data-count="318">0</span></div>
+          <div class="stat-desc" data-i18n-id="Scopus, Sinta, WoS" data-i18n-en="Scopus, Sinta, WoS">Scopus, Sinta, WoS</div>
+          <div class="stat-spark" aria-hidden="true">
+            <span style="--h:0.2"></span><span style="--h:0.35"></span><span style="--h:0.5"></span><span style="--h:0.62"></span><span style="--h:0.78"></span><span style="--h:0.7"></span><span style="--h:0.88"></span><span style="--h:1"></span>
+          </div>
+        </div>
+        <div class="stat reveal" data-delay="2">
+          <div class="stat-label" data-i18n-id="Mentor aktif" data-i18n-en="Active mentors">Mentor aktif</div>
+          <div class="stat-value"><span data-count="47">0</span></div>
+          <div class="stat-desc" data-i18n-id="Editor & reviewer jurnal Q1–Q4" data-i18n-en="Q1–Q4 journal editors & reviewers">Editor & reviewer jurnal Q1–Q4</div>
+          <div class="stat-spark" aria-hidden="true">
+            <span style="--h:0.4"></span><span style="--h:0.5"></span><span style="--h:0.45"></span><span style="--h:0.62"></span><span style="--h:0.7"></span><span style="--h:0.85"></span><span style="--h:0.78"></span><span style="--h:1"></span>
+          </div>
+        </div>
+        <div class="stat reveal" data-delay="3">
+          <div class="stat-label" data-i18n-id="Tingkat akseptasi" data-i18n-en="Acceptance rate">Tingkat akseptasi</div>
+          <div class="stat-value"><span data-count="76">0</span><span class="suffix">%</span></div>
+          <div class="stat-desc" data-i18n-id="Untuk submission cohort 2024" data-i18n-en="For 2024 cohort submissions">Untuk submission cohort 2024</div>
+          <div class="stat-spark" aria-hidden="true">
+            <span style="--h:0.5"></span><span style="--h:0.6"></span><span style="--h:0.55"></span><span style="--h:0.72"></span><span style="--h:0.78"></span><span style="--h:0.85"></span><span style="--h:0.92"></span><span style="--h:1"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== BENTO: Apa yang kami lakukan ========== -->
+  <section class="pillars-section" data-screen-label="What we do">
+    <div class="wrap">
+      <div class="head-center reveal">
+        <div class="sh-tag" style="margin-bottom: 18px;"><span class="num">03</span><span data-i18n-id="Apa yang kami lakukan" data-i18n-en="What we do">Apa yang kami lakukan</span></div>
+        <h2 class="sh-h" data-i18n-id="Kenapa Gabung CoPublika?" data-i18n-en="Why Join CoPublika?">Kenapa Gabung CoPublika?</h2>
+        <p class="sh-sub" data-i18n-id="Komunitas akademisi pemula Indonesia yang supportive, kolaboratif, dan siap menemani anda menjadi peneliti yang lebih baik." data-i18n-en="A supportive, collaborative community of early-career academics ready to help you grow into a stronger researcher.">Komunitas akademisi pemula Indonesia yang supportive, kolaboratif, dan siap menemani anda menjadi peneliti yang lebih baik.</p>
+      </div>
+
+      <div class="bento">
+        <!-- Big stat card with circled number -->
+        <a class="bento-card stat-card span-2 reveal" href="about.html">
+          <div class="big-num-wrap">
+            <svg class="circle-svg" viewBox="0 0 200 100" preserveAspectRatio="none">
+              <ellipse cx="100" cy="50" rx="92" ry="42" transform="rotate(-2 100 50)"/>
+            </svg>
+            <span class="big-num">1.240<span style="color:var(--accent);">+</span></span>
+          </div>
+          <h3 data-i18n-id="Akademisi Aktif" data-i18n-en="Active Academics">Akademisi Aktif</h3>
+        </a>
+
+        <!-- Icon card: Komunitas Terpercaya (fingerprint) -->
+        <a class="bento-card icon-only span-2 reveal" data-delay="1" href="about.html">
+          <div class="b-content">
+            <div class="b-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22c-2 0-4-2-4-5"/>
+                <path d="M12 22c2 0 4-2 4-5v-7a4 4 0 00-8 0v7"/>
+                <path d="M16 10a4 4 0 00-8 0v7"/>
+                <path d="M20 10a8 8 0 00-16 0v3"/>
+                <path d="M4 14v3"/>
+              </svg>
+            </div>
+            <h3 data-i18n-id="Komunitas Terpercaya" data-i18n-en="Trusted Community">Komunitas Terpercaya</h3>
+            <p data-i18n-id="Diskusi berkualitas, networking nyata, dan kolaborasi riset yang meaningful." data-i18n-en="Quality discussions, real networking, and meaningful research collaboration.">Diskusi berkualitas, networking nyata, dan kolaborasi riset yang meaningful.</p>
+          </div>
+        </a>
+
+        <!-- Icon card with chart: Level Up Bareng -->
+        <a class="bento-card with-chart span-2 reveal" data-delay="2" href="research.html">
+          <div class="chart-wrap">
+            <span class="speed-label" data-i18n-id="Progress" data-i18n-en="Progress">Progress</span>
+            <span class="speed-value">+47% YoY</span>
+            <svg class="spark" viewBox="0 0 200 60" preserveAspectRatio="none">
+              <path class="line" d="M0,45 L18,38 L36,42 L54,30 L72,34 L90,22 L108,28 L126,18 L144,24 L162,12 L180,16 L200,8"/>
+            </svg>
+          </div>
+          <h3 data-i18n-id="Level Up Bareng" data-i18n-en="Level Up Together">Level Up Bareng</h3>
+          <p data-i18n-id="Tracking progres riset anda, share achievement, dan lihat bagaimana skill akademik bertumbuh." data-i18n-en="Track your research progress, share achievements, and watch your academic skills grow.">Tracking progres riset anda, share achievement, dan lihat bagaimana skill akademik bertumbuh.</p>
+        </a>
+
+        <!-- Wide card: Safe Space (icon left + chart right) -->
+        <a class="bento-card wide-split span-3 reveal" data-delay="3" href="about.html">
+          <div class="ws-left">
+            <div class="b-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z"/>
+              </svg>
+            </div>
+            <h3 data-i18n-id="Safe Space untuk Belajar" data-i18n-en="Safe Space to Learn">Safe Space untuk Belajar</h3>
+            <p data-i18n-id="Lingkungan supportive untuk semua level. Mau pemula atau berpengalaman — kami saling bantu untuk grow together." data-i18n-en="A supportive environment for all levels. New or experienced — we grow together.">Lingkungan supportive untuk semua level. Mau pemula atau berpengalaman — kami saling bantu untuk grow together.</p>
+          </div>
+          <div class="ws-right">
+            <svg class="growth-chart" viewBox="0 0 280 140" preserveAspectRatio="none">
+              <path class="area" d="M0,115 L20,108 L40,118 L60,95 L80,100 L100,82 L120,90 L140,68 L160,75 L180,50 L200,58 L220,40 L240,28 L260,32 L280,12 L280,140 L0,140 Z"/>
+              <path class="line" d="M0,115 L20,108 L40,118 L60,95 L80,100 L100,82 L120,90 L140,68 L160,75 L180,50 L200,58 L220,40 L240,28 L260,32 L280,12"/>
+            </svg>
+          </div>
+        </a>
+
+        <!-- Wide card: Kolaborasi Tanpa Batas (icon left + avatars right) -->
+        <a class="bento-card wide-split span-3 reveal" data-delay="4" href="research.html">
+          <div class="ws-left">
+            <div class="b-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="8" r="3"/>
+                <circle cx="17" cy="10" r="2.5"/>
+                <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+                <path d="M14.5 16c1.5-1 3-1.5 4.5-1.5 1.5 0 3 .5 4 1.5"/>
+              </svg>
+            </div>
+            <h3 data-i18n-id="Kolaborasi Tanpa Batas" data-i18n-en="Collaboration Without Limits">Kolaborasi Tanpa Batas</h3>
+            <p data-i18n-id="Bikin riset bareng, share knowledge, dan publikasikan karya yang berdampak — bersama tim mentor & peer." data-i18n-en="Build research together, share knowledge, and publish impactful work — with mentors and peers.">Bikin riset bareng, share knowledge, dan publikasikan karya yang berdampak — bersama tim mentor & peer.</p>
+          </div>
+          <div class="ws-right" style="background: transparent; border: 0; padding: 0;">
+            <div class="avatars-list">
+              <div class="av-row r1">
+                <span>Rini P.</span>
+                <div class="av" style="background-image:url('https://i.pravatar.cc/60?img=44');"></div>
+              </div>
+              <div class="av-row r2">
+                <div class="av" style="background-image:url('https://i.pravatar.cc/60?img=33');"></div>
+                <span>dr. Andika H.</span>
+              </div>
+              <div class="av-row r3">
+                <span>Siti N.</span>
+                <div class="av" style="background-image:url('https://i.pravatar.cc/60?img=49');"></div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FEATURED PROGRAM ========== -->
+  <section class="feature-section" data-screen-label="Flagship Program">
+    <div class="wrap">
+      <div class="section-head two-col reveal">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">04</span><span data-i18n-id="Program unggulan" data-i18n-en="Flagship program">Program unggulan</span></div>
+          <h2 class="sh-h" data-i18n-id="Siap Tembus Scopus." data-i18n-en="Scopus-Ready Bootcamp.">Siap Tembus Scopus.</h2>
+        </div>
+        <div class="head-right">
+          <p class="sh-sub" data-i18n-id="Bootcamp 12 minggu untuk mendampingi anda menerbitkan satu artikel di jurnal terindeks Scopus — dari draft hingga acceptance letter." data-i18n-en="A 12-week bootcamp to guide you to publishing one article in a Scopus-indexed journal — from draft to acceptance letter.">Bootcamp 12 minggu untuk mendampingi anda menerbitkan satu artikel di jurnal terindeks Scopus — dari draft hingga acceptance letter.</p>
+        </div>
+      </div>
+
+      <div class="program-feature reveal">
+        <div class="pf-left">
+          <div class="pf-tag">
+            <span style="width:8px;height:8px;background:var(--accent);border-radius:50%;"></span>
+            <span data-i18n-id="Cohort #07 — Pendaftaran Dibuka" data-i18n-en="Cohort #07 — Now Open">Cohort #07 — Pendaftaran Dibuka</span>
+          </div>
+          <h2 data-i18n-id="Dari ide ke acceptance letter dalam 12 minggu." data-i18n-en="From idea to acceptance letter in 12 weeks.">Dari ide ke acceptance letter dalam 12 minggu.</h2>
+          <p class="pf-lead" data-i18n-id="Modul terstruktur, mentor 1-on-1 dengan rekam jejak Scopus, klinik manuskrip mingguan, dan akses ke editor tamu dari jurnal Q1–Q3." data-i18n-en="Structured modules, 1-on-1 mentors with Scopus track records, weekly manuscript clinics, and access to guest editors from Q1–Q3 journals.">Modul terstruktur, mentor 1-on-1 dengan rekam jejak Scopus, klinik manuskrip mingguan, dan akses ke editor tamu dari jurnal Q1–Q3.</p>
+          <div class="pf-meta">
+            <div>
+              <span class="l" data-i18n-id="Durasi" data-i18n-en="Duration">Durasi</span>
+              <span class="v" data-i18n-id="12 Minggu" data-i18n-en="12 Weeks">12 Minggu</span>
+            </div>
+            <div>
+              <span class="l" data-i18n-id="Format" data-i18n-en="Format">Format</span>
+              <span class="v" data-i18n-id="Hybrid" data-i18n-en="Hybrid">Hybrid</span>
+            </div>
+            <div>
+              <span class="l" data-i18n-id="Mulai" data-i18n-en="Starts">Mulai</span>
+              <span class="v">15 Sep 2025</span>
+            </div>
+            <div>
+              <span class="l" data-i18n-id="Kuota" data-i18n-en="Seats">Kuota</span>
+              <span class="v">24</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:24px;">
+            <a class="btn btn-accent btn-lg btn-arrow" href="siap-tembus-scopus.html" data-i18n-id="Daftar Sekarang" data-i18n-en="Apply Now">Daftar Sekarang</a>
+            <a class="btn btn-line btn-lg" href="siap-tembus-scopus.html" style="border-color:rgba(255,255,255,0.2); color:white;" data-i18n-id="Unduh Silabus" data-i18n-en="Download Syllabus">Unduh Silabus</a>
+          </div>
+        </div>
+        <div class="pf-right">
+          <div>
+            <div class="pf-tag" style="margin-bottom:24px;">
+              <span data-i18n-id="Modul" data-i18n-en="Curriculum">Modul</span>
+              <span style="color:#666;">/ 12 Weeks</span>
+            </div>
+            <div class="pf-curriculum">
+              <div class="item">
+                <span class="n">01</span>
+                <span class="t" data-i18n-id="Pemilihan Topik & Jurnal Target" data-i18n-en="Topic & Target Journal Selection">Pemilihan Topik & Jurnal Target</span>
+                <span class="d">W 1–2</span>
+              </div>
+              <div class="item">
+                <span class="n">02</span>
+                <span class="t" data-i18n-id="Tinjauan Pustaka Sistematis" data-i18n-en="Systematic Literature Review">Tinjauan Pustaka Sistematis</span>
+                <span class="d">W 3–4</span>
+              </div>
+              <div class="item">
+                <span class="n">03</span>
+                <span class="t" data-i18n-id="Metodologi & Analisis Data" data-i18n-en="Methodology & Data Analysis">Metodologi & Analisis Data</span>
+                <span class="d">W 5–6</span>
+              </div>
+              <div class="item">
+                <span class="n">04</span>
+                <span class="t" data-i18n-id="Penulisan Akademik Bahasa Inggris" data-i18n-en="Academic Writing in English">Penulisan Akademik Bahasa Inggris</span>
+                <span class="d">W 7–8</span>
+              </div>
+              <div class="item">
+                <span class="n">05</span>
+                <span class="t" data-i18n-id="Klinik Manuskrip & Peer Review" data-i18n-en="Manuscript Clinic & Peer Review">Klinik Manuskrip & Peer Review</span>
+                <span class="d">W 9–10</span>
+              </div>
+              <div class="item">
+                <span class="n">06</span>
+                <span class="t" data-i18n-id="Submission & Strategi Revisi" data-i18n-en="Submission & Revision Strategy">Submission & Strategi Revisi</span>
+                <span class="d">W 11–12</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== RESEARCH HIGHLIGHTS — horizontal marquee ========== -->
+  <section class="section" data-screen-label="Research">
+    <div class="wrap">
+      <div class="section-head two-col reveal">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">05</span><span data-i18n-id="Riset terkini" data-i18n-en="Recent research">Riset terkini</span></div>
+          <h2 class="sh-h" data-i18n-id="Publikasi alumni & afiliasi." data-i18n-en="Alumni & affiliate publications.">Publikasi alumni & afiliasi.</h2>
+        </div>
+        <div class="head-right" style="display:flex; align-items:end; gap:12px;">
+          <a class="btn btn-line" href="research.html" data-i18n="cta.viewall">Lihat semua</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="marquee reveal" style="--speed: 60s;">
+      <div class="marquee-track" id="researchTrack">
+        <!-- 10 unique cards (will be cloned in JS for seamless loop) -->
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q">Scopus Q1</span>
+            <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Education</span><span class="sep">/</span><span>2025</span></div>
+            <h4>Generative AI Adoption in Indonesian Higher Education: A National Survey of 12 Universities</h4>
+            <div class="rc-journal">Journal of Educational Research</div>
+          </div>
+        </a>
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q q2">Scopus Q2</span>
+            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Public Health</span><span class="sep">/</span><span>2025</span></div>
+            <h4>Digital Health Literacy Among Rural Indonesian Communities Post-COVID</h4>
+            <div class="rc-journal">Health Promotion Intl.</div>
+          </div>
+        </a>
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q">Scopus Q1</span>
+            <img src="https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Sustainability</span><span class="sep">/</span><span>2025</span></div>
+            <h4>Circular Economy Practices in Central Java's Textile MSMEs</h4>
+            <div class="rc-journal">Sustainability</div>
+          </div>
+        </a>
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q q3">Scopus Q3</span>
+            <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Linguistics</span><span class="sep">/</span><span>2024</span></div>
+            <h4>Reading Comprehension Strategies in English-Medium Instruction: Indonesian Polytechnics</h4>
+            <div class="rc-journal">TEFLIN Journal</div>
+          </div>
+        </a>
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q q2">Scopus Q2</span>
+            <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Pedagogy</span><span class="sep">/</span><span>2024</span></div>
+            <h4>Anchor Sentences as a Heuristic for L2 Academic Writing: A Quasi-Experimental Study</h4>
+            <div class="rc-journal">Studies in Higher Ed.</div>
+          </div>
+        </a>
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q q3">Scopus Q3</span>
+            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Publishing</span><span class="sep">/</span><span>2024</span></div>
+            <h4>Reviewer Comment Framing and Author Response: A Discourse Analysis of 240 Revision Letters</h4>
+            <div class="rc-journal">Learned Publishing</div>
+          </div>
+        </a>
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q q2">Scopus Q2</span>
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Sociology</span><span class="sep">/</span><span>2024</span></div>
+            <h4>Network Effects in Early-Career Academic Writing Communities: A Social Capital Perspective</h4>
+            <div class="rc-journal">Higher Education</div>
+          </div>
+        </a>
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q">Scopus Q1</span>
+            <img src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Biotech</span><span class="sep">/</span><span>2024</span></div>
+            <h4>Microbiome Profiling in Indonesian Fermented Foods: A Multi-Province Survey</h4>
+            <div class="rc-journal">Food Microbiology</div>
+          </div>
+        </a>
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q q2">Scopus Q2</span>
+            <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Education</span><span class="sep">/</span><span>2024</span></div>
+            <h4>Flipped Classroom in Engineering Programs: A 3-Year Longitudinal Study</h4>
+            <div class="rc-journal">IEEE Trans. on Ed.</div>
+          </div>
+        </a>
+        <a class="research-card" href="research.html">
+          <div class="rc-thumb">
+            <span class="rc-q q3">Scopus Q3</span>
+            <img src="https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=720&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="rc-body">
+            <div class="rc-meta"><span>Economics</span><span class="sep">/</span><span>2024</span></div>
+            <h4>SME Resilience and Digital Payment Adoption in Post-Pandemic Jakarta</h4>
+            <div class="rc-journal">Asian Econ. Papers</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== EVENTS ========== -->
+  <section class="section section-alt" data-screen-label="Events">
+    <div class="wrap">
+      <div class="section-head two-col reveal">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">06</span><span data-i18n-id="Agenda" data-i18n-en="Agenda">Agenda</span></div>
+          <h2 class="sh-h" data-i18n-id="Acara mendatang." data-i18n-en="Upcoming events.">Acara mendatang.</h2>
+        </div>
+        <div class="head-right" style="display:flex; align-items:end;">
+          <a class="btn btn-line" href="event.html" data-i18n="cta.viewall">Lihat semua</a>
+        </div>
+      </div>
+
+      <div class="events">
+        <a class="event reveal" href="event.html">
+          <div class="date"><span class="d">12</span><span class="m">Jun</span></div>
+          <div class="info">
+            <h4 data-i18n-id="Klinik Manuskrip: Membedah Reviewer Comments" data-i18n-en="Manuscript Clinic: Dissecting Reviewer Comments">Klinik Manuskrip: Membedah Reviewer Comments</h4>
+            <div class="sub" data-i18n-id="Bersama Dr. Aulia Rahmawati, Editor Asia Pacific Journal of Education" data-i18n-en="With Dr. Aulia Rahmawati, Editor at Asia Pacific Journal of Education">Bersama Dr. Aulia Rahmawati, Editor Asia Pacific Journal of Education</div>
+          </div>
+          <div class="where" data-i18n-id="Daring · Zoom" data-i18n-en="Online · Zoom">Daring · Zoom</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <a class="event reveal" data-delay="1" href="event.html">
+          <div class="date"><span class="d">24</span><span class="m">Jun</span></div>
+          <div class="info">
+            <h4 data-i18n-id="Editor Roundtable: Strategi Memilih Jurnal Q1–Q2" data-i18n-en="Editor Roundtable: Choosing the Right Q1–Q2 Journal">Editor Roundtable: Strategi Memilih Jurnal Q1–Q2</h4>
+            <div class="sub" data-i18n-id="Diskusi panel 3 editor jurnal Scopus dari Asia Tenggara" data-i18n-en="A panel of 3 Scopus journal editors from Southeast Asia">Diskusi panel 3 editor jurnal Scopus dari Asia Tenggara</div>
+          </div>
+          <div class="where" data-i18n-id="Daring · Webinar" data-i18n-en="Online · Webinar">Daring · Webinar</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <a class="event reveal" data-delay="2" href="event.html">
+          <div class="date"><span class="d">08</span><span class="m">Jul</span></div>
+          <div class="info">
+            <h4 data-i18n-id="Workshop Luring: Academic Writing dengan Anchor Sentences" data-i18n-en="In-person Workshop: Academic Writing with Anchor Sentences">Workshop Luring: Academic Writing dengan Anchor Sentences</h4>
+            <div class="sub" data-i18n-id="2 hari intensif, pendampingan tata-tulis Bahasa Inggris akademik" data-i18n-en="2-day intensive, English academic writing mentorship">2 hari intensif, pendampingan tata-tulis Bahasa Inggris akademik</div>
+          </div>
+          <div class="where" data-i18n-id="Luring · Yogyakarta" data-i18n-en="In-person · Yogyakarta">Luring · Yogyakarta</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+        <a class="event reveal" data-delay="3" href="event.html">
+          <div class="date"><span class="d">22</span><span class="m">Jul</span></div>
+          <div class="info">
+            <h4 data-i18n-id="Doctoral Forum: Membangun Jejaring Internasional Sejak S3" data-i18n-en="Doctoral Forum: Building International Networks During Your PhD">Doctoral Forum: Membangun Jejaring Internasional Sejak S3</h4>
+            <div class="sub" data-i18n-id="Sharing dari 4 alumni S3 ITB, UI, UGM, dan Universitas Indonesia" data-i18n-en="Sharing from 4 PhD alumni: ITB, UI, UGM, and Universitas Indonesia">Sharing dari 4 alumni S3 ITB, UI, UGM, dan Universitas Indonesia</div>
+          </div>
+          <div class="where" data-i18n-id="Hybrid · Jakarta" data-i18n-en="Hybrid · Jakarta">Hybrid · Jakarta</div>
+          <div class="go"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== BLOG — featured horizontal + horizontal marquee ========== -->
+  <section class="section" data-screen-label="Blog">
+    <div class="wrap">
+      <div class="section-head two-col reveal">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">07</span><span data-i18n-id="Tulisan terbaru" data-i18n-en="Latest writing">Tulisan terbaru</span></div>
+          <h2 class="sh-h" data-i18n-id="Dari editor & mentor." data-i18n-en="From editors & mentors.">Dari editor & mentor.</h2>
+        </div>
+        <div class="head-right" style="display:flex; align-items:end;">
+          <a class="btn btn-line" href="blog.html" data-i18n="cta.viewall">Lihat semua</a>
+        </div>
+      </div>
+
+      <!-- Featured (horizontal: image left, text right) — rotates every 6s -->
+      <div class="blog-hero-wrap reveal">
+        <a class="blog-hero active" data-bh="0" href="blog.html">
+          <div class="bh-img">
+            <span class="bh-tag" data-i18n-id="UTAMA" data-i18n-en="FEATURED">UTAMA</span>
+            <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bh-body">
+            <div class="bh-meta"><span>Guide</span><span class="sep">/</span><span>12 min read</span><span class="sep">/</span><span>15 Mei 2025</span></div>
+            <h3>Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance</h3>
+            <p>Tiga naskah peserta cohort #05 berhasil diterima di jurnal Q1 dalam 6 bulan terakhir. Kami membedah pola umum, kesalahan yang dihindari, dan kerangka berpikir di balik revisi-revisi penting.</p>
+            <div class="bh-author">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/80?img=8');"></div>
+              <div>
+                <div class="name">Dr. Ade Putranto</div>
+                <div class="role">Pendiri · Editor jurnal Q1</div>
+              </div>
+              <span class="bh-cta">Baca →</span>
+            </div>
+          </div>
+        </a>
+        <a class="blog-hero" data-bh="1" href="blog.html">
+          <div class="bh-img">
+            <span class="bh-tag">PILIHAN</span>
+            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bh-body">
+            <div class="bh-meta"><span>Interview</span><span class="sep">/</span><span>8 min read</span><span class="sep">/</span><span>02 Mei 2025</span></div>
+            <h3>Membaca Reviewer Comments Tanpa Patah Semangat: Kerangka Berpikir dari Editor Senior</h3>
+            <p>Dr. Maya Rahmawati — reviewer aktif di 4 jurnal Q1 — berbagi cara membaca komentar reviewer sebagai data, bukan serangan personal.</p>
+            <div class="bh-author">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/80?img=20');"></div>
+              <div>
+                <div class="name">Dr. Maya Rahmawati</div>
+                <div class="role">Head of Programs</div>
+              </div>
+              <span class="bh-cta">Baca →</span>
+            </div>
+          </div>
+        </a>
+        <a class="blog-hero" data-bh="2" href="blog.html">
+          <div class="bh-img">
+            <span class="bh-tag">ESAI</span>
+            <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1200&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bh-body">
+            <div class="bh-meta"><span>Essay</span><span class="sep">/</span><span>10 min read</span><span class="sep">/</span><span>18 Apr 2025</span></div>
+            <h3>Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa di Dunia yang Mengejar Output</h3>
+            <p>Esai panjang tentang etos kerja akademik, ritme yang berkelanjutan, dan kenapa kuantitas publikasi tidak selalu berbanding lurus dengan dampak.</p>
+            <div class="bh-author">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/80?img=49');"></div>
+              <div>
+                <div class="name">Dr. Dewi Nirmala</div>
+                <div class="role">Mentor · Sociology</div>
+              </div>
+              <span class="bh-cta">Baca →</span>
+            </div>
+          </div>
+        </a>
+        <a class="blog-hero" data-bh="3" href="blog.html">
+          <div class="bh-img">
+            <span class="bh-tag">STUDI KASUS</span>
+            <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=1200&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bh-body">
+            <div class="bh-meta"><span>Case Study</span><span class="sep">/</span><span>15 min read</span><span class="sep">/</span><span>05 Apr 2025</span></div>
+            <h3>Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission, Sembilan Bulan</h3>
+            <p>Studi kasus naskah peserta cohort #04. Kronologi lengkap setiap submission, reviewer comments, dan keputusan strategis di setiap titik.</p>
+            <div class="bh-author">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/80?img=12');"></div>
+              <div>
+                <div class="name">Fajar Ramadhan</div>
+                <div class="role">Mentor · Engineering</div>
+              </div>
+              <span class="bh-cta">Baca →</span>
+            </div>
+          </div>
+        </a>
+        <!-- Pagination dots -->
+        <div class="bh-dots" id="bhDots">
+          <button class="bh-dot active" data-i="0" aria-label="Slide 1"></button>
+          <button class="bh-dot" data-i="1" aria-label="Slide 2"></button>
+          <button class="bh-dot" data-i="2" aria-label="Slide 3"></button>
+          <button class="bh-dot" data-i="3" aria-label="Slide 4"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marquee of 10 articles (portrait card style — different from research landscape) -->
+    <div class="marquee reveal" style="--speed: 65s; margin-top: 56px;">
+      <div class="marquee-track reverse" id="blogTrack">
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat">Guide</span>
+            <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">4 min · Mei 2025</span>
+            <h4 data-i18n-id="7 Kesalahan Umum Saat Memilih Jurnal Target" data-i18n-en="7 Common Mistakes When Choosing a Target Journal">7 Kesalahan Umum Saat Memilih Jurnal Target</h4>
+            <span class="bc-author">— Dr. Maya Rahmawati</span>
+          </div>
+        </a>
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat accent">Interview</span>
+            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">8 min · Apr 2025</span>
+            <h4 data-i18n-id="Membaca Reviewer Comments Tanpa Patah Semangat" data-i18n-en="Reading Reviewer Comments Without Losing Heart">Membaca Reviewer Comments Tanpa Patah Semangat</h4>
+            <span class="bc-author">— Dr. Ade Putranto</span>
+          </div>
+        </a>
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat">Essay</span>
+            <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">12 min · Mar 2025</span>
+            <h4 data-i18n-id="Mengapa Publikasi Internasional Penting Bagi Dosen Pemula" data-i18n-en="Why International Publication Matters for Early-Career Lecturers">Mengapa Publikasi Internasional Penting Bagi Dosen Pemula</h4>
+            <span class="bc-author">— Dr. Lina Kartika</span>
+          </div>
+        </a>
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat">Guide</span>
+            <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">6 min · Mar 2025</span>
+            <h4 data-i18n-id="Struktur IMRaD: Mengapa Reviewer Menyukai Naskah Disiplin" data-i18n-en="IMRaD Structure: Why Reviewers Love Disciplined Manuscripts">Struktur IMRaD: Mengapa Reviewer Menyukai Naskah Disiplin</h4>
+            <span class="bc-author">— Dr. Bayu Setiawan</span>
+          </div>
+        </a>
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat accent" data-i18n-id="Studi Kasus" data-i18n-en="Case Study">Studi Kasus</span>
+            <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">15 min · Feb 2025</span>
+            <h4 data-i18n-id="Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission" data-i18n-en="From Q3 Reject to Q2 Accept: One Manuscript, Three Submissions">Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission</h4>
+            <span class="bc-author">— Fajar Ramadhan</span>
+          </div>
+        </a>
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat">Guide</span>
+            <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">9 min · Feb 2025</span>
+            <h4 data-i18n-id="Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda" data-i18n-en="How to Write an Abstract That Makes Reviewers Open Your Manuscript">Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda</h4>
+            <span class="bc-author">— Dr. Maya Rahmawati</span>
+          </div>
+        </a>
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat">Essay</span>
+            <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">10 min · Jan 2025</span>
+            <h4 data-i18n-id="Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa" data-i18n-en="Slow Scholarship: Why Going Slow Is OK">Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa</h4>
+            <span class="bc-author">— Dr. Dewi Nirmala</span>
+          </div>
+        </a>
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat">Guide</span>
+            <img src="https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">7 min · Dec 2024</span>
+            <h4 data-i18n-id="Menggunakan AI sebagai Asisten Riset Tanpa Melanggar Etika" data-i18n-en="Using AI as a Research Assistant Without Crossing Ethics">Menggunakan AI sebagai Asisten Riset Tanpa Melanggar Etika</h4>
+            <span class="bc-author">— Fajar Ramadhan</span>
+          </div>
+        </a>
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat accent">Interview</span>
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">6 min · Dec 2024</span>
+            <h4 data-i18n-id="Kolaborasi Internasional: Mencari Co-Author yang Sefrekuensi" data-i18n-en="International Collaboration: Finding the Right Co-Author">Kolaborasi Internasional: Mencari Co-Author yang Sefrekuensi</h4>
+            <span class="bc-author">— Dr. Lina Kartika</span>
+          </div>
+        </a>
+        <a class="blog-card" href="blog-article.html">
+          <div class="bc-thumb">
+            <span class="bc-cat" data-i18n-id="Forum" data-i18n-en="Forum">Forum</span>
+            <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+          </div>
+          <div class="bc-body">
+            <span class="bc-meta">11 min · Nov 2024</span>
+            <h4 data-i18n-id="Beasiswa S3 Luar Negeri: Sharing Alumni LPDP & Chevening" data-i18n-en="Overseas PhD Scholarships: LPDP & Chevening Alumni Sharing">Beasiswa S3 Luar Negeri: Sharing Alumni LPDP & Chevening</h4>
+            <span class="bc-author">— Dr. Hadi Suryanto</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TESTIMONIALS — 2-row marquee, opposite directions ========== -->
+  <section class="section section-alt" data-screen-label="Testimonials">
+    <div class="wrap">
+      <div class="section-head two-col reveal">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">08</span><span data-i18n-id="Suara alumni" data-i18n-en="Alumni voices">Suara alumni</span></div>
+          <h2 class="sh-h" data-i18n-id="Diceritakan oleh mereka yang menjalaninya." data-i18n-en="Told by those who went through it.">Diceritakan oleh mereka yang menjalaninya.</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-stack">
+      <!-- Row 1: scroll LEFT -->
+      <div class="marquee reveal" style="--speed: 70s;">
+        <div class="marquee-track" id="testiRow1">
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q3 · 2024</span>
+            </div>
+            <p class="quote">Saya kira mengirim ke jurnal Scopus mustahil di tahun pertama mengajar. Tiga bulan setelah bootcamp, naskah pertama saya diterima di jurnal Q3.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=44');"></div>
+              <div class="info">
+                <div class="name">Rini Puspita, M.Pd.</div>
+                <div class="role">Universitas Negeri Semarang</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q2 · 2025</span>
+            </div>
+            <p class="quote">Yang paling berharga bukan modulnya — tapi komunitasnya. Saya menemukan co-author yang sefrekuensi di cluster Public Health.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=33');"></div>
+              <div class="info">
+                <div class="name">dr. Andika Hidayat</div>
+                <div class="role">Peneliti Kesehatan, Surabaya</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q2 · 2024</span>
+            </div>
+            <p class="quote">Klinik manuskrip mingguan mengubah cara saya menulis. Reviewer Q2 saya menyebut "argumen yang terstruktur" di laporan revisi.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=49');"></div>
+              <div class="info">
+                <div class="name">Siti Nurhaliza, Ph.D.</div>
+                <div class="role">Lecturer, Universitas Andalas</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q3 · 2024</span>
+            </div>
+            <p class="quote">Mentor saya tidak pernah men-judge pertanyaan saya. Itu yang membuat saya berani submit ke jurnal yang dulu saya pikir terlalu tinggi.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=11');"></div>
+              <div class="info">
+                <div class="name">Bayu Wibowo, M.T.</div>
+                <div class="role">Dosen Teknik, ITS Surabaya</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q2 · 2025</span>
+            </div>
+            <p class="quote">Saya bergabung tanpa pernah submit sebelumnya. Sekarang saya membantu junior saya untuk submit pertama mereka.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=23');"></div>
+              <div class="info">
+                <div class="name">Maya Pratiwi, M.Si.</div>
+                <div class="role">Dosen, Universitas Brawijaya</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q1 · 2025</span>
+            </div>
+            <p class="quote">Cohort #04 mengubah hidup akademik saya. Sekarang saya sedang menulis paper kedua dengan co-author dari cohort yang sama.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=15');"></div>
+              <div class="info">
+                <div class="name">Hendra Setiawan</div>
+                <div class="role">PhD Candidate, UI</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q2 · 2024</span>
+            </div>
+            <p class="quote">Editor roundtable bulan lalu sangat membuka mata. Saya jadi tahu apa yang sebenarnya editor cari di sebuah submission.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=20');"></div>
+              <div class="info">
+                <div class="name">dr. Lestari Wijaya</div>
+                <div class="role">Peneliti, BRIN</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q3 · 2025</span>
+            </div>
+            <p class="quote">Saya pikir saya akan jadi dosen yang publikasinya hanya di prosiding. Sekarang saya punya 2 paper Scopus dalam setahun.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=27');"></div>
+              <div class="info">
+                <div class="name">Faisal Rahman, M.A.</div>
+                <div class="role">Dosen Sastra, UIN Jakarta</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Sinta 2</span>
+            </div>
+            <p class="quote">Komunitas yang sangat hangat. Tidak ada yang merasa pertanyaannya bodoh — itu jarang sekali di dunia akademik.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=38');"></div>
+              <div class="info">
+                <div class="name">Dewi Anggraini, M.Pd.</div>
+                <div class="role">Dosen, Universitas Riau</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q2 · 2025</span>
+            </div>
+            <p class="quote">Saya butuh 4 bulan untuk paper pertama. Yang kedua hanya 2 bulan. Pola berpikirnya yang berubah — bukan kecepatan menulis.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=52');"></div>
+              <div class="info">
+                <div class="name">Ahmad Subagja, M.Si.</div>
+                <div class="role">Dosen Fisika, ITB</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: scroll RIGHT -->
+      <div class="marquee reveal" data-delay="1" style="--speed: 80s;">
+        <div class="marquee-track reverse" id="testiRow2">
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q1 · 2025</span>
+            </div>
+            <p class="quote">Forum doctoral membantu saya menentukan arah disertasi. Saya bertemu calon supervisor untuk visiting scholarship di Belanda.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=5');"></div>
+              <div class="info">
+                <div class="name">Indah Permata, Ph.D.</div>
+                <div class="role">Researcher, LPEM UI</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q2 · 2024</span>
+            </div>
+            <p class="quote">Yang membuat saya bertahan adalah peer-review internal — sebelum naskah saya dilihat reviewer jurnal, sudah dibaca 3 teman cohort.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=14');"></div>
+              <div class="info">
+                <div class="name">Rizky Pratama, M.T.</div>
+                <div class="role">Dosen, Universitas Diponegoro</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Sinta 1</span>
+            </div>
+            <p class="quote">Saya akademisi paruh waktu di kampus swasta. CoPublika tetap memberi ruang dan akses yang sama dengan dosen kampus besar.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=29');"></div>
+              <div class="info">
+                <div class="name">Nadia Kusumawati, M.Pd.</div>
+                <div class="role">Dosen, STKIP Yogyakarta</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q3 · 2024</span>
+            </div>
+            <p class="quote">Workshop luring di Yogya jadi pengalaman akademik paling berkesan saya tahun ini. Saya pulang dengan 3 ide paper baru.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=42');"></div>
+              <div class="info">
+                <div class="name">Joko Susilo, M.Hum.</div>
+                <div class="role">Dosen Linguistik, UNS</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q2 · 2025</span>
+            </div>
+            <p class="quote">Saya merasa "tertangkap" — komunitas ini menemukan saya pada saat saya hampir menyerah dengan menulis akademik.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=55');"></div>
+              <div class="info">
+                <div class="name">Dr. Putri Hartati</div>
+                <div class="role">Peneliti Independen</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q1 · 2024</span>
+            </div>
+            <p class="quote">Akses ke editor jurnal Q1 yang kami dapat di webinar — itu hal yang tidak bisa saya beli di pelatihan biasa.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=61');"></div>
+              <div class="info">
+                <div class="name">Aditya Pratama, Ph.D.</div>
+                <div class="role">Dosen, Universitas Padjadjaran</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q3 · 2025</span>
+            </div>
+            <p class="quote">Sebagai mahasiswa S3, beban menulis paper di luar disertasi sangat berat. Kerangka kerja CoPublika membuatnya terkelola.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=64');"></div>
+              <div class="info">
+                <div class="name">Citra Wulandari</div>
+                <div class="role">PhD Candidate, UGM</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q2 · 2024</span>
+            </div>
+            <p class="quote">Cover letter & response-to-reviewer template yang kami pelajari — masih saya pakai di setiap submission setelah lulus cohort.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=68');"></div>
+              <div class="info">
+                <div class="name">Rendra Nugroho, M.Eng.</div>
+                <div class="role">Dosen Teknik, UPN Jakarta</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Q3 · 2025</span>
+            </div>
+            <p class="quote">Komunitas yang menghargai proses — bukan hanya hasil. Saya tetap diapresiasi meski naskah pertama saya ditolak.</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=58');"></div>
+              <div class="info">
+                <div class="name">dr. Hana Marlina</div>
+                <div class="role">Peneliti Klinis, RSCM</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="top-row">
+              <span class="qmark">&#8220;</span>
+              <span class="badge">Sinta 2</span>
+            </div>
+            <p class="quote">Saya tidak menyangka 12 minggu bisa mengubah cara saya melihat publikasi akademik dari "beban administrasi" jadi "karya yang dibanggakan".</p>
+            <div class="person">
+              <div class="av" style="background-image:url('https://i.pravatar.cc/100?img=36');"></div>
+              <div class="info">
+                <div class="name">Wahyu Kurniawan, M.M.</div>
+                <div class="role">Dosen Manajemen, UII</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FAQ ========== -->
+  <section class="section" data-screen-label="FAQ">
+    <div class="wrap">
+      <div class="section-head two-col reveal">
+        <div>
+          <div class="sh-tag"><span class="bar"></span><span class="num">10</span><span data-i18n-id="Pertanyaan umum" data-i18n-en="Common questions">Pertanyaan umum</span></div>
+          <h2 class="sh-h" data-i18n-id="Pertanyaan yang sering ditanyakan." data-i18n-en="Questions we get often.">Pertanyaan yang sering ditanyakan.</h2>
+        </div>
+        <div class="head-right">
+          <p class="sh-sub" data-i18n-id="Belum menemukan jawaban? Hubungi kami langsung di halaman Contact." data-i18n-en="Didn't find your answer? Reach us on the Contact page.">Belum menemukan jawaban? Hubungi kami langsung di halaman Contact.</p>
+        </div>
+      </div>
+
+      <div class="faq" id="faq">
+        <div class="faq-item">
+          <div class="faq-q">
+            <span class="num">01</span>
+            <span class="q" data-i18n-id="Apa itu CoPublika?" data-i18n-en="What is CoPublika?">Apa itu CoPublika?</span>
+            <span class="plus"></span>
+          </div>
+          <div class="faq-a"><div><div data-i18n-id="CoPublika adalah komunitas yang dibentuk khusus untuk akademisi pemula — dosen, peneliti, dan mahasiswa S2/S3 — yang ingin membangun rekam jejak publikasi terindeks. Kami menggabungkan kelompok riset, bootcamp, dan ruang komunitas dalam satu sistem." data-i18n-en="CoPublika is a community built for early-career academics — lecturers, researchers, and Master's/PhD students — who want to build a track record of indexed publication. We combine research groups, bootcamps, and community spaces in one system.">CoPublika adalah komunitas yang dibentuk khusus untuk akademisi pemula — dosen, peneliti, dan mahasiswa S2/S3 — yang ingin membangun rekam jejak publikasi terindeks. Kami menggabungkan kelompok riset, bootcamp, dan ruang komunitas dalam satu sistem.</div></div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">
+            <span class="num">02</span>
+            <span class="q" data-i18n-id="Siapa target anggota komunitas?" data-i18n-en="Who is the community for?">Siapa target anggota komunitas?</span>
+            <span class="plus"></span>
+          </div>
+          <div class="faq-a"><div><div data-i18n-id="Akademisi pemula — dosen baru, peneliti awal karir, mahasiswa pascasarjana — yang merasa siap belajar tetapi membutuhkan struktur, mentor, dan teman seperjuangan untuk menjaga konsistensi." data-i18n-en="Early-career academics — new lecturers, early-career researchers, and graduate students — who feel ready to learn but need structure, mentors, and peers to stay consistent.">Akademisi pemula — dosen baru, peneliti awal karir, mahasiswa pascasarjana — yang merasa siap belajar tetapi membutuhkan struktur, mentor, dan teman seperjuangan untuk menjaga konsistensi.</div></div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">
+            <span class="num">03</span>
+            <span class="q" data-i18n-id="Apakah ada biaya untuk bergabung?" data-i18n-en="Is there a cost to join?">Apakah ada biaya untuk bergabung?</span>
+            <span class="plus"></span>
+          </div>
+          <div class="faq-a"><div><div data-i18n-id="Forum komunitas, blog, dan beberapa webinar bersifat gratis. Program berstruktur seperti Siap Tembus Scopus berbayar — dengan opsi cicilan dan beasiswa institusi. Detail tarif disampaikan saat pendaftaran cohort." data-i18n-en="Community forums, the blog, and some webinars are free. Structured programs like the Scopus-Ready Bootcamp are paid — with installments and institutional scholarships available. Pricing is disclosed during cohort registration.">Forum komunitas, blog, dan beberapa webinar bersifat gratis. Program berstruktur seperti Siap Tembus Scopus berbayar — dengan opsi cicilan dan beasiswa institusi. Detail tarif disampaikan saat pendaftaran cohort.</div></div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">
+            <span class="num">04</span>
+            <span class="q" data-i18n-id="Saya belum pernah submit ke jurnal sama sekali — apakah masih relevan?" data-i18n-en="I've never submitted to a journal — is this still relevant?">Saya belum pernah submit ke jurnal sama sekali — apakah masih relevan?</span>
+            <span class="plus"></span>
+          </div>
+          <div class="faq-a"><div><div data-i18n-id="Sangat relevan. Banyak peserta yang bergabung dari titik nol — kami mendampingi sejak pemilihan topik. Tidak ada pertanyaan yang terlalu kecil di komunitas." data-i18n-en="Very relevant. Many participants join from zero — we accompany you from topic selection onward. No question is too small here.">Sangat relevan. Banyak peserta yang bergabung dari titik nol — kami mendampingi sejak pemilihan topik. Tidak ada pertanyaan yang terlalu kecil di komunitas.</div></div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">
+            <span class="num">05</span>
+            <span class="q" data-i18n-id="Apakah CoPublika menjamin naskah saya akan diterima Scopus?" data-i18n-en="Does CoPublika guarantee my paper will be accepted to Scopus?">Apakah CoPublika menjamin naskah saya akan diterima Scopus?</span>
+            <span class="plus"></span>
+          </div>
+          <div class="faq-a"><div><div data-i18n-id="Tidak ada lembaga yang dapat memberi jaminan absolut — keputusan akhir ada di tangan editor jurnal. Yang kami jaminkan adalah proses: kerangka kerja, mentor berpengalaman, dan klinik revisi yang konsisten." data-i18n-en="No institution can give an absolute guarantee — the final decision rests with the journal editor. What we guarantee is the process: a framework, experienced mentors, and consistent revision clinics.">Tidak ada lembaga yang dapat memberi jaminan absolut — keputusan akhir ada di tangan editor jurnal. Yang kami jaminkan adalah proses: kerangka kerja, mentor berpengalaman, dan klinik revisi yang konsisten.</div></div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">
+            <span class="num">06</span>
+            <span class="q" data-i18n-id="Bagaimana cara mendaftar?" data-i18n-en="How do I register?">Bagaimana cara mendaftar?</span>
+            <span class="plus"></span>
+          </div>
+          <div class="faq-a"><div><div data-i18n-id="Klik tombol Daftar di pojok kanan atas, atau pergi ke halaman program yang anda minati. Setelah membuat akun, anda akan langsung terhubung ke forum dan jadwal cohort terdekat." data-i18n-en="Click the Register button in the top-right, or visit your program of interest. After creating an account, you'll be connected to the forum and the next cohort schedule.">Klik tombol Daftar di pojok kanan atas, atau pergi ke halaman program yang anda minati. Setelah membuat akun, anda akan langsung terhubung ke forum dan jadwal cohort terdekat.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FINAL CTA ========== -->
+  <section class="cta-final" data-screen-label="CTA">
+    <div class="cta-grid" aria-hidden="true"></div>
+    <div class="cta-orbit" aria-hidden="true"></div>
+    <div class="wrap">
+      <h2 class="reveal" data-i18n-id="Saatnya menulis paragraf pertama." data-i18n-en="Time to write your first paragraph.">Saatnya menulis paragraf pertama.</h2>
+      <p class="reveal" data-delay="1" data-i18n-id="Bergabunglah dengan ratusan akademisi pemula yang sedang membangun rekam jejak publikasi mereka — bersama. Tidak perlu menunggu siap." data-i18n-en="Join hundreds of early-career academics building their publication track record — together. You don't have to wait until you feel ready.">Bergabunglah dengan ratusan akademisi pemula yang sedang membangun rekam jejak publikasi mereka — bersama. Tidak perlu menunggu siap.</p>
+      <div class="group reveal" data-delay="2">
+        <a class="btn btn-accent btn-lg btn-arrow" href="register.html" data-i18n="cta.join">Gabung Komunitas</a>
+        <a class="btn btn-line btn-lg" href="contact.html" data-i18n-id="Hubungi Kami" data-i18n-en="Contact Us">Hubungi Kami</a>
+      </div>
+      <div class="cta-trust reveal" data-delay="4">
+        <div class="item">
+          <span class="v">1.240<span class="accent">+</span></span>
+          <span class="l">Anggota</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">318</span>
+          <span class="l">Publikasi</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">47</span>
+          <span class="l">Mentor</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">76<span class="accent">%</span></span>
+          <span class="l">Tingkat Akseptasi</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<div id="site-footer"></div>
+
+<script src="assets/js/main.js"></script>
+<script>
+  CoPublika.init('home');
+
+  // ===== Nav dark mode while hero visible =====
+  (function(){
+    const nav = document.getElementById('nav');
+    const hero = document.querySelector('.hero');
+    if (!nav || !hero) return;
+    const io = new IntersectionObserver(([e]) => {
+      // hero visible >40% → nav dark
+      nav.classList.toggle('on-dark', e.intersectionRatio > 0.4);
+    }, { threshold: [0, 0.4, 1] });
+    io.observe(hero);
+  })();
+
+  // ===== Hero slider =====
+  (function(){
+    const slides = document.querySelectorAll('.hero-slide');
+    const cards = document.querySelectorAll('.hero-card');
+    const dots = document.querySelectorAll('.hero-dot');
+    let i = 0;
+    let timer;
+    function go(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      cards.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+
+      // Re-trigger progress animation on active dot
+      dots.forEach(d => {
+        const c = d.querySelector('circle');
+        if (c) {
+          c.style.animation = 'none';
+          void c.offsetWidth;
+          c.style.animation = '';
+        }
+      });
+
+      // Re-trigger chart bars when slide 3 (research) becomes active
+      if (i === 2) {
+        cards[2].querySelectorAll('.fill').forEach(f => {
+          f.style.animation = 'none';
+          void f.offsetWidth;
+          f.style.animation = '';
+        });
+      }
+    }
+    function next() { go(i + 1); }
+    function start() { clearInterval(timer); timer = setInterval(next, 6000); }
+    dots.forEach(d => d.addEventListener('click', () => { go(+d.dataset.i); start(); }));
+    document.getElementById('heroPrev').addEventListener('click', () => { go(i - 1); start(); });
+    document.getElementById('heroNext').addEventListener('click', () => { go(i + 1); start(); });
+
+    // Keyboard nav (left/right arrows)
+    document.addEventListener('keydown', (e) => {
+      if (e.target.matches('input, textarea, select')) return;
+      if (e.key === 'ArrowLeft') { go(i - 1); start(); }
+      if (e.key === 'ArrowRight') { go(i + 1); start(); }
+    });
+
+    start();
+  })();
+
+  // ===== Duplicate ticker for infinite scroll =====
+  (function(){
+    const t = document.getElementById('ticker');
+    if (!t) return;
+    t.innerHTML += t.innerHTML;
+  })();
+
+  // ===== Bento cards: trigger SVG draw animations =====
+  (function(){
+    const cards = document.querySelectorAll('.bento-card');
+    if (!cards.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    cards.forEach(c => io.observe(c));
+  })();
+
+  // ===== Duplicate marquee tracks for seamless loop =====
+  ['researchTrack', 'blogTrack', 'testiRow1', 'testiRow2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML += el.innerHTML;
+  });
+
+  // ===== Blog hero rotator (featured article rotates every 6s) =====
+  (function(){
+    const slides = document.querySelectorAll('.blog-hero');
+    const dots = document.querySelectorAll('.bh-dot');
+    if (!slides.length) return;
+    let i = 0;
+    let timer;
+    function go(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === i);
+      });
+      // restart progress animation
+      dots.forEach(d => {
+        if (d.classList.contains('active')) {
+          d.style.setProperty('--restart', Math.random());
+        }
+      });
+    }
+    function start() { clearInterval(timer); timer = setInterval(() => go(i + 1), 6000); }
+    dots.forEach(d => d.addEventListener('click', () => { go(+d.dataset.i); start(); }));
+    const wrap = document.querySelector('.blog-hero-wrap');
+    if (wrap) {
+      wrap.addEventListener('mouseenter', () => clearInterval(timer));
+      wrap.addEventListener('mouseleave', () => start());
+    }
+    start();
+  })();
+
+  // ===== FAQ accordion =====
+  document.querySelectorAll('#faq .faq-item').forEach(item => {
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('#faq .faq-item').forEach(x => x.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+  // Open first FAQ by default
+  document.querySelector('#faq .faq-item')?.classList.add('open');
+</script>
+</body>
+</html>

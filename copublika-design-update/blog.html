@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — CoPublika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  /* Featured post */
+  .featured-post {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(32px, 5vw, 80px);
+    align-items: center;
+    margin-bottom: 80px;
+  }
+  @media (max-width: 900px) { .featured-post { grid-template-columns: 1fr; } }
+  .featured-post .ph {
+    aspect-ratio: 5 / 4;
+    background: var(--bg-alt);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .featured-post .ph::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, transparent 45%, rgba(0,0,0,0.04) 45% 55%, transparent 55%),
+      linear-gradient(45deg, transparent 45%, rgba(0,0,0,0.04) 45% 55%, transparent 55%);
+  }
+  .featured-post .ph::after {
+    content: "Featured · Cover Image";
+    position: absolute;
+    bottom: 16px; left: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .featured-post .tag-row { display: flex; gap: 8px; margin-bottom: 24px; }
+  .featured-post h2 {
+    font-size: clamp(32px, 4vw, 56px);
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    text-wrap: pretty;
+  }
+  .featured-post p {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-3);
+    margin-bottom: 28px;
+    max-width: 50ch;
+  }
+  .featured-post .meta {
+    display: flex; gap: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .featured-post .meta .sep { color: var(--accent); }
+
+  /* Category tabs */
+  .cat-tabs {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 60px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cat-tab {
+    padding: 20px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-3);
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .cat-tab:hover { color: var(--ink); }
+  .cat-tab.active { color: var(--ink); }
+  .cat-tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: 24px; right: 24px;
+    height: 2px;
+    background: var(--accent);
+  }
+  .cat-tab .ct {
+    font-family: var(--mono);
+    font-size: 11px;
+    margin-left: 6px;
+    color: var(--muted);
+  }
+
+  /* Posts grid */
+  .posts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px 24px;
+  }
+  @media (max-width: 900px) { .posts { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .posts { grid-template-columns: 1fr; } }
+  .post {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    transition: transform 0.3s var(--ease);
+  }
+  .post:hover { transform: translateY(-6px); }
+  .post .ph {
+    aspect-ratio: 16/11;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .post .ph::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(135deg, transparent 45%, rgba(0,0,0,0.04) 45% 55%, transparent 55%),
+      linear-gradient(45deg, transparent 45%, rgba(0,0,0,0.04) 45% 55%, transparent 55%);
+  }
+  .post .ph .cat {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .post .ph .cat.accent { background: var(--accent); color: white; }
+  .post .meta {
+    display: flex; gap: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .post .meta .sep { color: var(--accent); }
+  .post h3 {
+    font-size: 22px;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    transition: color 0.2s;
+    text-wrap: pretty;
+  }
+  .post:hover h3 { color: var(--accent-ink); }
+  .post .author {
+    display: flex; gap: 10px; align-items: center;
+    margin-top: 6px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .post .author .av {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-3);
+  }
+  .post .author .name { font-size: 12px; color: var(--ink-2); }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main data-screen-label="Blog">
+
+  <section class="page-hero">
+    <div class="ph-orb" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="breadcrumb reveal">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <span class="sep">/</span>
+        <span data-i18n="nav.blog">Blog</span>
+      </div>
+      <h1 class="page-h reveal" data-delay="1" data-i18n-id="Cerita, panduan, esai." data-i18n-en="Stories, guides, essays.">Cerita, panduan, esai.</h1>
+      <p class="page-sub reveal" data-delay="2" data-i18n-id="Tulisan dari mentor, editor, dan alumni — tentang riset, publikasi, dan kehidupan akademik di Indonesia." data-i18n-en="Writing from mentors, editors, and alumni — about research, publication, and academic life in Indonesia.">Tulisan dari mentor, editor, dan alumni — tentang riset, publikasi, dan kehidupan akademik di Indonesia.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <!-- Featured -->
+      <a href="#" class="featured-post reveal">
+        <div class="ph"></div>
+        <div>
+          <div class="tag-row">
+            <span class="tag tag-accent" data-i18n-id="UTAMA" data-i18n-en="FEATURED">UTAMA</span>
+            <span class="tag">Guide</span>
+            <span class="tag">12 min read</span>
+          </div>
+          <div class="meta">
+            <span>Dr. Ade Putranto</span>
+            <span class="sep">/</span>
+            <span>15 Mei 2025</span>
+          </div>
+          <h2 data-i18n-id="Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance" data-i18n-en="Anatomy of a Q1-Accepted Manuscript: Dissecting Three CoPublika Submissions from Submit to Acceptance">Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance</h2>
+          <p data-i18n-id="Tiga naskah peserta cohort #05 berhasil diterima di jurnal Q1 dalam 6 bulan terakhir. Kami membedah pola umum, kesalahan yang dihindari, dan kerangka berpikir di balik revisi-revisi penting." data-i18n-en="Three cohort #05 manuscripts were accepted at Q1 journals in the last 6 months. We dissect the patterns, mistakes avoided, and frameworks behind key revisions.">Tiga naskah peserta cohort #05 berhasil diterima di jurnal Q1 dalam 6 bulan terakhir. Kami membedah pola umum, kesalahan yang dihindari, dan kerangka berpikir di balik revisi-revisi penting.</p>
+          <span class="btn btn-line btn-arrow" data-i18n="cta.readmore">Baca selengkapnya</span>
+        </div>
+      </a>
+
+      <!-- Tabs -->
+      <div class="cat-tabs reveal" id="catTabs">
+        <button class="cat-tab active" data-cat="all" data-i18n-id="Semua" data-i18n-en="All">Semua <span class="ct">48</span></button>
+        <button class="cat-tab" data-cat="guide" data-i18n-id="Panduan" data-i18n-en="Guides">Panduan <span class="ct">18</span></button>
+        <button class="cat-tab" data-cat="interview">Interview <span class="ct">9</span></button>
+        <button class="cat-tab" data-cat="essay" data-i18n-id="Esai" data-i18n-en="Essays">Esai <span class="ct">11</span></button>
+        <button class="cat-tab" data-cat="news" data-i18n-id="Berita" data-i18n-en="News">Berita <span class="ct">6</span></button>
+        <button class="cat-tab" data-cat="case" data-i18n-id="Studi Kasus" data-i18n-en="Case Study">Studi Kasus <span class="ct">4</span></button>
+      </div>
+
+      <!-- Grid -->
+      <div class="posts" id="posts">
+        <a class="post reveal" href="#" data-cat="guide">
+          <div class="ph"><span class="cat">Panduan</span></div>
+          <div class="meta"><span>4 min read</span><span class="sep">/</span><span>Mei 2025</span></div>
+          <h3 data-i18n-id="7 Kesalahan Umum Saat Memilih Jurnal Target" data-i18n-en="7 Common Mistakes When Choosing a Target Journal">7 Kesalahan Umum Saat Memilih Jurnal Target</h3>
+          <div class="author"><div class="av">MR</div><div class="name">Dr. Maya Rahmawati</div></div>
+        </a>
+        <a class="post reveal" data-delay="1" href="#" data-cat="interview">
+          <div class="ph"><span class="cat">Interview</span></div>
+          <div class="meta"><span>8 min read</span><span class="sep">/</span><span>Apr 2025</span></div>
+          <h3 data-i18n-id="Wawancara: Membaca Reviewer Comments Tanpa Patah Semangat" data-i18n-en="Interview: Reading Reviewer Comments Without Losing Heart">Wawancara: Membaca Reviewer Comments Tanpa Patah Semangat</h3>
+          <div class="author"><div class="av">AP</div><div class="name">Dr. Ade Putranto</div></div>
+        </a>
+        <a class="post reveal" data-delay="2" href="#" data-cat="essay">
+          <div class="ph"><span class="cat accent">Esai</span></div>
+          <div class="meta"><span>12 min read</span><span class="sep">/</span><span>Mar 2025</span></div>
+          <h3 data-i18n-id="Mengapa Publikasi Internasional Penting Bagi Dosen Pemula" data-i18n-en="Why International Publication Matters for Early-Career Lecturers">Mengapa Publikasi Internasional Penting Bagi Dosen Pemula</h3>
+          <div class="author"><div class="av">LK</div><div class="name">Dr. Lina Kartika</div></div>
+        </a>
+        <a class="post reveal" href="#" data-cat="guide">
+          <div class="ph"><span class="cat">Panduan</span></div>
+          <div class="meta"><span>6 min read</span><span class="sep">/</span><span>Mar 2025</span></div>
+          <h3 data-i18n-id="Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin" data-i18n-en="IMRaD Structure: Why Reviewers Love Disciplined Manuscripts">Struktur IMRaD: Mengapa Reviewer Menyukai Naskah yang Disiplin</h3>
+          <div class="author"><div class="av">BS</div><div class="name">Dr. Bayu Setiawan</div></div>
+        </a>
+        <a class="post reveal" data-delay="1" href="#" data-cat="case">
+          <div class="ph"><span class="cat accent" data-i18n-id="Studi Kasus" data-i18n-en="Case Study">Studi Kasus</span></div>
+          <div class="meta"><span>15 min read</span><span class="sep">/</span><span>Feb 2025</span></div>
+          <h3 data-i18n-id="Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission" data-i18n-en="From Q3 Reject to Q2 Accept: One Manuscript, Three Submissions">Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission</h3>
+          <div class="author"><div class="av">FR</div><div class="name">Fajar Ramadhan</div></div>
+        </a>
+        <a class="post reveal" data-delay="2" href="#" data-cat="guide">
+          <div class="ph"><span class="cat">Panduan</span></div>
+          <div class="meta"><span>9 min read</span><span class="sep">/</span><span>Feb 2025</span></div>
+          <h3 data-i18n-id="Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda" data-i18n-en="How to Write an Abstract That Makes Reviewers Open Your Manuscript">Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda</h3>
+          <div class="author"><div class="av">MR</div><div class="name">Dr. Maya Rahmawati</div></div>
+        </a>
+        <a class="post reveal" href="#" data-cat="news">
+          <div class="ph"><span class="cat" data-i18n-id="Berita" data-i18n-en="News">Berita</span></div>
+          <div class="meta"><span>3 min read</span><span class="sep">/</span><span>Jan 2025</span></div>
+          <h3 data-i18n-id="CoPublika Berkolaborasi dengan 5 Universitas Baru untuk Beasiswa Cohort 2025" data-i18n-en="CoPublika Partners with 5 New Universities for 2025 Cohort Scholarships">CoPublika Berkolaborasi dengan 5 Universitas Baru untuk Beasiswa Cohort 2025</h3>
+          <div class="author"><div class="av">CP</div><div class="name">CoPublika Team</div></div>
+        </a>
+        <a class="post reveal" data-delay="1" href="#" data-cat="essay">
+          <div class="ph"><span class="cat accent">Esai</span></div>
+          <div class="meta"><span>10 min read</span><span class="sep">/</span><span>Jan 2025</span></div>
+          <h3 data-i18n-id="Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa" data-i18n-en="Slow Scholarship: Why Going Slow Is OK">Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa</h3>
+          <div class="author"><div class="av">DN</div><div class="name">Dr. Dewi Nirmala</div></div>
+        </a>
+        <a class="post reveal" data-delay="2" href="#" data-cat="guide">
+          <div class="ph"><span class="cat">Panduan</span></div>
+          <div class="meta"><span>7 min read</span><span class="sep">/</span><span>Dec 2024</span></div>
+          <h3 data-i18n-id="Menggunakan AI sebagai Asisten Riset — Tanpa Melanggar Etika Akademik" data-i18n-en="Using AI as a Research Assistant — Without Crossing Academic Ethics">Menggunakan AI sebagai Asisten Riset — Tanpa Melanggar Etika Akademik</h3>
+          <div class="author"><div class="av">FR</div><div class="name">Fajar Ramadhan</div></div>
+        </a>
+      </div>
+
+      <div style="margin-top:60px; text-align:center;">
+        <a class="btn btn-line btn-lg" href="#" data-i18n-id="Muat lebih banyak" data-i18n-en="Load more">Muat lebih banyak</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-final">
+    <div class="cta-grid" aria-hidden="true"></div>
+    <div class="cta-orbit" aria-hidden="true"></div>
+    <div class="wrap">
+      <h2 class="reveal" data-i18n-id="Mau menulis di blog kami?" data-i18n-en="Want to write for our blog?">Mau menulis di blog kami?</h2>
+      <p class="reveal" data-delay="1" data-i18n-id="Kami terbuka untuk tulisan tamu dari peneliti dan akademisi. Kirim outline anda ke editor kami." data-i18n-en="We welcome guest contributions from researchers and academics. Send your outline to our editors.">Kami terbuka untuk tulisan tamu dari peneliti dan akademisi. Kirim outline anda ke editor kami.</p>
+      <div class="group reveal" data-delay="2">
+        <a class="btn btn-accent btn-lg btn-arrow" href="contact.html" data-i18n-id="Hubungi Editor" data-i18n-en="Contact Editor">Hubungi Editor</a>
+      </div>
+      <div class="cta-trust reveal" data-delay="4">
+        <div class="item">
+          <span class="v">1.240<span class="accent">+</span></span>
+          <span class="l">Anggota</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">318</span>
+          <span class="l">Publikasi</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">47</span>
+          <span class="l">Mentor</span>
+        </div>
+        <div class="div"></div>
+        <div class="item">
+          <span class="v">76<span class="accent">%</span></span>
+          <span class="l">Tingkat Akseptasi</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/main.js"></script>
+<script>
+  CoPublika.init('blog');
+  const tabs = document.querySelectorAll('#catTabs .cat-tab');
+  const posts = document.querySelectorAll('#posts .post');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const c = t.dataset.cat;
+    posts.forEach(p => {
+      p.style.display = (c === 'all' || p.dataset.cat === c) ? '' : 'none';
+    });
+  }));
+</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anggota — CoPublika Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="_shell.css">
+<style>
+  .stat-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  @media (max-width: 900px) { .stat-strip { grid-template-columns: 1fr 1fr; } }
+  .tbl-mini-row .scholar { font-family: var(--mono); font-size: 10.5px; color: var(--accent); letter-spacing: 0.04em; }
+  .h-pill {
+    font-family: var(--mono); font-size: 11px;
+    padding: 3px 9px; border-radius: 999px;
+    background: var(--bg-alt); color: var(--ink-2);
+    letter-spacing: 0.04em;
+  }
+  .h-pill.hi { background: #eaf6ed; color: #1f7a36; }
+  .h-pill.top { background: var(--accent-soft); color: var(--accent-ink); }
+</style>
+</head>
+<body data-page="members" data-search="Cari nama, institusi, bidang, Scholar ID…">
+
+  <div class="pg-head">
+    <div class="greet">
+      <div class="crumb"><a href="dashboard.html">Curation</a> <span class="sep">/</span> <span>Anggota</span></div>
+      <h1>Direktori <em>anggota.</em></h1>
+      <p>1.240 peneliti aktif lintas 9 rumpun ilmu — semua sudah lolos kurasi Scholar.</p>
+    </div>
+    <div class="head-cta">
+      <button class="vbtn ghost">Ekspor CSV</button>
+      <a class="vbtn dark" href="verifications.html">Antrian Verifikasi (14)</a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <section class="stat-strip">
+    <div class="kpi reveal" style="grid-column: span 1;">
+      <div class="ktop"><div class="klabel">Member aktif</div></div>
+      <div class="kbig sm">1.240 <span class="kdelta">↑ 4.8%</span></div>
+      <div class="ksub">vs bulan lalu</div>
+    </div>
+    <div class="kpi reveal" style="grid-column: span 1;">
+      <div class="ktop"><div class="klabel">H-Index rata-rata</div></div>
+      <div class="kbig sm">11.4</div>
+      <div class="ksub">Top 10%: <strong>H ≥ 22</strong></div>
+    </div>
+    <div class="kpi reveal" style="grid-column: span 1;">
+      <div class="ktop"><div class="klabel">Universitas terwakili</div></div>
+      <div class="kbig sm">86</div>
+      <div class="ksub">PTN 52 · PTS 34</div>
+    </div>
+    <div class="kpi reveal" style="grid-column: span 1;">
+      <div class="ktop"><div class="klabel">Member tidak aktif</div></div>
+      <div class="kbig sm">28 <span class="kdelta down">2.3%</span></div>
+      <div class="ksub">≥ 6 bulan tidak login</div>
+    </div>
+  </section>
+
+  <!-- Filter bar -->
+  <div class="filter-bar reveal">
+    <div class="filter-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Cari nama, institusi, bidang, Scholar ID…">
+    </div>
+    <div class="filter-select"><label>Status</label><select><option>Semua</option><option>Aktif</option><option>Tidak aktif</option><option>Suspended</option></select></div>
+    <div class="filter-select"><label>Cluster</label><select><option>Semua cluster</option><option>Pendidikan &amp; EdTech</option><option>Kesehatan</option><option>Ekonomi Sirkular</option><option>AI &amp; Etika</option></select></div>
+    <div class="filter-select"><label>Batch</label><select><option>Semua batch</option><option>#4</option><option>#3</option><option>#2</option><option>#1</option></select></div>
+    <div class="filter-select"><label>H-Index</label><select><option>Semua</option><option>≥ 20</option><option>10–19</option><option>1–9</option></select></div>
+  </div>
+
+  <!-- Members table -->
+  <section class="card tbl-card reveal">
+    <div class="card-head"><h3>1.240 anggota</h3><div class="meta">Diurutkan: H-Index ↓</div></div>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Anggota</th>
+          <th>Institusi</th>
+          <th>Cluster</th>
+          <th>Scholar ID</th>
+          <th class="right">H-Index</th>
+          <th class="right">Publikasi</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="cell-user"><span class="av">AP</span><div class="who"><div class="nm">Prof. Dr. Anwar Putranto, M.Ed.</div><div class="sub">Cluster Lead · Co-Founder</div></div></div></td>
+          <td>UPI</td>
+          <td>Pendidikan &amp; EdTech</td>
+          <td><span class="cell-user" style="display:inline-flex;"><span class="scholar" style="font-family:var(--mono); font-size:10.5px; color:var(--accent);">7XQrK2pAAAAJ</span></span></td>
+          <td class="right"><span class="h-pill top">H · 24</span></td>
+          <td class="right">62</td>
+          <td><span class="pill active">Aktif</span></td>
+          <td><span class="link-mono">Detail →</span></td>
+        </tr>
+        <tr>
+          <td><div class="cell-user"><span class="av">BH</span><div class="who"><div class="nm">Bayu Hermawan, Ph.D.</div><div class="sub">Co-Lead AI &amp; Etika</div></div></div></td>
+          <td>UGM</td>
+          <td>AI &amp; Etika</td>
+          <td><span style="font-family:var(--mono); font-size:10.5px; color:var(--accent);">mNb3HQ8AAAAJ</span></td>
+          <td class="right"><span class="h-pill top">H · 23</span></td>
+          <td class="right">48</td>
+          <td><span class="pill active">Aktif</span></td>
+          <td><span class="link-mono">Detail →</span></td>
+        </tr>
+        <tr>
+          <td><div class="cell-user"><span class="av">RD</span><div class="who"><div class="nm">Dr. Reza Dwianto, M.Si.</div><div class="sub">Senior Mentor</div></div></div></td>
+          <td>UNDIP</td>
+          <td>Kebijakan Publik</td>
+          <td><span style="font-family:var(--mono); font-size:10.5px; color:var(--accent);">7XQrK2pAAAAJ</span></td>
+          <td class="right"><span class="h-pill hi">H · 18</span></td>
+          <td class="right">38</td>
+          <td><span class="pill active">Aktif</span></td>
+          <td><span class="link-mono">Detail →</span></td>
+        </tr>
+        <tr>
+          <td><div class="cell-user"><span class="av">SN</span><div class="who"><div class="nm">Dr. Sari Nurhaliza, M.Hum.</div><div class="sub">Co-Lead Linguistik</div></div></div></td>
+          <td>UPI</td>
+          <td>Linguistik Terapan</td>
+          <td><span style="font-family:var(--mono); font-size:10.5px; color:var(--accent);">8YqLm5RAAAAJ</span></td>
+          <td class="right"><span class="h-pill hi">H · 17</span></td>
+          <td class="right">34</td>
+          <td><span class="pill active">Aktif</span></td>
+          <td><span class="link-mono">Detail →</span></td>
+        </tr>
+        <tr>
+          <td><div class="cell-user"><span class="av">WK</span><div class="who"><div class="nm">Dr. Wira Kusuma, M.T.</div><div class="sub">Batch #4 · baru bergabung</div></div></div></td>
+          <td>ITS</td>
+          <td>Sustainability</td>
+          <td><span style="font-family:var(--mono); font-size:10.5px; color:var(--accent);">tH6Lx9YAAAAJ</span></td>
+          <td class="right"><span class="h-pill hi">H · 14</span></td>
+          <td class="right">22</td>
+          <td><span class="pill active">Aktif</span></td>
+          <td><span class="link-mono">Detail →</span></td>
+        </tr>
+        <tr>
+          <td><div class="cell-user"><span class="av">RM</span><div class="who"><div class="nm">Dr. Rini Maharani</div><div class="sub">Batch #2</div></div></div></td>
+          <td>UGM</td>
+          <td>Pendidikan &amp; EdTech</td>
+          <td><span style="font-family:var(--mono); font-size:10.5px; color:var(--accent);">kL3MnP7AAAAJ</span></td>
+          <td class="right"><span class="h-pill">H · 12</span></td>
+          <td class="right">18</td>
+          <td><span class="pill active">Aktif</span></td>
+          <td><span class="link-mono">Detail →</span></td>
+        </tr>
+        <tr>
+          <td><div class="cell-user"><span class="av">SP</span><div class="who"><div class="nm">Siti Putri Anggraini, M.Pd.</div><div class="sub">Batch #4 · baru bergabung</div></div></div></td>
+          <td>UPI</td>
+          <td>Pendidikan &amp; EdTech</td>
+          <td><span style="font-family:var(--mono); font-size:10.5px; color:var(--accent);">q9KsmW2AAAAJ</span></td>
+          <td class="right"><span class="h-pill">H · 6</span></td>
+          <td class="right">9</td>
+          <td><span class="pill active">Aktif</span></td>
+          <td><span class="link-mono">Detail →</span></td>
+        </tr>
+        <tr>
+          <td><div class="cell-user"><span class="av">ND</span><div class="who"><div class="nm">Nurdin Hidayat, M.A.</div><div class="sub">Batch #1</div></div></div></td>
+          <td>UI</td>
+          <td>Hukum &amp; Tata Kelola</td>
+          <td><span style="font-family:var(--mono); font-size:10.5px; color:var(--accent);">fGtRm8VAAAAJ</span></td>
+          <td class="right"><span class="h-pill">H · 8</span></td>
+          <td class="right">11</td>
+          <td><span class="pill plain">Tidak aktif</span></td>
+          <td><span class="link-mono">Detail →</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <div class="info">Menampilkan <strong>1–8</strong> dari <strong>1.240</strong> anggota</div>
+      <div class="pages">
+        <button disabled>←</button>
+        <button class="active">1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>…</button>
+        <button>155</button>
+        <button>→</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="_shell.js"></script>
+</body>
+</html>
