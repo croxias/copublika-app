@@ -30,6 +30,45 @@
 
   --max: 1320px;
   --pad: clamp(20px, 4vw, 56px);
+
+  --color-page: var(--paper);
+  --color-surface: var(--bone);
+  --color-surface-raised: var(--paper);
+  --color-text: var(--ink);
+  --color-text-muted: var(--mute);
+  --color-border: var(--hair);
+  --color-border-strong: var(--hair-strong);
+  --color-accent: var(--scopus);
+  --color-accent-strong: var(--scopus-ink);
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 20px;
+  --radius-xl: 20px;
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--scopus) 28%, transparent);
+  --motion-fast: 180ms;
+  --motion-base: 280ms;
+  --ease-standard: cubic-bezier(.2,.65,.2,1);
+}
+
+html[data-theme="dark"] {
+  --color-surface-raised: var(--paper);
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--scopus);
+  outline-offset: 3px;
+  box-shadow: var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
 }
 
 html[data-theme="dark"] {

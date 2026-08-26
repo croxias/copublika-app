@@ -4,35 +4,32 @@
    ===================================================================== */
 
 body.cp-admin-mode {
-  --bg: #ffffff;
-  --bg-alt: #F8FAFC;
-  --bg-panel: rgba(255, 255, 255, 0.82);
-  --bg-panel-strong: #ffffff;
-  --bg-dark: #0F172A;
-  --ink: #0F172A;
-  --ink-2: #334155;
-  --ink-3: #64748B;
-  --muted: #94A3B8;
-  --line: #E2E8F0;
-  --line-strong: rgba(15, 23, 42, 0.16);
-  --accent: #E9711C;
-  --accent-soft: #fcefe2;
-  --accent-ink: #b8580f;
-  --accent-glow: 0 0 10px 0 rgba(233,113,28,0.2);
-  --accent-glow-hover: 0 0 20px 5px rgba(233,113,28,0.6);
-  --shadow-soft: 0 18px 50px -32px rgba(15, 23, 42, 0.30);
-  --shadow-card: 0 24px 60px -42px rgba(15, 23, 42, 0.50);
+  --bg: var(--color-page);
+  --bg-alt: var(--color-surface);
+  --bg-panel: color-mix(in srgb, var(--color-surface-raised) 82%, transparent);
+  --bg-panel-strong: var(--color-surface-raised);
+  --bg-dark: #0f172a;
+  --ink: var(--color-text);
+  --ink-2: color-mix(in srgb, var(--color-text) 78%, var(--color-page));
+  --ink-3: color-mix(in srgb, var(--color-text) 58%, var(--color-page));
+  --muted: color-mix(in srgb, var(--color-text) 42%, var(--color-page));
+  --line: var(--color-border);
+  --line-strong: var(--color-border-strong);
+  --accent: var(--color-accent);
+  --accent-soft: color-mix(in srgb, var(--color-accent) 12%, var(--color-page));
+  --accent-ink: var(--color-accent-strong);
+  --accent-glow: 0 0 10px 0 color-mix(in srgb, var(--color-accent) 20%, transparent);
+  --accent-glow-hover: 0 0 20px 5px color-mix(in srgb, var(--color-accent) 60%, transparent);
+  --shadow-soft: 0 18px 50px -32px color-mix(in srgb, var(--ink) 30%, transparent);
+  --shadow-card: 0 24px 60px -42px color-mix(in srgb, var(--ink) 50%, transparent);
   --sans: var(--font-jakarta), -apple-system, sans-serif;
   --mono: var(--font-jetbrains), ui-monospace, monospace;
-  --radius: 10px;
-  --radius-lg: 20px;
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  
+  --radius: var(--radius-md);
+  --radius-lg: var(--radius-xl);
+  --ease: var(--ease-standard);
+
   padding-top: 0 !important;
-  background:
-    radial-gradient(circle at 14% 0%, rgba(233, 113, 28, 0.07), transparent 30%),
-    radial-gradient(circle at 92% 12%, rgba(15, 23, 42, 0.04), transparent 28%),
-    var(--bg-alt) !important;
+  background: var(--bg-alt) !important;
   font-family: var(--sans);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
