@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+.turbo
+.hermes
+.agents
+.claude
+.codex
+copublika-design
+copublika-design-update
+copublika-logo
+agent

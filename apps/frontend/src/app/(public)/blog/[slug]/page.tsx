@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { getBlogPostBySlug, getBlogPosts } from "@/lib/data/blog";
+import { BLOG_ARTICLES } from "@/lib/data/blog-articles";
+import { fallbackBlogs } from "@/lib/data/fallbacks";
 import { BlogDetailContent } from "@/components/blog/BlogDetailContent";
 
 interface PageProps {
@@ -32,11 +34,13 @@ export async function generateMetadata({ params }: PageProps) {
   };
 }
 
-export async function generateStaticParams() {
-  const posts = await getBlogPosts();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+export function generateStaticParams() {
+  const slugs = new Set([
+    ...BLOG_ARTICLES.map((post) => post.slug),
+    ...fallbackBlogs.map((post) => post.slug),
+  ]);
+
+  return Array.from(slugs, (slug) => ({ slug }));
 }
 
 export default async function BlogDetailPage({ params }: PageProps) {
