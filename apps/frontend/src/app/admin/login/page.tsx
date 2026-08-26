@@ -2,31 +2,32 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/components/auth/SupabaseAuthProvider';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { signIn } = useAuth();
 
   useEffect(() => {
     document.title = 'Log In — CoPublika Admin';
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    // Mock verification
-    setTimeout(() => {
-      if (email === 'admin@copublika.com' && password === 'admin123') {
-        window.location.href = '/admin/dashboard';
-      } else {
-        setError('Email atau kata sandi salah. Gunakan admin@copublika.com & admin123 untuk masuk.');
-        setLoading(false);
-      }
-    }, 800);
+    const result = await signIn(email, password);
+    if (result.error) {
+      setError('Email atau kata sandi salah.');
+      setLoading(false);
+      return;
+    }
+
+    window.location.href = '/admin/dashboard';
   };
 
   return (

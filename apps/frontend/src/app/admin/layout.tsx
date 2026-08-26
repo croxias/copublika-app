@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AdminRootLayout({
+export default async function AdminRootLayout({
   children,
 }: {
   children: React.ReactNode;
