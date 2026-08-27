@@ -8,18 +8,18 @@ export async function requireAdmin() {
     redirect("/admin/login");
   }
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
     redirect("/admin/login");
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") {
+  if (profileError || profile?.role !== "admin") {
     redirect("/admin/login");
   }
 
