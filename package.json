@@ -6,6 +6,7 @@
     "build": "pnpm --filter frontend build",
     "lint": "pnpm --filter frontend lint",
     "typecheck": "pnpm --filter frontend typecheck",
+    "test": "node --test tests/verify-admin-auth.test.mjs",
     "verify:admin-auth": "python3 scripts/verify_admin_auth.py"
   },
   "devDependencies": {
