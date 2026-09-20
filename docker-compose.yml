@@ -6,12 +6,23 @@ services:
       args:
         NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:?Set NEXT_PUBLIC_SUPABASE_URL}
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:?Set NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+        NEXT_PUBLIC_COPUBLIKA_DEMO_MODE: ${NEXT_PUBLIC_COPUBLIKA_DEMO_MODE:-false}
+    # Produksi harus bangkit sendiri. Tanpa ini, satu SIGKILL membuat :3000 mati
+    # sampai ada manusia yang menyadarinya (kejadian 06-09-2026: down 32 menit).
+    restart: unless-stopped
+    # Pagar cgroup: pemakaian nyata ~146 MB, batas 768 MB = margin 5x.
+    # memswap_limit disamakan dengan mem_limit agar container TIDAK swap —
+    # gagal cepat lalu restart otomatis lebih baik daripada thrashing senyap.
+    mem_limit: 768m
+    memswap_limit: 768m
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:?Set NEXT_PUBLIC_SUPABASE_URL}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:?Set NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+      NEXT_PUBLIC_COPUBLIKA_DEMO_MODE: ${NEXT_PUBLIC_COPUBLIKA_DEMO_MODE:-false}
+
       BACKEND_INTERNAL_URL: http://backend:4000
     depends_on:
       backend:
@@ -21,6 +32,10 @@ services:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
+    restart: unless-stopped
+    # Pemakaian nyata backend jauh di bawah ini; 512 MB adalah pagar, bukan target.
+    mem_limit: 512m
+    memswap_limit: 512m
     expose:
       - "4000"
     environment:
