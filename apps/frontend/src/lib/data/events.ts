@@ -12,6 +12,7 @@ function mapEventRow(row: Record<string, unknown>): Event {
     location: String(row.location ?? ""),
     status: (String(row.status) as Event["status"]) ?? "upcoming",
     isPaid: Boolean(row.is_paid ?? row.isPaid ?? false),
+    memberOnly: Boolean(row.member_only ?? row.memberOnly ?? false),
     capacity: Number(row.capacity ?? 0),
     registrantsCount: Number(row.registrants_count ?? row.registrantsCount ?? 0),
   };

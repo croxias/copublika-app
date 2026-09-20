@@ -1,14 +1,12 @@
 import type { Batch, BlogPost, Event, ResearchProject } from "@/types";
 
-export const fallbackBatch: Batch = {
-  id: "batch-4",
-  number: 4,
-  status: "open",
-  seatsTotal: 120,
-  seatsRemaining: 37,
-  openDate: "2026-05-01T00:00:00.000Z",
-  closeDate: "2026-06-10T23:59:59.000Z",
-};
+export const fallbackBatches: Batch[] = [
+  { id: "batch-4", number: 4, status: "open", seatsTotal: 120, seatsRemaining: 37, openDate: "2026-05-01T00:00:00.000Z", closeDate: "2026-09-30T23:59:59.000Z" },
+  { id: "batch-5", number: 5, status: "open", seatsTotal: 60, seatsRemaining: 24, openDate: "2026-09-01T00:00:00.000Z", closeDate: "2026-12-31T23:59:59.000Z" },
+  { id: "batch-6", number: 6, status: "closed", seatsTotal: 80, seatsRemaining: 0, openDate: "2026-03-01T00:00:00.000Z", closeDate: "2026-04-30T23:59:59.000Z" },
+];
+
+export const fallbackBatch: Batch = fallbackBatches[0];
 
 export const fallbackKpis: { label: string; value: string }[] = [
   { label: "Active Members", value: "1,240+" },
@@ -150,6 +148,7 @@ export const fallbackEvents: Event[] = [
     language: "Indonesia",
     status: "upcoming",
     isPaid: false,
+    memberOnly: false,
     capacity: 500,
     registrantsCount: 347,
     type: "clinic",
@@ -229,6 +228,7 @@ export const fallbackEvents: Event[] = [
     language: "Indonesia",
     status: "upcoming",
     isPaid: false,
+    memberOnly: false,
     capacity: 400,
     registrantsCount: 218,
     type: "webinar",
@@ -300,6 +300,7 @@ export const fallbackEvents: Event[] = [
     language: "Indonesia",
     status: "upcoming",
     isPaid: true,
+    memberOnly: true,
     capacity: 40,
     registrantsCount: 38,
     type: "workshop",
@@ -378,6 +379,7 @@ export const fallbackEvents: Event[] = [
     language: "Indonesia",
     status: "upcoming",
     isPaid: false,
+    memberOnly: true,
     capacity: 300,
     registrantsCount: 156,
     type: "forum",
@@ -454,6 +456,7 @@ export const fallbackEvents: Event[] = [
     language: "Indonesia",
     status: "upcoming",
     isPaid: false,
+    memberOnly: false,
     capacity: 500,
     registrantsCount: 289,
     type: "webinar",

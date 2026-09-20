@@ -31,7 +31,7 @@ const steps = [
   { num: 4, title: "Review", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" },
 ];
 
-export function JoinBatchForm() {
+export function JoinBatchForm({ batchId, batchNumber }: { batchId?: string; batchNumber?: number }) {
   const { t } = useI18n();
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
@@ -54,7 +54,7 @@ export function JoinBatchForm() {
       const res = await fetch("/api/join-batch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, batchId, batchNumber }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.message || "Submission failed");

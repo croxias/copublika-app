@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { HeroCanvas } from "./HeroCanvas";
+import { getOpenBatches } from "@/lib/data/batches";
 
-const QUICK_META = [
+const QUICK_META_STATIC = [
   { label: "Durasi", value: "12 Minggu" },
   { label: "Format", value: "Hybrid", sub: "(Online + 2x Luring)" },
   { label: "Mulai", value: "15 Sep 2026" },
-  { label: "Kuota tersisa", value: "24 / 60" },
 ];
 
 const IDEAL_PROFILE = [
@@ -61,7 +61,15 @@ function CheckIcon() {
   );
 }
 
-export default function SiapTembusScopusPage() {
+export default async function SiapTembusScopusPage() {
+  const openBatches = await getOpenBatches();
+  const activeBatch = openBatches[0];
+  const seatsLabel = activeBatch ? `${activeBatch.seatsRemaining} / ${activeBatch.seatsTotal}` : "24 / 60";
+  const seatsRemaining = activeBatch?.seatsRemaining ?? 24;
+  const seatsTotal = activeBatch?.seatsTotal ?? 60;
+  const filled = Math.round(((seatsTotal - seatsRemaining) / seatsTotal) * 100);
+  const cohortLabel = activeBatch ? `Cohort #${activeBatch.number}` : "Cohort #07";
+  const joinHref = activeBatch ? `/join-batch?batchId=${activeBatch.id}` : "/join-batch";
   return (
     <main className="cp-stsz">
       {/* Hero */}
@@ -73,7 +81,7 @@ export default function SiapTembusScopusPage() {
               <Reveal>
                 <div className="cp-stsz-pulse">
                   <i />
-                  <span>Cohort #07 — Pendaftaran Dibuka</span>
+                  <span>{cohortLabel} — Pendaftaran Dibuka</span>
                 </div>
               </Reveal>
               <Reveal delay={0.08}>
@@ -90,8 +98,8 @@ export default function SiapTembusScopusPage() {
               </Reveal>
               <Reveal delay={0.24}>
                 <div className="cp-stsz-hero__cta">
-                  <Link href="/register" className="cp-stsz-cta-btn cp-stsz-cta-btn--primary cp-stsz-cta-btn--lg">
-                    <span>Daftar Cohort #07</span>
+                  <Link href={joinHref} className="cp-stsz-cta-btn cp-stsz-cta-btn--primary cp-stsz-cta-btn--lg">
+                    <span>Daftar {cohortLabel}</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="5" y1="12" x2="19" y2="12" />
                       <polyline points="12 5 19 12 12 19" />
@@ -131,7 +139,7 @@ export default function SiapTembusScopusPage() {
 
           <Reveal delay={0.32}>
             <div className="cp-stsz-meta">
-              {QUICK_META.map((m) => (
+              {[...QUICK_META_STATIC, { label: "Kuota tersisa", value: seatsLabel }].map((m) => (
                 <div key={m.label} className="cp-stsz-meta__item">
                   <div className="cp-stsz-meta__l">{m.label}</div>
                   <div className="cp-stsz-meta__v">
@@ -152,7 +160,6 @@ export default function SiapTembusScopusPage() {
             <Reveal>
               <div className="cp-stsz-tag">
                 <span className="cp-stsz-tag__bar" />
-                <span className="cp-stsz-tag__num">P.01</span>
                 <span>Untuk siapa</span>
               </div>
               <h2 className="cp-stsz-section__title">Anda akan cocok di sini jika&hellip;</h2>
@@ -203,8 +210,7 @@ export default function SiapTembusScopusPage() {
             <Reveal>
               <div className="cp-stsz-tag">
                 <span className="cp-stsz-tag__bar" />
-                <span className="cp-stsz-tag__num">P.02</span>
-                <span>Modul</span>
+                <span>Kurikulum 12 minggu</span>
               </div>
               <h2 className="cp-stsz-section__title">12 minggu, 6 fase.</h2>
             </Reveal>
@@ -243,8 +249,7 @@ export default function SiapTembusScopusPage() {
             <Reveal>
               <div className="cp-stsz-tag">
                 <span className="cp-stsz-tag__bar" />
-                <span className="cp-stsz-tag__num">P.03</span>
-                <span>Mentor</span>
+                <span>Dibimbing mentor aktif</span>
               </div>
               <h2 className="cp-stsz-section__title">Dibimbing peneliti aktif.</h2>
               <p className="cp-stsz-section__sub">
@@ -292,7 +297,7 @@ export default function SiapTembusScopusPage() {
             </Reveal>
             <Reveal delay={0.1}>
               <h2 className="cp-stsz-free__title">
-                Cohort #07 — <em>100% gratis</em>.<br />Hanya 24 kursi.
+                {cohortLabel} — <em>100% gratis</em>.<br />Hanya {seatsRemaining} kursi tersisa dari {seatsTotal}.
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
@@ -308,17 +313,17 @@ export default function SiapTembusScopusPage() {
                   <div>
                     <div className="cp-stsz-slot__l">Kuota terisi</div>
                     <div className="cp-stsz-slot__count">
-                      <span className="cp-stsz-slot__count-num">36</span>
-                      <span className="cp-stsz-slot__count-of">/ 60</span>
+                      <span className="cp-stsz-slot__count-num">{seatsTotal - seatsRemaining}</span>
+                      <span className="cp-stsz-slot__count-of">/ {seatsTotal}</span>
                     </div>
                   </div>
                   <div className="cp-stsz-slot__right">
                     <div className="cp-stsz-slot__l">Tersisa</div>
-                    <div className="cp-stsz-slot__remain">24 kursi</div>
+                    <div className="cp-stsz-slot__remain">{seatsRemaining} kursi</div>
                   </div>
                 </div>
                 <div className="cp-stsz-slot__bar">
-                  <div className="cp-stsz-slot__bar-fill" />
+                  <div className="cp-stsz-slot__bar-fill" style={{ width: `${filled}%` }} />
                 </div>
                 <div className="cp-stsz-slot__foot">
                   <span className="cp-stsz-slot__foot-dot">&#9679;</span>
@@ -340,8 +345,8 @@ export default function SiapTembusScopusPage() {
 
             <Reveal delay={0.44}>
               <div className="cp-stsz-free__cta">
-                <Link href="/register" className="cp-stsz-cta-btn cp-stsz-cta-btn--primary cp-stsz-cta-btn--lg">
-                  <span>Klaim Kursi Gratis</span>
+                <Link href={joinHref} className="cp-stsz-cta-btn cp-stsz-cta-btn--primary cp-stsz-cta-btn--lg">
+                  <span>Klaim Kursi Gratis — {cohortLabel}</span>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12" />
                     <polyline points="12 5 19 12 12 19" />

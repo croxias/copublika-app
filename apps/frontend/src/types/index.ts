@@ -90,6 +90,8 @@ export interface Event {
   language?: string;
   status: "upcoming" | "live" | "ended";
   isPaid: boolean;
+  /** Khusus member — daftar hanya via Dashboard Member (1 klik) */
+  memberOnly?: boolean;
   capacity: number;
   registrantsCount: number;
   type?: string;

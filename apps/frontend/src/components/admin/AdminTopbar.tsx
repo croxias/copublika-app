@@ -49,12 +49,13 @@ const MOCK_NOTIFICATIONS: Notification[] = [
 
 interface AdminTopbarProps {
   onMenuToggle: () => void;
+  demoEnabled?: boolean;
 }
 
-export const AdminTopbar: React.FC<AdminTopbarProps> = ({ onMenuToggle }) => {
+export const AdminTopbar: React.FC<AdminTopbarProps> = ({ onMenuToggle, demoEnabled = false }) => {
   const [notifOpen, setNotifOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notification[]>(demoEnabled ? [] : MOCK_NOTIFICATIONS);
   const notifRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -284,9 +285,9 @@ export const AdminTopbar: React.FC<AdminTopbarProps> = ({ onMenuToggle }) => {
               <div className="cp-account-header">
                 <div className="cp-account-avatar">AW</div>
                 <div className="cp-account-info">
-                  <span className="cp-account-name">Adi Wijaya</span>
-                  <span className="cp-account-role">Superadmin</span>
-                  <span className="cp-account-email">copublika@gmail.com</span>
+                  <span className="cp-account-name">{demoEnabled ? 'Demo Preview' : 'Adi Wijaya'}</span>
+                  <span className="cp-account-role">{demoEnabled ? 'Read-only' : 'Superadmin'}</span>
+                  {!demoEnabled && <span className="cp-account-email">copublika@gmail.com</span>}
                 </div>
               </div>
               <div className="cp-account-divider" />

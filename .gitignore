@@ -11,3 +11,10 @@ build
 .DS_Store
 *.log
 coverage
+
+# Agent tooling & internal ops artifacts (not product code)
+.agents/
+.claude/
+.codex/
+agent/
+.hermes/

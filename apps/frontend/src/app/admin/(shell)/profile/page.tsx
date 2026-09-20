@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
+  const demoEnabled = process.env.NEXT_PUBLIC_COPUBLIKA_DEMO_MODE === 'true';
   const [activeTab, setActiveTab] = useState<'personal' | 'security'>('personal');
   
   // Form states
@@ -32,6 +33,15 @@ export default function ProfilePage() {
   useEffect(() => {
     document.title = 'Profil — CoPublika Admin';
   }, []);
+
+  if (demoEnabled) {
+    return (
+      <>
+        <div className="cp-pg-head"><div className="cp-greet"><div className="cp-crumb"><Link href="/admin/dashboard">Overview</Link><span className="cp-sep">/</span><span>Profil</span></div><h1>Profil Admin</h1><p>DEMO / DEVELOPMENT ONLY · Identitas akun tidak ditampilkan dalam preview read-only.</p></div></div>
+        <section className="cp-card cp-empty-state" role="status"><h4>DEMO · Profil tidak tersedia</h4><p>Data identitas dan perubahan keamanan hanya tersedia setelah autentikasi serta sumber data admin terhubung.</p></section>
+      </>
+    );
+  }
 
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();

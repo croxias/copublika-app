@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { ChevronDown, ChevronLeft, ChevronRight, UserRound } from 'lucide-react';
 
 interface NavItem {
   id: string;
@@ -17,7 +18,10 @@ interface NavSection {
   items: NavItem[];
 }
 
-const getNav = (): NavSection[] => [
+const getNav = (demoEnabled = false): NavSection[] => {
+  const stagingHref = (href: string) => demoEnabled ? href : '#';
+
+  return [
   {
     section: 'Overview',
     items: [
@@ -28,35 +32,36 @@ const getNav = (): NavSection[] => [
   {
     section: 'Curation',
     items: [
-      { id: 'verifications', name: 'Verifikasi Pendaftar', href: '#', icon: 'user-check', badge: '14' },
-      { id: 'batches', name: 'Batch Management', href: '#', icon: 'clock' },
-      { id: 'members', name: 'Anggota', href: '#', icon: 'users', badge: '1.240', soft: true }
+      { id: 'applicants', name: 'Verifikasi Pendaftar', href: stagingHref('/admin/applicants'), icon: 'user-check', badge: demoEnabled ? 'Preview' : '14' },
+      { id: 'batches', name: 'Batch Management', href: stagingHref('/admin/batches'), icon: 'clock' },
+      { id: 'members', name: 'Anggota', href: stagingHref('/admin/members'), icon: 'users', badge: demoEnabled ? 'Preview' : '1.240', soft: true }
     ]
   },
   {
     section: 'Project Governance',
     items: [
-      { id: 'projects', name: 'Riset & Proyek', href: '#', icon: 'file', badge: '8' },
-      { id: 'clusters', name: 'Cluster Riset', href: '#', icon: 'grid' }
+      { id: 'projects', name: 'Riset & Proyek', href: stagingHref('/admin/projects'), icon: 'file', badge: demoEnabled ? 'Preview' : '8' },
+      { id: 'clusters', name: 'Cluster Riset', href: stagingHref('/admin/clusters'), icon: 'grid' }
     ]
   },
   {
     section: 'Content',
     items: [
-      { id: 'blog', name: 'Blog', href: '#', icon: 'edit' },
-      { id: 'events', name: 'Event', href: '#', icon: 'calendar' },
-      { id: 'lms', name: 'LMS — Siap Tembus Scopus', href: '#', icon: 'book' },
-      { id: 'templates', name: 'Template Vault', href: '#', icon: 'package' }
+      { id: 'blog', name: 'Blog', href: stagingHref('/admin/blog'), icon: 'edit' },
+      { id: 'events', name: 'Event', href: stagingHref('/admin/events'), icon: 'calendar' },
+      { id: 'lms', name: 'LMS — Siap Tembus Scopus', href: stagingHref('/admin/lms'), icon: 'book' },
+      { id: 'templates', name: 'Template Vault', href: stagingHref('/admin/templates'), icon: 'package' }
     ]
   },
   {
     section: 'System',
     items: [
       { id: 'settings', name: 'Pengaturan Situs', href: '/admin/settings', icon: 'settings' },
-      { id: 'audit', name: 'Audit & Keamanan', href: '#', icon: 'shield' }
+      { id: 'audit', name: 'Audit & Keamanan', href: stagingHref('/admin/audit'), icon: 'shield' }
     ]
   }
 ];
+};
 
 const ICONS: Record<string, React.ReactNode> = {
   'dashboard': (
@@ -147,9 +152,27 @@ const ICONS: Record<string, React.ReactNode> = {
 interface AdminSidebarProps {
   activePage: string;
   isOpen?: boolean;
+  demoEnabled?: boolean;
+  collapsed?: boolean;
+  onCollapse?: () => void;
 }
 
-export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, isOpen = false }) => {
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, isOpen = false, demoEnabled = false, collapsed = false, onCollapse }) => {
+  const [roleOpen, setRoleOpen] = useState(false);
+  const [role, setRole] = useState('Administrator');
+  const [hoveredTooltip, setHoveredTooltip] = useState<{ label: string; top: number; left: number } | null>(null);
+  const roleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const closeRoleMenu = (event: MouseEvent) => {
+      if (roleRef.current && !roleRef.current.contains(event.target as Node)) setRoleOpen(false);
+    };
+    document.addEventListener('mousedown', closeRoleMenu);
+    return () => document.removeEventListener('mousedown', closeRoleMenu);
+  }, []);
+
+  const roles = ['Administrator', 'Kurator', 'Editor'];
+
   const renderIcon = (name: string) => {
     return (
       <svg
@@ -166,26 +189,51 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, isOpen =
     );
   };
 
-  const nav = getNav();
+  const nav = getNav(demoEnabled);
+  const showTooltip = (event: React.MouseEvent<HTMLAnchorElement> | React.FocusEvent<HTMLAnchorElement>, label: string) => {
+    if (!collapsed) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    setHoveredTooltip({ label, top: rect.top + rect.height / 2, left: rect.right + 12 });
+  };
 
   return (
-    <aside className={`cp-side ${isOpen ? 'open' : ''}`}>
-      <Link href="/admin/dashboard" className="cp-side-brand">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-white.png" alt="CoPublika" />
-        <div className="role">Superadmin</div>
-      </Link>
-      
-      <nav className="cp-side-nav">
+    <aside className={`cp-shell-sidebar ${isOpen ? 'open' : ''} ${collapsed ? 'collapsed' : ''}`}>
+      {collapsed && hoveredTooltip && <div className="cp-sidebar-tooltip" role="tooltip" style={{ top: hoveredTooltip.top, left: hoveredTooltip.left }}>{hoveredTooltip.label}</div>}
+      <div className="cp-shell-sidebar-topline">
+        <Link href="/admin/dashboard" className="cp-shell-sidebar-brand" aria-label="CoPublika dashboard">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-white.png" alt="CoPublika" />
+        </Link>
+        <button type="button" className="cp-shell-sidebar-collapse" onClick={() => { setRoleOpen(false); onCollapse?.(); }} aria-label={collapsed ? 'Perbesar sidebar' : 'Perkecil sidebar'} aria-pressed={collapsed}>
+          <span className="toggle-icon" aria-hidden="true">{collapsed ? <ChevronRight size={17} strokeWidth={2.4} /> : <ChevronLeft size={17} strokeWidth={2.4} />}</span>
+          <span className="toggle-label">{collapsed ? 'Buka sidebar' : 'Perkecil sidebar'}</span>
+        </button>
+      </div>
+      <div className="cp-shell-sidebar-profile">
+        <span className="cp-shell-sidebar-avatar" aria-label="Foto profil belum tersedia"><UserRound size={38} strokeWidth={1.7} /></span>
+        <div className="cp-shell-sidebar-identity"><strong>Croxias Digital House</strong><small>Admin Console</small></div>
+        <div className="cp-shell-sidebar-role" ref={roleRef}>
+          <button type="button" className="role-trigger" onClick={() => setRoleOpen((value) => !value)} aria-expanded={roleOpen} aria-haspopup="listbox"><span className="role-dot" aria-hidden="true" />{role}<span className="role-chevron" aria-hidden="true"><ChevronDown size={14} strokeWidth={2.2} /></span></button>
+          {roleOpen && <div className="cp-shell-sidebar-role-menu" role="listbox" aria-label="Pilih peran">{roles.map((item) => <button type="button" role="option" aria-selected={role === item} key={item} onClick={() => { setRole(item); setRoleOpen(false); }}><span className="role-option-dot" aria-hidden="true" />{item}{role === item && <span className="role-check" aria-hidden="true">✓</span>}</button>)}</div>}
+        </div>
+      </div>
+      <nav className="cp-shell-sidebar-nav">
         {nav.map((section, idx) => (
-          <div className="cp-side-section" key={idx}>
+          <div className="cp-shell-sidebar-section" key={idx}>
             <h6>{section.section}</h6>
             {section.items.map((item) => {
               const isActive = item.id === activePage;
               return (
                 <Link
                   href={item.href}
-                  className={`cp-side-link ${isActive ? 'active' : ''}`}
+                  className={`cp-shell-sidebar-link ${isActive ? 'active' : ''}`}
+                  data-tooltip={item.name}
+                  title={collapsed ? item.name : undefined}
+                  aria-label={collapsed ? item.name : undefined}
+                  onMouseEnter={(event) => showTooltip(event, item.name)}
+                  onMouseLeave={() => setHoveredTooltip(null)}
+                  onFocus={(event) => showTooltip(event, item.name)}
+                  onBlur={() => setHoveredTooltip(null)}
                   key={item.id}
                 >
                   {renderIcon(item.icon)}
@@ -202,16 +250,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, isOpen =
         ))}
       </nav>
 
-      <div className="cp-side-foot">
-        <Link href="#" className="cp-batch-card">
-          <div className="label">Batch #4 · Open</div>
-          <div className="name">September 2025</div>
-          <div className="meta">204 / 300 kuota terisi</div>
-          <div className="bar">
-            <span style={{ width: '68%' }}></span>
-          </div>
-        </Link>
-      </div>
+      {!demoEnabled && <div className="cp-shell-sidebar-foot"><Link href="/admin/batches" className="cp-batch-card"><div className="label">Batch Management</div><div className="name">September 2025</div><div className="meta">204 / 300 kuota terisi</div><div className="bar"><span style={{ width: '68%' }}></span></div></Link></div>}
     </aside>
   );
 };

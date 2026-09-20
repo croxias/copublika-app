@@ -116,6 +116,14 @@ function mapProject(row: Record<string, unknown>): ResearchProject | null {
 export async function getAdminDashboardData(): Promise<AdminDashboardData> {
   const { supabase } = await requireAdmin();
   if (!supabase) {
+    if (process.env.NEXT_PUBLIC_COPUBLIKA_DEMO_MODE === "true") {
+      const reason = "Mode demo aktif: data Supabase tidak ditampilkan.";
+      return {
+        batches: unavailable(reason),
+        applications: unavailable(reason),
+        researchProjects: unavailable(reason),
+      };
+    }
     const reason = "Server-side Supabase is not configured.";
     return { batches: unavailable(reason), applications: unavailable(reason), researchProjects: unavailable(reason) };
   }

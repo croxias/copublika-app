@@ -37,7 +37,7 @@ function EventHero({ event }: { event: Event }) {
 
         <div className="cp-ed-pills-v2">
           <span className="cp-ed-pill-v2 accent">{event.type ? event.type.charAt(0).toUpperCase() + event.type.slice(1) : "Event"}</span>
-          <span className="cp-ed-pill-v2">{event.isPaid ? "Berbayar" : "Gratis · Anggota"}</span>
+          <span className={`cp-ed-pill-v2 ${event.memberOnly ? "accent" : ""}`}>{event.memberOnly ? "Khusus Member" : event.isPaid ? "Berbayar" : "Gratis"}</span>
           <span className="cp-ed-pill-v2">{event.duration || "90 menit"}</span>
           <span className="cp-ed-pill-v2">Sertifikat tersedia</span>
         </div>
@@ -201,18 +201,49 @@ function EventContent({ event }: { event: Event }) {
                   <div className="cp-ed-reg-v2__cap-bar-fill" style={{ width: `${filled}%` }} />
                 </div>
               </div>
-              <button className="cp-ed-reg-v2__btn">
-                Daftarkan Saya
-                <span style={{ fontFamily: "var(--mono)" }}>→</span>
-              </button>
-              <button className="cp-ed-reg-v2__btn2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                Tambah ke Kalender
-              </button>
+              {event.memberOnly ? (
+                <>
+                  <Link href="/join-batch" className="cp-ed-reg-v2__btn">
+                    Masuk sebagai Member untuk Daftar
+                    <span style={{ fontFamily: "var(--mono)" }}>→</span>
+                  </Link>
+                  <div className="mt-2 rounded-lg border border-brand/20 bg-brand-soft/40 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+                    Event ini <b className="text-foreground">khusus Member</b>. Daftar hanya via{" "}
+                    <Link href="/member/dashboard" className="font-bold text-brand hover:underline">
+                      Dashboard Member
+                    </Link>{" "}
+                    — 1 klik, data prefill otomatis. Belum jadi member?{" "}
+                    <Link href="/join-batch" className="font-bold text-brand hover:underline">
+                      Join Cohort →
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <Link href={`/event/${event.slug}#daftar`} className="cp-ed-reg-v2__btn">
+                  Daftarkan Saya — Gratis
+                  <span style={{ fontFamily: "var(--mono)" }}>→</span>
+                </Link>
+              )}
+              {event.memberOnly && (
+                <Link href="/member/dashboard" className="cp-ed-reg-v2__btn2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  Daftar di Dashboard (Member)
+                </Link>
+              )}
+              {!event.memberOnly && (
+                <button className="cp-ed-reg-v2__btn2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  Tambah ke Kalender
+                </button>
+              )}
               <div className="cp-ed-reg-v2__features">
                 {event.benefits?.map((ft: string, i: number) => (
                   <div className="cp-ed-reg-v2__ft" key={i}>{ft}</div>
