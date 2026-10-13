@@ -125,7 +125,7 @@ export default function WebsiteHeroSliderPage() {
             </div>
           </article>
         ))}
-        {!slides.length && <div className="ac-empty"><p>Belum ada slide. Klik "+ Slide baru" untuk menambahkan.</p></div>}
+        {!slides.length && <div className="ac-empty"><p>Belum ada slide. Klik &ldquo;+ Slide baru&rdquo; untuk menambahkan.</p></div>}
       </div>
     </section>
   );

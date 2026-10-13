@@ -111,7 +111,7 @@ export default function WebsiteAboutPage() {
             </div>
           </article>
         ))}
-        {!sections.length && <div className="ac-empty"><p>Belum ada section. Klik "+ Section baru" untuk menambahkan.</p></div>}
+        {!sections.length && <div className="ac-empty"><p>Belum ada section. Klik &ldquo;+ Section baru&rdquo; untuk menambahkan.</p></div>}
       </div>
     </section>
   );

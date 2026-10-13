@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useStaging } from '@/lib/staging';
 import type { StagingSiteConfig } from '@/lib/staging';
 import AdminPlaceholder from '@/components/admin/AdminPlaceholder';
@@ -8,12 +8,11 @@ const demoEnabled = process.env.NEXT_PUBLIC_COPUBLIKA_DEMO_MODE === 'true';
 
 export default function WebsiteConfigPage() {
   const s = useStaging();
-  const [form, setForm] = useState<StagingSiteConfig | null>(null);
+  // Unsaved edits live in `draft`; until the first edit the form shows the stored config,
+  // so a config loaded from localStorage after mount still appears.
+  const [draft, setForm] = useState<StagingSiteConfig | null>(null);
+  const form = draft ?? s.siteConfig;
   const [notice, setNotice] = useState('');
-
-  useEffect(() => {
-    if (s.siteConfig) setForm({ ...s.siteConfig });
-  }, [s.siteConfig]);
 
   if (!demoEnabled) {
     return <AdminPlaceholder title="Konfigurasi Website" eyebrow="Konten Website" description="Tersedia hanya pada mode staging/demo." />;
@@ -26,6 +25,7 @@ export default function WebsiteConfigPage() {
 
   const save = () => {
     s.updateSiteConfig(form);
+    setForm(null);
     flash('Konfigurasi tersimpan di sandbox.');
   };
 

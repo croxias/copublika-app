@@ -119,7 +119,7 @@ export default function WebsiteResearchProjectPage() {
             </div>
           </article>
         ))}
-        {!items.length && <div className="ac-empty"><p>Belum ada highlight. Klik "+ Highlight baru" untuk menambahkan.</p></div>}
+        {!items.length && <div className="ac-empty"><p>Belum ada highlight. Klik &ldquo;+ Highlight baru&rdquo; untuk menambahkan.</p></div>}
       </div>
     </section>
   );
