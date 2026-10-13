@@ -1,29 +1,59 @@
+'use client';
 import Link from "next/link";
+import { useOptionalStaging } from "@/lib/staging";
+import { useMemo } from "react";
+
+// Hero landing: membaca slide Published dari staging store saat demo mode aktif.
+// Saat demo off (production), store kosong → fallback ke konten statis bawaan,
+// sehingga perilaku produksi tidak berubah pada fase ini.
+
+const FALLBACK = {
+  eyebrow: "Digital Research Engine — CoPublika",
+  title: "Riset yang lebih terarah.",
+  titleAccent: "Kolaborasi yang lebih berarti.",
+  dek: "Ruang kerja dan komunitas terkurasi untuk akademisi yang ingin menemukan rekan riset, mengembangkan ide, dan menulis untuk publikasi berkualitas.",
+  ctaLabel: "Mulai berkolaborasi",
+  ctaHref: "/register",
+  secondaryLabel: "Lihat proyek riset",
+  secondaryHref: "/research",
+  note: "Untuk akademisi pemula — lintas disiplin — Indonesia",
+};
 
 export function Hero() {
+  const staging = useOptionalStaging();
+  const slide = useMemo(() => {
+    const published = (staging?.heroSlides ?? [])
+      .filter((s) => s.status === "Published")
+      .sort((a, b) => a.order - b.order);
+    return published[0] ?? null;
+  }, [staging]);
+
+  const c = slide ?? FALLBACK;
+
   return (
     <section className="cp-home-hero" aria-labelledby="home-hero-title">
       <div className="cp-home-hero__inner">
         <div className="cp-home-hero__copy">
           <p className="cp-home-hero__eyebrow">
-            <span aria-hidden="true" /> Digital Research Engine · CoPublika
+            <span aria-hidden="true" /> {c.eyebrow}
           </p>
           <h1 id="home-hero-title" className="cp-home-hero__title">
-            Riset yang lebih terarah. <em>Kolaborasi yang lebih berarti.</em>
+            {c.title} <em>{c.titleAccent}</em>
           </h1>
-          <p className="cp-home-hero__dek">
-            Ruang kerja dan komunitas terkurasi untuk akademisi yang ingin menemukan rekan riset,
-            mengembangkan ide, dan menulis untuk publikasi berkualitas.
-          </p>
+          <p className="cp-home-hero__dek">{c.dek}</p>
           <div className="cp-home-hero__actions">
-            <Link href="/register" className="cp-btn cp-btn--solid cp-btn--lg">
-              Mulai berkolaborasi <span className="cp-btn__arrow" aria-hidden="true">→</span>
-            </Link>
-            <Link href="/research" className="cp-home-hero__secondary">
-              Lihat proyek riset <span aria-hidden="true">↗</span>
-            </Link>
+            {c.ctaLabel && (
+              <Link href={c.ctaHref || "/register"} className="cp-btn cp-btn--solid cp-btn--lg">
+                {c.ctaLabel} <span className="cp-btn__arrow" aria-hidden="true">→</span>
+              </Link>
+            )}
+            {c.secondaryLabel && (
+              <Link href={c.secondaryHref || "/research"} className="cp-home-hero__secondary">
+                {c.secondaryLabel} <span aria-hidden="true">→</span>
+              </Link>
+            )}
           </div>
-          <p className="cp-home-hero__note">Untuk akademisi pemula · lintas disiplin · Indonesia</p>
+          {c.note && <p className="cp-home-hero__note">{c.note}</p>}
         </div>
 
         <div className="cp-home-hero__visual" role="img" aria-label="Diagram alur kolaborasi riset: dari ide, bertemu orang, hingga menjadi paper.">

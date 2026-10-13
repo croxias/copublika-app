@@ -1,4 +1,5 @@
 import type { StagingState, StagingApplicant, StagingBatch, StagingProject, StagingBlog, StagingEvent, ActivityEvent } from './types';
+import { WEBSITE_CONTENT_SEED } from './website-content-seed';
 
 const weeks = ['2026-06-08','2026-06-15','2026-06-22','2026-06-29','2026-07-06','2026-07-13','2026-07-20','2026-07-27','2026-08-03','2026-08-10','2026-08-17','2026-08-24'];
 const weeklySubmissions = [2,3,4,5,3,4,5,2,4,5,3,8];
@@ -23,5 +24,5 @@ const projects: StagingProject[] = Array.from({length:24}, (_, i) => ({id:`PRO-$
 const blogs: StagingBlog[] = Array.from({length:18}, (_, i) => ({id:`BLO-${String(i+1).padStart(3,'0')}`,title:`Insight Riset Sandbox ${String(i+1).padStart(2,'0')}`,category:i % 2 ? 'Resources' : 'Research Tips',status:(['Draft','Scheduled','Published','Archived'] as const)[i % 4],updatedAt:weeks[i % weeks.length],publishAt:i % 4 === 2 ? weeks[i % weeks.length] : '',content:'Konten sintetis untuk preview editor blog.'}));
 const events: StagingEvent[] = Array.from({length:10}, (_, i) => ({id:`EVE-${String(i+1).padStart(3,'0')}`,title:`Sesi Akademik Sandbox ${String(i+1).padStart(2,'0')}`,date:`2026-${String(8 + Math.floor(i / 3)).padStart(2,'0')}-${String(10 + i).padStart(2,'0')}`,location:i % 2 ? 'Online Sandbox' : 'Ruang Sandbox',status:(['Upcoming','Live','Ended','Archived'] as const)[i % 4],description:'Event sintetis untuk preview kalender.',capacity:30 + i * 5}));
 const activity: ActivityEvent[] = Array.from({length:128}, (_, i) => ({id:`ACT-${String(i+1).padStart(3,'0')}`,action:['Pendaftar diterima','Review Scholar selesai','Proyek diperbarui','Batch dibuka'][i % 4],entity:i % 4 < 2 ? `APP-${String((i % 48)+1).padStart(3,'0')}` : `PRO-${String((i % 24)+1).padStart(3,'0')}`,detail:'Aktivitas sintetis dari seed preview.',at:`${weeks[i % weeks.length]}T${String(8 + i % 9).padStart(2,'0')}:00:00.000Z`}));
-export const STAGING_SEED: StagingState = {applicants,batches,projects,blogs,events,activity};
+export const STAGING_SEED: StagingState = {applicants,batches,projects,blogs,events,activity,...WEBSITE_CONTENT_SEED};
 export const cloneSeed=()=>JSON.parse(JSON.stringify(STAGING_SEED)) as StagingState;

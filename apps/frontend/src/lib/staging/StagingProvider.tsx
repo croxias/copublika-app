@@ -2,7 +2,7 @@
 import {createContext,useCallback,useContext,useEffect,useMemo,useState} from 'react';
 import {cloneSeed} from './seed';
 import {STAGING_STORAGE_KEY,id,now} from './types';
-import type {StagingStore,StagingState,StagingApplicant,StagingBatch,StagingProject,StagingBlog,StagingEvent} from './types';
+import type {StagingStore,StagingState,StagingApplicant,StagingBatch,StagingProject,StagingBlog,StagingEvent,StagingHeroSlide,StagingSiteConfig,StagingAboutSection,LandingResearchHighlight} from './types';
 const Context=createContext<StagingStore|null>(null);
 
 function loadStoredState(): StagingState | null {
@@ -17,7 +17,7 @@ function loadStoredState(): StagingState | null {
   }
 }
 
-const EMPTY_STATE:StagingState={applicants:[],batches:[],projects:[],blogs:[],events:[],activity:[]};
+const EMPTY_STATE:StagingState={applicants:[],batches:[],projects:[],blogs:[],events:[],activity:[],heroSlides:[],siteConfig:null,aboutSections:[],landingResearch:[]};
 
 export function StagingProvider({children,enabled=true}:{children:React.ReactNode;enabled?:boolean}){const [state,setState]=useState<StagingState>(()=>enabled?cloneSeed():EMPTY_STATE);const [hydrated,setHydrated]=useState(true);
  // Client-only hydration prevents localStorage from changing the server-rendered tree.
@@ -31,7 +31,11 @@ export function StagingProvider({children,enabled=true}:{children:React.ReactNod
  addBatch:v=>mutate('batches',xs=>[...xs,{...v,id:id('BAT')} as StagingBatch],'Batch sintetis ditambahkan'),updateBatch:(x,v)=>mutate('batches',xs=>xs.map(a=>a.id===x?{...a,...v}:a),'Batch diperbarui'),removeBatch:x=>mutate('batches',xs=>xs.filter(a=>a.id!==x),'Batch dihapus'),
  addProject:v=>mutate('projects',xs=>[...xs,{...v,id:id('PRO'),updatedAt:now().slice(0,10)} as StagingProject],'Proyek sintetis ditambahkan'),updateProject:(x,v)=>mutate('projects',xs=>xs.map(a=>a.id===x?{...a,...v,updatedAt:now().slice(0,10)}:a),'Proyek diperbarui'),
  addBlog:v=>mutate('blogs',xs=>[...xs,{...v,id:id('BLO'),updatedAt:now().slice(0,10)} as StagingBlog],'Blog sintetis ditambahkan'),updateBlog:(x,v)=>mutate('blogs',xs=>xs.map(a=>a.id===x?{...a,...v,updatedAt:now().slice(0,10)}:a),'Blog diperbarui'),
- addEvent:v=>mutate('events',xs=>[...xs,{...v,id:id('EVE')} as StagingEvent],'Event sintetis ditambahkan'),updateEvent:(x,v)=>mutate('events',xs=>xs.map(a=>a.id===x?{...a,...v}:a),'Event diperbarui') }),[state,mutate,enabled]); return <Context.Provider value={value}>{hydrated?children:<div aria-busy="true">Memuat preview sandbox…</div>}</Context.Provider>}
+ addEvent:v=>mutate('events',xs=>[...xs,{...v,id:id('EVE')} as StagingEvent],'Event sintetis ditambahkan'),updateEvent:(x,v)=>mutate('events',xs=>xs.map(a=>a.id===x?{...a,...v}:a),'Event diperbarui'),
+ addHeroSlide:v=>mutate('heroSlides',xs=>[...xs,{...v,id:id('SLD')} as StagingHeroSlide],'Slide hero ditambahkan'),updateHeroSlide:(x,v)=>mutate('heroSlides',xs=>xs.map(a=>a.id===x?{...a,...v}:a),'Slide hero diperbarui'),removeHeroSlide:x=>mutate('heroSlides',xs=>xs.filter(a=>a.id!==x),'Slide hero dihapus'),
+ updateSiteConfig:v=>mutate('siteConfig',()=>v,'Konfigurasi situs diperbarui'),
+ addAboutSection:v=>mutate('aboutSections',xs=>[...xs,{...v,id:id('ABT')} as StagingAboutSection],'Section about ditambahkan'),updateAboutSection:(x,v)=>mutate('aboutSections',xs=>xs.map(a=>a.id===x?{...a,...v}:a),'Section about diperbarui'),removeAboutSection:x=>mutate('aboutSections',xs=>xs.filter(a=>a.id!==x),'Section about dihapus'),
+ addLandingResearch:v=>mutate('landingResearch',xs=>[...xs,{...v,id:id('LRH')} as LandingResearchHighlight],'Highlight riset landing ditambahkan'),updateLandingResearch:(x,v)=>mutate('landingResearch',xs=>xs.map(a=>a.id===x?{...a,...v}:a),'Highlight riset landing diperbarui'),removeLandingResearch:x=>mutate('landingResearch',xs=>xs.filter(a=>a.id!==x),'Highlight riset landing dihapus') }),[state,mutate,enabled]); return <Context.Provider value={value}>{hydrated?children:<div aria-busy="true">Memuat preview sandbox…</div>}</Context.Provider>}
 export const useStaging=()=>{const value=useContext(Context);if(!value)throw new Error('useStaging must be used inside StagingProvider');return value};
 export const useOptionalStaging=()=>useContext(Context);
 export default StagingProvider;

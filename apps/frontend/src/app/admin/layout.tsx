@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import AdminBodyClassManager from './AdminBodyClassManager';
 import './admin.css';
+import './website-content.css';
 import './staging.css';
 import './ui-foundation.css';
 import './sidebar.css';

@@ -23,38 +23,47 @@ const getNav = (demoEnabled = false): NavSection[] => {
 
   return [
   {
-    section: 'Overview',
+    section: 'Ringkasan',
     items: [
-      { id: 'dashboard', name: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
-      { id: 'analytics', name: 'Analytics', href: '/admin/analytics', icon: 'chart' }
+      { id: 'dashboard', name: 'Dasbor', href: '/admin/dashboard', icon: 'dashboard' },
+      { id: 'analytics', name: 'Analitik', href: '/admin/analytics', icon: 'chart' }
     ]
   },
   {
-    section: 'Curation',
+    section: 'Kurasi',
     items: [
       { id: 'applicants', name: 'Verifikasi Pendaftar', href: stagingHref('/admin/applicants'), icon: 'user-check', badge: demoEnabled ? 'Preview' : '14' },
-      { id: 'batches', name: 'Batch Management', href: stagingHref('/admin/batches'), icon: 'clock' },
+      { id: 'batches', name: 'Manajemen Batch', href: stagingHref('/admin/batches'), icon: 'clock' },
       { id: 'members', name: 'Anggota', href: stagingHref('/admin/members'), icon: 'users', badge: demoEnabled ? 'Preview' : '1.240', soft: true }
     ]
   },
   {
-    section: 'Project Governance',
+    section: 'Tata Kelola Riset',
     items: [
       { id: 'projects', name: 'Riset & Proyek', href: stagingHref('/admin/projects'), icon: 'file', badge: demoEnabled ? 'Preview' : '8' },
       { id: 'clusters', name: 'Cluster Riset', href: stagingHref('/admin/clusters'), icon: 'grid' }
     ]
   },
   {
-    section: 'Content',
+    section: 'Program & Pembelajaran',
     items: [
-      { id: 'blog', name: 'Blog', href: stagingHref('/admin/blog'), icon: 'edit' },
-      { id: 'events', name: 'Event', href: stagingHref('/admin/events'), icon: 'calendar' },
-      { id: 'lms', name: 'LMS — Siap Tembus Scopus', href: stagingHref('/admin/lms'), icon: 'book' },
-      { id: 'templates', name: 'Template Vault', href: stagingHref('/admin/templates'), icon: 'package' }
+      { id: 'lms', name: 'Halaman Program - Siap Tembus Scopus', href: stagingHref('/admin/lms'), icon: 'book' },
+      { id: 'templates', name: 'Gudang Template', href: stagingHref('/admin/templates'), icon: 'package' }
     ]
   },
   {
-    section: 'System',
+    section: 'Konten Website',
+    items: [
+      { id: 'website-blog', name: 'Artikel Blog', href: stagingHref('/admin/blog'), icon: 'edit' },
+      { id: 'website-events', name: 'Agenda Event', href: stagingHref('/admin/events'), icon: 'calendar' },
+      { id: 'website-hero-slider', name: 'Hero Slider', href: stagingHref('/admin/website/hero-slider'), icon: 'layout' },
+      { id: 'website-config', name: 'Konfigurasi Website', href: stagingHref('/admin/website/config'), icon: 'sliders' },
+      { id: 'website-about', name: 'Halaman About', href: stagingHref('/admin/website/about'), icon: 'info' },
+      { id: 'website-research', name: 'Research Project \u2014 Landing', href: stagingHref('/admin/website/research-project'), icon: 'file' }
+    ]
+  },
+  {
+    section: 'Sistem',
     items: [
       { id: 'settings', name: 'Pengaturan Situs', href: '/admin/settings', icon: 'settings' },
       { id: 'audit', name: 'Audit & Keamanan', href: stagingHref('/admin/audit'), icon: 'shield' }
@@ -134,6 +143,27 @@ const ICONS: Record<string, React.ReactNode> = {
     <g>
       <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
       <path d="m3.27 6.96 8.73 5.05 8.73-5.05M12 22.08V12" />
+    </g>
+  ),
+  'layout': (
+    <g>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M3 9h18" />
+      <path d="M9 21V9" />
+    </g>
+  ),
+  'sliders': (
+    <g>
+      <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" />
+      <line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" />
+      <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
+    </g>
+  ),
+  'info': (
+    <g>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4M12 8h.01" />
     </g>
   ),
   'settings': (
