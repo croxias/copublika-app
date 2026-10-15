@@ -37,7 +37,6 @@ export const PEOPLE: Person[] = [
   { name: 'Dr. Bayu S.', kind: 'mentor', role: 'Mentor', badge: 'Editor tamu', expertise: '', photo: 'https://i.pravatar.cc/100?img=15', affiliation: 'Universitas Hasanuddin', topics: ['Editorial', 'Seleksi jurnal'], linkedinUrl: 'https://www.linkedin.com/in/bayu-s', instagramUrl: 'https://www.instagram.com/bayu_s', email: 'bayu.s@copublika.id' },
 ];
 
-export const STS_MENTOR_IDS = PEOPLE.slice(0, 6).map((p) => personId(p.name));
 
 const people: CmsItem[] = PEOPLE.map((p, i) => ({
   id: personId(p.name),

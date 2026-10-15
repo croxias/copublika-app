@@ -3,6 +3,7 @@ import type { CollectionKey } from '../types';
 import type { SeedPart } from './types';
 import { seed as content } from './content';
 import { seed as research } from './research';
+import { seed as programs } from './programs';
 import { seed as library } from './library';
 import { seed as home } from './home';
 import { seed as pages } from './pages';
@@ -15,7 +16,7 @@ const EMPTY: Record<CollectionKey, []> = {
   blog: [], events: [], projects: [], publications: [], heroSlides: [], people: [], testimonials: [], faqs: [],
 };
 
-const parts: SeedPart[] = [content, research, library, home, pages, about, settings, testimonials, people];
+const parts: SeedPart[] = [content, research, programs, library, home, pages, about, settings, testimonials, people];
 
 /** Initial CMS content: what the public site shows today, before any admin edit. */
 export const CMS_SEED: CmsState = {

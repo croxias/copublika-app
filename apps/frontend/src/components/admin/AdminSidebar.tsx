@@ -47,12 +47,18 @@ const getNav = (demoEnabled = false): NavSection[] => [
     ]
   },
   {
+    section: 'Program',
+    items: [
+      { id: 'program-sts', name: 'Siap Tembus Scopus', href: '/admin/website/siap-tembus-scopus', icon: 'award' },
+      { id: 'program-btm', name: 'Bootcamp 30 Hari', href: '/admin/website/bootcamp-menulis', icon: 'edit' }
+    ]
+  },
+  {
     section: 'Halaman Website',
     items: [
       { id: 'page-home', name: 'Beranda', href: '/admin/website/home', icon: 'home' },
       { id: 'page-about', name: 'About', href: '/admin/website/about', icon: 'info', also: ['/admin/website/about-team', '/admin/website/about-mentors'] },
       { id: 'page-research', name: 'Halaman Riset', href: '/admin/website/research', icon: 'layout' },
-      { id: 'page-program', name: 'Siap Tembus Scopus', href: '/admin/website/program', icon: 'award' },
       { id: 'page-curation', name: 'Proses Kurasi', href: '/admin/website/curation', icon: 'route' },
       { id: 'page-contact', name: 'Kontak', href: '/admin/website/contact', icon: 'mail' }
     ]
