@@ -1,4 +1,4 @@
-export type ActiveProjectStatus = "recruiting" | "writing" | "review";
+export type ActiveProjectStatus = "recruiting" | "writing" | "review" | "submitted";
 
 export type ActiveProject = {
   id: string;
@@ -27,12 +27,14 @@ export const STATUS_LABEL: Record<ActiveProjectStatus, string> = {
   recruiting: "Recruiting",
   writing: "Writing",
   review: "In Review",
+  submitted: "Submitted",
 };
 
 export const STATUS_LABEL_ID: Record<ActiveProjectStatus, string> = {
   recruiting: "Mencari kolaborator",
   writing: "Sedang ditulis",
-  review: "Dalam review",
+  review: "Review artikel",
+  submitted: "Sudah submit",
 };
 
 export const ACTIVE_PROJECTS: ActiveProject[] = [
@@ -51,12 +53,12 @@ export const ACTIVE_PROJECTS: ActiveProject[] = [
     timeline: "Mei 2025 — Desember 2025 (Fase Writing)",
     tags: ["EdTech", "Policy", "AI"],
     lead: "Dr. Ade Putranto",
-    leadRole: "Principal Investigator",
+    leadRole: "Author",
     affiliation: "Universitas Negeri Yogyakarta",
     collaborators: [
-      { name: "Dr. Lina Kartika", role: "Co-Investigator · Linguistics" },
-      { name: "Bayu Nugroho, M.Sc.", role: "Data Analyst" },
-      { name: "Sari Wibowo, S.Pd.", role: "Field Coordinator" },
+      { name: "Dr. Lina Kartika", role: "Co-author · Linguistics" },
+      { name: "Bayu Nugroho, M.Sc.", role: "Co-author · Data Analyst" },
+      { name: "Sari Wibowo, S.Pd.", role: "Co-author · Field Coordinator" },
     ],
     startedAt: "2024-11",
   },
@@ -74,11 +76,11 @@ export const ACTIVE_PROJECTS: ActiveProject[] = [
     timeline: "Submitted ke Health Promotion International — menunggu reviewer comments",
     tags: ["Health", "Digital", "Rural"],
     lead: "Dr. Maya Rahmawati",
-    leadRole: "Principal Investigator",
+    leadRole: "Author",
     affiliation: "Universitas Gadjah Mada",
     collaborators: [
-      { name: "Andika Hidayat, M.Kes.", role: "Field Lead" },
-      { name: "Dewi Sari, M.Sc.", role: "Statistician" },
+      { name: "Andika Hidayat, M.Kes.", role: "Co-author · Field Lead" },
+      { name: "Dewi Sari, M.Sc.", role: "Co-author · Statistician" },
     ],
     startedAt: "2024-08",
   },
@@ -96,11 +98,11 @@ export const ACTIVE_PROJECTS: ActiveProject[] = [
     timeline: "Mei 2025 — Agustus 2025 (Draft penuh)",
     tags: ["Sustainability", "MSME", "Textile"],
     lead: "Dr. Bayu Setiawan",
-    leadRole: "Principal Investigator",
+    leadRole: "Author",
     affiliation: "Institut Teknologi Sepuluh Nopember",
     collaborators: [
-      { name: "Dr. Dewi Nirmala", role: "Co-Investigator · Sociology" },
-      { name: "Rini Puspita, M.Pd.", role: "Research Assistant" },
+      { name: "Dr. Dewi Nirmala", role: "Co-author · Sociology" },
+      { name: "Rini Puspita, M.Pd.", role: "Co-author · Research Assistant" },
     ],
     startedAt: "2024-09",
   },
@@ -118,10 +120,10 @@ export const ACTIVE_PROJECTS: ActiveProject[] = [
     timeline: "Recruiting hingga 30 Jun 2025 — pelaksanaan Sep–Des 2025",
     tags: ["Linguistics", "EAP", "Writing"],
     lead: "Dr. Lina Kartika",
-    leadRole: "Principal Investigator",
+    leadRole: "Author",
     affiliation: "Universitas Pendidikan Indonesia",
     collaborators: [
-      { name: "Putri Andini, Ph.D.", role: "Methodologist (advisory)" },
+      { name: "Putri Andini, Ph.D.", role: "Co-author · Methodologist" },
     ],
     startedAt: "2025-02",
   },
@@ -139,10 +141,10 @@ export const ACTIVE_PROJECTS: ActiveProject[] = [
     timeline: "Under review — Learned Publishing, sejak Maret 2025",
     tags: ["Publishing", "Discourse", "Q1"],
     lead: "Dr. Hadi Suryanto",
-    leadRole: "Principal Investigator",
+    leadRole: "Author",
     affiliation: "Universitas Indonesia",
     collaborators: [
-      { name: "Dr. Ade Putranto", role: "Co-Investigator · Senior advisor" },
+      { name: "Dr. Ade Putranto", role: "Co-author · Senior advisor" },
     ],
     startedAt: "2024-06",
   },
@@ -160,10 +162,10 @@ export const ACTIVE_PROJECTS: ActiveProject[] = [
     timeline: "Recruiting hingga 31 Juli 2025 — analisis Agu–Nov 2025",
     tags: ["Sociology", "Network", "Capital"],
     lead: "Dr. Andika Hidayat",
-    leadRole: "Principal Investigator",
+    leadRole: "Author",
     affiliation: "Universitas Airlangga",
     collaborators: [
-      { name: "Dr. Maya Rahmawati", role: "Co-Investigator · Public Health" },
+      { name: "Dr. Maya Rahmawati", role: "Co-author · Public Health" },
     ],
     startedAt: "2025-01",
   },

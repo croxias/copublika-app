@@ -1,20 +1,16 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import { ArrowRight, BookOpen, Calendar, Check, Clock, Layers, Lock, Sparkles, Target, Users } from "lucide-react";
+import { getSession } from "@/lib/auth";
 import { getResearchProjectBySlug } from "@/lib/data/research";
-import { ACTIVE_PROJECTS, STATUS_LABEL, type ActiveProject } from "@/lib/data/active-projects";
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .filter((w) => /^[A-Za-z]/.test(w))
-    .slice(-2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-}
+import { ACTIVE_PROJECTS, type ActiveProject } from "@/lib/data/active-projects";
+import { PHASES, RESEARCH_PREVIEW_OPEN, STATUS_ID, formatMonth, initials, personPhoto, phaseIndex, teamSize } from "@/lib/content/research";
+import { BackButton } from "@/components/research/BackButton";
+import { ProjectCard } from "@/components/research/ActiveProjectsGallery";
+import { Reveal } from "@/components/about/motion";
 
 async function loadProject(slug: string): Promise<ActiveProject | null> {
-  // 1) Try active projects first (mock IDs p01-p06 + future additions)
+  // 1) Active projects first (p01-p06 + future additions)
   const active = ACTIVE_PROJECTS.find((p) => p.id === slug);
   if (active) return active;
 
@@ -34,243 +30,246 @@ async function loadProject(slug: string): Promise<ActiveProject | null> {
     timeline: "Detail timeline tersedia untuk anggota terverifikasi.",
     tags: db.tags,
     lead: db.leadName,
-    leadRole: "Principal Investigator",
+    leadRole: "Author",
     affiliation: db.leadInstitution,
     collaborators: [],
     startedAt: (db.createdAt ?? "").slice(0, 7),
   };
 }
 
-export default async function ResearchPreviewPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = await loadProject(slug);
+  const p = ACTIVE_PROJECTS.find((x) => x.id === slug);
+  return { title: p ? `${p.title} — CoPublika` : "Proyek riset — CoPublika", description: p?.abstract.slice(0, 160) };
+}
 
+function Avatar({ name, size = 44 }: { name: string; size?: number }) {
+  const photo = personPhoto(name);
+  return (
+    <span className="cp-rd-avatar" style={{ width: size, height: size }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {photo ? <img src={photo} alt="" /> : initials(name)}
+    </span>
+  );
+}
+
+export default async function ResearchPreviewPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  // The proxy already redirects guests; this is the real check.
+  if (!(await getSession())) redirect(`/login?next=${encodeURIComponent(`/research-project/${slug}`)}&reason=research`);
+  const project = await loadProject(slug);
   if (!project) notFound();
 
-  return (
-    <>
-      {/* Hero */}
-      <section className="cp-stsz-hero cp-rpv-hero">
-        <div className="cp-stsz-hero__grid" aria-hidden="true" />
-        <div className="cp-stsz-hero__orb-a" aria-hidden="true" />
-        <div className="cp-stsz-hero__orb-b" aria-hidden="true" />
+  const phase = phaseIndex(project.status);
+  const open = RESEARCH_PREVIEW_OPEN;
+  const related = ACTIVE_PROJECTS.filter((p) => p.id !== project.id)
+    .sort((a, b) => Number(b.cluster === project.cluster) - Number(a.cluster === project.cluster))
+    .slice(0, 3);
 
-        <div className="cp-stsz-hero__inner cp-rpv-hero__inner">
-          <div className="cp-rpv-tags">
-            <span className="cp-rpv-cluster">{project.cluster}</span>
-            <span className={`cp-rpv-status cp-rpv-status--${project.status}`}>
-              {STATUS_LABEL[project.status]}
-            </span>
+  return (
+    <main className="cp-rd">
+      {/* Hero */}
+      <section className="cp-rd-hero">
+        <div className="cp-ab-hero__bg" aria-hidden="true" />
+        <div className="cp-rd-hero__glow" aria-hidden="true" />
+        <div className="cp-ab-wrap">
+          <div className="cp-rd-hero__nav">
+            <BackButton fallback="/research" label="Kembali ke Riset" />
+            <nav className="cp-rd-crumb" aria-label="Lokasi">
+              <Link href="/research">Riset</Link>
+              <span aria-hidden="true">/</span>
+              <span>{project.cluster}</span>
+            </nav>
           </div>
 
-          <h1 className="cp-rpv-title">{project.title}</h1>
+          <div className="cp-rd-hero__grid">
+            <Reveal className="cp-rd-hero__head">
+              <div className="cp-rd-hero__pills">
+                <span className="cp-rd-pill"><Layers size={13} /> {project.cluster}</span>
+                <span className={`cp-rp-status cp-rp-status--${project.status}`}>{STATUS_ID[project.status]}</span>
+              </div>
+              <h1 className="cp-rd-hero__title">{project.title}</h1>
+              <p className="cp-rd-hero__abs">{project.abstract}</p>
 
-          <p className="cp-rpv-lead">{project.abstract}</p>
+              <div className="cp-rd-authors">
+                <div className="cp-rd-authors__stack" aria-hidden="true">
+                  <Avatar name={project.lead} size={46} />
+                  {project.collaborators.slice(0, 3).map((c) => (
+                    <Avatar key={c.name} name={c.name} size={46} />
+                  ))}
+                  {project.collaborators.length > 3 && <span className="cp-rd-avatar cp-rd-authors__more">+{project.collaborators.length - 3}</span>}
+                </div>
+                <span className="cp-rd-authors__text">
+                  <small>{project.leadRole}</small>
+                  <strong>{project.lead}</strong>
+                  <em>
+                    {project.affiliation}
+                    {project.collaborators.length > 0 && ` · bersama ${project.collaborators.length} co-author`}
+                  </em>
+                </span>
+              </div>
 
-          <div className="cp-rpv-meta">
-            <div className="cp-rpv-meta__item">
-              <span className="cp-rpv-meta__l">Principal Investigator</span>
-              <span className="cp-rpv-meta__v">{project.lead}</span>
-              <span className="cp-rpv-meta__sub">{project.affiliation}</span>
-            </div>
-            <div className="cp-rpv-meta__item">
-              <span className="cp-rpv-meta__l">Mulai</span>
-              <span className="cp-rpv-meta__v">{formatMonth(project.startedAt)}</span>
-            </div>
-            <div className="cp-rpv-meta__item">
-              <span className="cp-rpv-meta__l">Cluster</span>
-              <span className="cp-rpv-meta__v">{project.cluster}</span>
-            </div>
-            <div className="cp-rpv-meta__item">
-              <span className="cp-rpv-meta__l">Status</span>
-              <span className="cp-rpv-meta__v">{STATUS_LABEL[project.status]}</span>
-            </div>
+              <div className="cp-rd-hero__ctas">
+                <a href="#tim" className="cp-ab-btn cp-ab-btn--primary">
+                  {project.status === "recruiting" ? "Gabung sebagai co-author" : "Lihat tim riset"} <ArrowRight size={16} />
+                </a>
+                <Link href="/contact" className="cp-ab-btn cp-ab-btn--line">Tanya tim</Link>
+              </div>
+            </Reveal>
+
+            <Reveal className="cp-rd-progress" delay={0.15}>
+              <div className="cp-rd-progress__head">
+                <span>Progres riset</span>
+                <strong>Tahap {phase + 1}<small>/{PHASES.length}</small></strong>
+              </div>
+              <div className="cp-rd-progress__bar" aria-hidden="true">
+                <i style={{ width: `${((phase + 0.5) / PHASES.length) * 100}%` }} />
+              </div>
+              <ol className="cp-rd-track">
+                {PHASES.map((ph, i) => (
+                  <li key={ph.key} className={`cp-rd-track__step ${i < phase ? "is-done" : i === phase ? "is-now" : ""}`} aria-current={i === phase ? "step" : undefined}>
+                    <span className="cp-rd-track__dot">{i < phase ? <Check size={13} strokeWidth={3} /> : i + 1}</span>
+                    <span className="cp-rd-track__label">{ph.label}</span>
+                    <span className="cp-rd-track__state">{i < phase ? "Selesai" : i === phase ? "Berjalan" : i === PHASES.length - 1 ? "Tujuan akhir" : "Berikutnya"}</span>
+                  </li>
+                ))}
+              </ol>
+              <dl className="cp-rd-progress__facts">
+                <div><dt><Calendar size={14} /> Mulai</dt><dd>{formatMonth(project.startedAt)}</dd></div>
+                <div><dt><Users size={14} /> Tim</dt><dd>{teamSize(project)} orang</dd></div>
+                <div><dt><Target size={14} /> Target jurnal</dt><dd>{project.targetJournals.length || "—"} kandidat</dd></div>
+              </dl>
+            </Reveal>
           </div>
         </div>
       </section>
 
       {/* Body */}
-      <section className="cp-rpv-body">
-        <div className="cp-rpv-body__wrap">
-          <div className="cp-rpv-grid">
-            {/* Main column */}
-            <div className="cp-rpv-main">
-              {/* Locked methodology */}
-              <article className="cp-rpv-block">
-                <header className="cp-rpv-block__head">
-                  <span className="cp-rpv-block__tag">M.01 · Metodologi</span>
-                  <h2 className="cp-rpv-block__h">Pendekatan riset & rancangan studi</h2>
-                </header>
-                <div className="cp-rpv-locked">
-                  <p className="cp-rpv-locked__text">{project.methodology}</p>
-                  <div className="cp-rpv-locked__veil" role="status" aria-label="Konten terkunci">
-                    <span className="cp-rpv-locked__icon" aria-hidden="true">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="2" />
-                        <path d="M7 11V7a5 5 0 0110 0v4" />
-                      </svg>
-                    </span>
-                    <div className="cp-rpv-locked__copy">
-                      <strong>Metodologi penuh terkunci.</strong>
-                      <span>Verifikasi Google Scholar untuk akses detail.</span>
-                    </div>
-                    <Link href="/register" className="cp-rpv-locked__cta">
-                      Unlock Research
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                        <path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </Link>
+      <section className="cp-rd-body">
+        <div className="cp-ab-wrap cp-rd-grid">
+          <div className="cp-rd-main">
+            <Reveal className="cp-rd-block">
+              <h2 className="cp-rd-block__h"><span className="cp-rd-ico"><Sparkles size={17} /></span> Ringkasan riset</h2>
+              <p className="cp-rd-lead">{project.abstract}</p>
+            </Reveal>
+
+            <Reveal className="cp-rd-block">
+              <h2 className="cp-rd-block__h"><span className="cp-rd-ico"><BookOpen size={17} /></span> Metodologi</h2>
+              {open ? (
+                <p className="cp-rd-text">{project.methodology}</p>
+              ) : (
+                <div className="cp-rd-locked">
+                  <p>{project.methodology}</p>
+                  <div className="cp-rd-locked__veil">
+                    <Lock size={20} />
+                    <strong>Metodologi penuh terbuka untuk anggota.</strong>
+                    <Link href="/register" className="cp-ab-btn cp-ab-btn--primary">Gabung komunitas</Link>
                   </div>
                 </div>
-              </article>
+              )}
+            </Reveal>
 
-              {/* Target journals */}
-              {project.targetJournals.length > 0 ? (
-                <article className="cp-rpv-block">
-                  <header className="cp-rpv-block__head">
-                    <span className="cp-rpv-block__tag">M.02 · Target Jurnal</span>
-                    <h2 className="cp-rpv-block__h">Kandidat jurnal yang dipertimbangkan</h2>
-                  </header>
-                  <ul className="cp-rpv-journals">
-                    {project.targetJournals.map((j, i) => (
-                      <li key={j} className="cp-rpv-journal">
-                        <span className="cp-rpv-journal__n">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className="cp-rpv-journal__name">{j}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ) : null}
-
-              {/* Required expertise */}
-              {project.requiredExpertise.length > 0 ? (
-                <article className="cp-rpv-block">
-                  <header className="cp-rpv-block__head">
-                    <span className="cp-rpv-block__tag">M.03 · Bidang dibutuhkan</span>
-                    <h2 className="cp-rpv-block__h">
-                      {project.status === "recruiting"
-                        ? "Bidang yang sedang dicari"
-                        : "Bidang inti tim riset"}
-                    </h2>
-                  </header>
-                  <div className="cp-rpv-needs">
-                    {project.requiredExpertise.map((r) => (
-                      <span key={r} className="cp-rpv-need">
-                        {r}
-                      </span>
-                    ))}
-                  </div>
-                </article>
-              ) : null}
-            </div>
-
-            {/* Side rail */}
-            <aside className="cp-rpv-side">
-              <div className="cp-rpv-card">
-                <span className="cp-rpv-card__l">Timeline</span>
-                <p className="cp-rpv-card__v">{project.timeline}</p>
-              </div>
-
-              <div className="cp-rpv-card">
-                <span className="cp-rpv-card__l">Tim riset</span>
-                <ul className="cp-rpv-team">
-                  <li className="cp-rpv-member cp-rpv-member--lead">
-                    <span className="cp-rpv-avatar">{initials(project.lead)}</span>
-                    <div>
-                      <div className="cp-rpv-member__name">{project.lead}</div>
-                      <div className="cp-rpv-member__role">{project.leadRole}</div>
-                      <div className="cp-rpv-member__aff">{project.affiliation}</div>
-                    </div>
-                  </li>
-                  {project.collaborators.length === 0 ? (
-                    <li className="cp-rpv-member cp-rpv-member--locked">
-                      <span className="cp-rpv-avatar cp-rpv-avatar--locked" aria-hidden="true">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="5" y="11" width="14" height="9" rx="1.5" />
-                          <path d="M8 11V8a4 4 0 018 0v3" />
-                        </svg>
-                      </span>
-                      <div>
-                        <div className="cp-rpv-member__name cp-rpv-member__name--locked">
-                          ●●●● ●●●●●●●●
-                        </div>
-                        <div className="cp-rpv-member__role">Kolaborator terkunci</div>
-                      </div>
+            {project.targetJournals.length > 0 && (
+              <Reveal className="cp-rd-block">
+                <h2 className="cp-rd-block__h"><span className="cp-rd-ico"><Target size={17} /></span> Kandidat jurnal</h2>
+                <ul className="cp-rd-journals">
+                  {project.targetJournals.map((j, i) => (
+                    <li key={j}>
+                      <span className={`cp-rd-journal__rank ${i === 0 ? "is-first" : ""}`}>{i === 0 ? "Prioritas" : "Alternatif"}</span>
+                      <strong>{j}</strong>
                     </li>
-                  ) : (
-                    project.collaborators.map((c) => (
-                      <li key={c.name} className="cp-rpv-member">
-                        <span className="cp-rpv-avatar">{initials(c.name)}</span>
-                        <div>
-                          <div className="cp-rpv-member__name">{c.name}</div>
-                          <div className="cp-rpv-member__role">{c.role}</div>
-                        </div>
-                      </li>
-                    ))
-                  )}
+                  ))}
                 </ul>
-              </div>
+              </Reveal>
+            )}
 
-              <div className="cp-rpv-card cp-rpv-card--cta">
-                <div className="cp-rpv-card__pulse">
-                  <i />
-                  <span>
-                    {project.status === "recruiting"
-                      ? "Sedang merekrut"
-                      : project.status === "writing"
-                      ? "Sedang ditulis"
-                      : "Dalam review"}
-                  </span>
-                </div>
-                <h3 className="cp-rpv-card__h">
-                  {project.status === "recruiting"
-                    ? "Tertarik bergabung sebagai co-author?"
-                    : "Akses detail penuh sebagai anggota."}
-                </h3>
-                <p className="cp-rpv-card__p">
-                  Detail metodologi, target jurnal final, dan undangan kolaborasi
-                  hanya terbuka untuk anggota komunitas terverifikasi.
-                </p>
-                <div className="cp-rpv-card__ctas">
-                  <Link href="/register" className="cp-rpv-btn cp-rpv-btn--solid">
-                    Daftar Komunitas
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                      <path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </Link>
-                  <Link href="/research" className="cp-rpv-btn cp-rpv-btn--line">
-                    Proyek lain
-                  </Link>
-                </div>
-              </div>
-
-              <div className="cp-rpv-card">
-                <span className="cp-rpv-card__l">Tag terkait</span>
-                <div className="cp-rpv-tags-list">
-                  {project.tags.map((t) => (
-                    <span key={t} className="cp-rpv-tag">
-                      {t}
-                    </span>
+            {project.requiredExpertise.length > 0 && (
+              <Reveal className="cp-rd-block">
+                <h2 className="cp-rd-block__h">
+                  <span className="cp-rd-ico"><Users size={17} /></span>
+                  {project.status === "recruiting" ? "Keahlian yang sedang dicari" : "Keahlian inti tim"}
+                </h2>
+                <div className="cp-rd-needs">
+                  {project.requiredExpertise.map((r) => (
+                    <span key={r}><Check size={14} strokeWidth={3} /> {r}</span>
                   ))}
                 </div>
-              </div>
-            </aside>
+              </Reveal>
+            )}
+
+            <Reveal className="cp-rd-block">
+              <h2 className="cp-rd-block__h"><span className="cp-rd-ico"><Clock size={17} /></span> Linimasa</h2>
+              <p className="cp-rd-text">{project.timeline}</p>
+            </Reveal>
           </div>
+
+          <aside className="cp-rd-side">
+            <Reveal className="cp-rd-card cp-rd-card--team">
+              <p className="cp-rd-card__k" id="tim">Tim riset</p>
+              <ul className="cp-rd-team">
+                <li className="is-lead">
+                  <Avatar name={project.lead} />
+                  <span><strong>{project.lead}</strong><small>{project.leadRole}</small></span>
+                </li>
+                {open || project.collaborators.length === 0
+                  ? project.collaborators.map((c) => (
+                      <li key={c.name}>
+                        <Avatar name={c.name} />
+                        <span><strong>{c.name}</strong><small>{c.role}</small></span>
+                      </li>
+                    ))
+                  : (
+                      <li className="is-locked"><span className="cp-rd-avatar"><Lock size={14} /></span><span><strong>{project.collaborators.length} kolaborator</strong><small>Terbuka untuk anggota</small></span></li>
+                    )}
+              </ul>
+            </Reveal>
+
+            <Reveal className="cp-rd-card cp-rd-card--cta" delay={0.1}>
+              <span className="cp-rd-card__pulse"><i /> {STATUS_ID[project.status]}</span>
+              <h3>{project.status === "recruiting" ? "Tertarik bergabung sebagai co-author?" : "Ingin ikut proyek seperti ini?"}</h3>
+              <p>Gabung komunitas, pilih cluster yang sesuai, dan kenali tim riset yang sedang berjalan.</p>
+              <div className="cp-rd-card__ctas">
+                <Link href="/register" className="cp-ab-btn cp-ab-btn--primary">Gabung komunitas <span className="cp-ab-btn__arr" aria-hidden="true">→</span></Link>
+                <Link href="/contact" className="cp-ab-btn cp-ab-btn--line">Tanya tim</Link>
+              </div>
+            </Reveal>
+
+            <Reveal className="cp-rd-card" delay={0.15}>
+              <p className="cp-rd-card__k">Topik</p>
+              <div className="cp-rd-tags">
+                {project.tags.map((t) => (
+                  <span key={t}>#{t}</span>
+                ))}
+              </div>
+            </Reveal>
+          </aside>
         </div>
       </section>
-    </>
-  );
-}
 
-const MONTH_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-function formatMonth(iso: string) {
-  if (!iso || !iso.includes("-")) return iso || "—";
-  const [y, m] = iso.split("-");
-  return `${MONTH_ID[Math.max(0, Math.min(11, parseInt(m, 10) - 1))]} ${y}`;
+      {/* Related */}
+      {related.length > 0 && (
+        <section className="cp-ab-sec cp-rd-related">
+          <div className="cp-ab-wrap">
+            <Reveal className="cp-ab-headcol">
+              <div className="cp-ab-tag">
+                <span className="cp-ab-tag__bar" aria-hidden="true" />
+                <span>Proyek lain</span>
+              </div>
+              <h2 className="cp-ab-h2 cp-ab-h2--line">
+                Mungkin juga <span className="cp-ab-accent">menarik untuk Anda.</span>
+              </h2>
+            </Reveal>
+            <div className="cp-rg__grid">
+              {related.map((p) => (
+                <ProjectCard key={p.id} p={p} unlocked />
+              ))}
+            </div>
+            <div className="cp-rd-related__more">
+              <Link href="/research#proyek" className="cp-ab-btn cp-ab-btn--primary">Lihat semua proyek <span className="cp-ab-btn__arr" aria-hidden="true">→</span></Link>
+            </div>
+          </div>
+        </section>
+      )}
+    </main>
+  );
 }

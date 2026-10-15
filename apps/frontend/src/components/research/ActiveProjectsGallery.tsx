@@ -1,133 +1,265 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { ACTIVE_PROJECTS, STATUS_LABEL } from "@/lib/data/active-projects";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight, BookOpen, Calendar, Lock, Search, Users, X } from "lucide-react";
+import { Reveal } from "@/components/about/motion";
+import { ACTIVE_PROJECTS, type ActiveProject } from "@/lib/data/active-projects";
+import { PHASES, STATUS_ID, formatMonth, initials, personPhoto, phaseIndex, teamSize } from "@/lib/content/research";
+import { Pager } from "./Pager";
+import { onResearchFocus } from "./events";
+import { authClient } from "@/lib/auth-client";
+
+/** Section text; also the admin seed for "Halaman Riset → Galeri proyek". */
+export const GALLERY_COPY = {
+  tag: "Proyek aktif",
+  heading: "Sedang berjalan",
+  headingAccent: "di komunitas.",
+  sub: "Setiap proyek dipimpin anggota dan terbuka untuk kolaborator. Pilih yang sesuai bidang Anda, lalu buka detailnya untuk melihat metodologi dan target jurnal.",
+};
 
 const FILTERS = [
   { id: "all", label: "Semua" },
-  { id: "recruiting", label: "Mencari kolaborator" },
-  { id: "writing", label: "Sedang ditulis" },
-  { id: "review", label: "Dalam review" },
-];
+  { id: "recruiting", label: STATUS_ID.recruiting },
+  { id: "writing", label: STATUS_ID.writing },
+  { id: "review", label: STATUS_ID.review },
+  { id: "submitted", label: STATUS_ID.submitted },
+] as const;
 
-const PROJECTS = ACTIVE_PROJECTS;
+const SORTS = [
+  { id: "new", label: "Terbaru dimulai" },
+  { id: "old", label: "Terlama dimulai" },
+  { id: "title", label: "Judul A–Z" },
+] as const;
+type SortId = (typeof SORTS)[number]["id"];
 
-function truncate(text: string, max = 150) {
-  if (text.length <= max) return text;
-  return text.slice(0, max).trimEnd() + "…";
-}
+const PER_PAGE = 3;
+const LOCKED_TEASER = "Desain penelitian, populasi dan sampel, instrumen, serta teknik analisis data tersedia lengkap untuk anggota.";
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function ActiveProjectsGallery() {
-  const [active, setActive] = useState<string>("all");
+  const reduce = useReducedMotion();
+  const { data: session } = authClient.useSession();
+  const sectionRef = useRef<HTMLElement>(null);
+  const [status, setStatus] = useState<string>("all");
+  const [q, setQ] = useState("");
+  const [sort, setSort] = useState<SortId>("new");
+  const [page, setPage] = useState(1);
 
-  const filtered = useMemo(
-    () => (active === "all" ? PROJECTS : PROJECTS.filter((p) => p.status === active)),
-    [active]
+  useEffect(
+    () =>
+      onResearchFocus((d) => {
+        if (d.target !== "projects") return;
+        setStatus(d.status);
+        setQ("");
+        setPage(1);
+      }),
+    [],
   );
 
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    const list = ACTIVE_PROJECTS.filter((p) => status === "all" || p.status === status).filter(
+      (p) => !needle || `${p.title} ${p.cluster} ${p.lead} ${p.tags.join(" ")}`.toLowerCase().includes(needle),
+    );
+    return [...list].sort((a, b) =>
+      sort === "title" ? a.title.localeCompare(b.title) : sort === "new" ? b.startedAt.localeCompare(a.startedAt) : a.startedAt.localeCompare(b.startedAt),
+    );
+  }, [status, q, sort]);
+
+  const pages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const current = Math.min(page, pages);
+  const slice = filtered.slice((current - 1) * PER_PAGE, current * PER_PAGE);
+
+  const goTo = (n: number) => {
+    setPage(n);
+    sectionRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  };
+  const reset = () => {
+    setStatus("all");
+    setQ("");
+    setPage(1);
+  };
+
   return (
-    <section className="cp-res-section">
-      <div className="cp-res-section__wrap">
-        <div className="cp-section-head cp-section-head--two">
-          <div>
-            <div className="cp-sh-tag">
-              <span className="cp-sh-tag__bar" />
-              <span className="cp-sh-tag__num">R.01</span>
-              <span>Proyek aktif</span>
-            </div>
-            <h2 className="cp-sh-h">Sedang berjalan di komunitas.</h2>
+    <section ref={sectionRef} className="cp-ab-sec cp-rg" id="proyek">
+      <div className="cp-rg__bg" aria-hidden="true">
+        <span className="cp-rg__grid-bg" />
+        <span className="cp-rg__blob cp-rg__blob--a" />
+        <span className="cp-rg__blob cp-rg__blob--b" />
+      </div>
+      <div className="cp-ab-wrap">
+        <Reveal className="cp-ab-headcol">
+          <div className="cp-ab-tag">
+            <span className="cp-ab-tag__bar" aria-hidden="true" />
+            <span>{GALLERY_COPY.tag}</span>
           </div>
-          <p className="cp-sh-sub">
-            Detail penuh — metodologi, daftar kolaborator, dan target jurnal — terbuka
-            untuk anggota komunitas yang sudah terverifikasi.
+          <h2 className="cp-ab-h2 cp-ab-h2--line">
+            {GALLERY_COPY.heading} <span className="cp-ab-accent">{GALLERY_COPY.headingAccent}</span>
+          </h2>
+          <p className="cp-ab-headcol__lead">
+            {GALLERY_COPY.sub}
           </p>
-        </div>
+        </Reveal>
 
-        <div className="cp-res-filter" role="tablist">
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              role="tab"
-              aria-selected={active === f.id}
-              className={`cp-res-chip ${active === f.id ? "is-active" : ""}`}
-              onClick={() => setActive(f.id)}
-            >
-              {f.label}
-              <span className="cp-res-chip__ct">
-                {f.id === "all"
-                  ? PROJECTS.length
-                  : PROJECTS.filter((p) => p.status === f.id).length}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        <div className="cp-res-grid">
-          {filtered.map((p) => (
-            <article key={p.id} className="cp-res-proj">
-              <header className="cp-res-proj__top">
-                <span className="cp-res-proj__cluster">{p.cluster}</span>
-                <span className={`cp-res-proj__status cp-res-proj__status--${p.status}`}>
-                  {STATUS_LABEL[p.status]}
-                </span>
-              </header>
-
-              <h3 className="cp-res-proj__title">{p.title}</h3>
-
-              <p className="cp-res-proj__abs">{truncate(p.abstract, 150)}</p>
-
-              <div className="cp-res-proj__locked" aria-hidden="true">
-                <p className="cp-res-proj__locked-text">
-                  {p.abstract.slice(150, 320) || "Methodology, target journal, dan daftar kolaborator hanya tampil untuk anggota terverifikasi."}
-                </p>
-                <div className="cp-res-proj__veil">
-                  <span className="cp-res-proj__lock-icon" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="11" width="18" height="11" rx="2" />
-                      <path d="M7 11V7a5 5 0 0110 0v4" />
-                    </svg>
-                  </span>
-                  <Link href="/register" className="cp-res-proj__unlock">
-                    Unlock Research
-                  </Link>
-                </div>
-              </div>
-
-              <div className="cp-res-proj__tags">
-                {p.tags.map((t) => (
-                  <span key={t} className="cp-res-proj__tag">
-                    {t}
-                  </span>
+        <div className="cp-rg__bar">
+          <div className="cp-rg__chips" role="group" aria-label="Filter status proyek">
+            {FILTERS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                aria-pressed={status === f.id}
+                className={`cp-rg__chip ${status === f.id ? "is-active" : ""}`}
+                onClick={() => {
+                  setStatus(f.id);
+                  setPage(1);
+                }}
+              >
+                {f.id !== "all" && <i className={`cp-rg__dot cp-rg__dot--${f.id}`} aria-hidden="true" />}
+                {f.label}
+                <span>{f.id === "all" ? ACTIVE_PROJECTS.length : ACTIVE_PROJECTS.filter((p) => p.status === f.id).length}</span>
+              </button>
+            ))}
+          </div>
+          <div className="cp-rg__tools">
+            <label className="cp-rg__search">
+              <Search size={16} aria-hidden="true" />
+              <input
+                type="search"
+                value={q}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="Cari judul, cluster, peneliti…"
+                aria-label="Cari proyek"
+              />
+            </label>
+            <label className="cp-rg__sort">
+              <span>Urutkan</span>
+              <select
+                value={sort}
+                onChange={(e) => {
+                  setSort(e.target.value as SortId);
+                  setPage(1);
+                }}
+              >
+                {SORTS.map((s) => (
+                  <option key={s.id} value={s.id}>{s.label}</option>
                 ))}
-              </div>
+              </select>
+            </label>
+          </div>
+        </div>
 
-              <footer className="cp-res-proj__foot">
-                <div className="cp-res-proj__lead">
-                  <span className="cp-res-proj__lead-avatar" aria-hidden="true">
-                    {p.lead
-                      .split(" ")
-                      .slice(-2)
-                      .map((w) => w[0])
-                      .join("")}
-                  </span>
-                  <div>
-                    <div className="cp-res-proj__lead-name">{p.lead}</div>
-                    <div className="cp-res-proj__lead-aff">{p.affiliation}</div>
-                  </div>
-                </div>
-                <Link href={`/research-project/${p.id}`} className="cp-res-proj__open">
-                  Preview
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </Link>
-              </footer>
-            </article>
+        {slice.length ? (
+          <motion.div layout={!reduce} className="cp-rg__grid">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {slice.map((p, i) => (
+                <motion.div
+                  key={p.id}
+                  layout={!reduce}
+                  initial={reduce ? false : { opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.18 } }}
+                  transition={{ duration: 0.45, delay: i * 0.04, ease: EASE }}
+                >
+                  <ProjectCard p={p} unlocked={!!session} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        ) : (
+          <div className="cp-rg__empty">
+            <Search size={28} aria-hidden="true" />
+            <p>Belum ada proyek yang cocok dengan filter ini.</p>
+            <button type="button" className="cp-rg__reset" onClick={reset}>
+              <X size={14} /> Reset filter
+            </button>
+          </div>
+        )}
+
+        <Pager page={current} perPage={PER_PAGE} total={filtered.length} noun="proyek" onChange={goTo} />
+      </div>
+    </section>
+  );
+}
+
+/** `unlocked` shows the methodology; guests see it blurred, and the card takes them to login. */
+export function ProjectCard({ p, unlocked }: { p: ActiveProject; unlocked: boolean }) {
+  const phase = phaseIndex(p.status);
+  const photo = personPhoto(p.lead);
+  const recruiting = p.status === "recruiting";
+  return (
+    <Link href={`/research-project/${p.id}`} className={`cp-rp cp-rp--${p.status}`}>
+      <div className="cp-rp__top">
+        <span className={`cp-rp-status cp-rp-status--${p.status}`}>{STATUS_ID[p.status]}</span>
+        <span className="cp-rp__go" aria-hidden="true"><ArrowUpRight size={17} /></span>
+      </div>
+
+      <div className="cp-rp__body">
+        <span className="cp-rp__cluster">{p.cluster}</span>
+        <h3 className="cp-rp__title">{p.title}</h3>
+        <p className="cp-rp__abs">{p.abstract}</p>
+      </div>
+
+      {unlocked ? (
+        <div className="cp-rp__method">
+          <span className="cp-rp__k"><BookOpen size={13} aria-hidden="true" /> Metodologi</span>
+          <p>{p.methodology}</p>
+        </div>
+      ) : (
+        <div className="cp-rp__method is-locked">
+          <span className="cp-rp__k"><BookOpen size={13} aria-hidden="true" /> Metodologi</span>
+          {/* Placeholder only: the real methodology never reaches a guest's browser. */}
+          <p aria-hidden="true">{LOCKED_TEASER}</p>
+          <span className="cp-rp__unlock">
+            <Lock size={14} aria-hidden="true" /> Masuk untuk membuka
+          </span>
+        </div>
+      )}
+
+      {p.requiredExpertise.length > 0 && (
+        <div className={`cp-rp__needs ${recruiting ? "is-open" : ""}`}>
+          <span className="cp-rp__k">{recruiting ? "Dibutuhkan" : "Keahlian tim"}</span>
+          <div>
+            {p.requiredExpertise.slice(0, 3).map((r) => (
+              <span key={r}>{r}</span>
+            ))}
+            {p.requiredExpertise.length > 3 && <span className="is-more">+{p.requiredExpertise.length - 3}</span>}
+          </div>
+        </div>
+      )}
+
+      <div className="cp-rp__phase" role="img" aria-label={`Tahap ${phase + 1} dari ${PHASES.length}: ${PHASES[phase].label}`}>
+        <div className="cp-rp__phase-row">
+          <span className="cp-rp__k">Tahap {phase + 1}/{PHASES.length}</span>
+          <strong>{PHASES[phase].label}</strong>
+        </div>
+        <div className="cp-rp__phase-bar">
+          {PHASES.map((ph, i) => (
+            <span key={ph.key} className={i < phase ? "is-done" : i === phase ? "is-now" : ""} />
           ))}
         </div>
       </div>
-    </section>
+
+      <div className="cp-rp__foot">
+        <div className="cp-rp__lead">
+          <span className="cp-rp__avatar">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {photo ? <img src={photo} alt="" /> : initials(p.lead)}
+          </span>
+          <span>
+            <strong>{p.lead}</strong>
+            <small>{p.affiliation}</small>
+          </span>
+        </div>
+        <div className="cp-rp__facts">
+          <span title="Anggota tim"><Users size={13} aria-hidden="true" /> {teamSize(p)}</span>
+          <span title="Mulai"><Calendar size={13} aria-hidden="true" /> {formatMonth(p.startedAt)}</span>
+        </div>
+      </div>
+    </Link>
   );
 }
