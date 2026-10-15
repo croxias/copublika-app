@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowUpRight, Eye, EyeOff, RotateCcw } from 'lucide-react';
 import { CmsSelect } from './CmsSelect';
@@ -21,6 +22,7 @@ import { validate, type Errors } from './validate';
  */
 export function SectionEditor({ page, crumb, children, switcher }: { page: PageConfig; crumb: string[]; /** Extra cards below the editor, e.g. the reset card. */ children?: React.ReactNode; /** Sibling-page switcher under the header. */ switcher?: React.ReactNode }) {
   const cms = useCms();
+  const reduceMotion = useReducedMotion();
   const [active, setActive] = useState(page.tabs[0].key);
   const [drafts, setDrafts] = useState<Record<string, Values>>({});
   const [errors, setErrors] = useState<Errors>({});
@@ -159,7 +161,13 @@ export function SectionEditor({ page, crumb, children, switcher }: { page: PageC
           </label>
 
           <div className="cms-section-card">
-            <div className="cms-section-layout">
+            <motion.div
+              key={tab.key}
+              className="cms-section-layout"
+              initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            >
               <div className="cms-section-head">
                 <span className="cms-section-kicker">Section {String(tabIndex + 1).padStart(2, '0')} dari {String(page.tabs.length).padStart(2, '0')}</span>
                 <h2>
@@ -200,17 +208,17 @@ export function SectionEditor({ page, crumb, children, switcher }: { page: PageC
                   <>
                     {tab.preview && <SectionPreview kind={tab.preview} values={values} active={group.key} onPick={pickGroup} ctx={ctx} />}
                     <GroupTabs groups={groups} active={group.key} onPick={pickGroup} errors={errors} stored={stored(tab.key)} values={values} />
-                    <div className="cms-group-panel" role="tabpanel" key={group.key}>
+                    <motion.div className="cms-group-panel" role="tabpanel" key={group.key} initial={reduceMotion ? false : { opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}>
                       <GroupHeader group={group} index={groupIndex} total={groups.length} />
                       <Fields fields={group.fields} values={values} onChange={change} errors={errors} ctx={ctx} />
                       <GroupPager groups={groups} index={groupIndex} onPick={pickGroup} />
-                    </div>
+                    </motion.div>
                   </>
                 ) : (
                   <Fields fields={tab.fields} values={values} onChange={change} errors={errors} ctx={ctx} />
                 )}
               </div>
-            </div>
+            </motion.div>
 
             {!tab.manager && <div className="cms-section-foot">
               <span className="cms-foot-step">

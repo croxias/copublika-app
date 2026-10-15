@@ -108,12 +108,17 @@ export type BootcampBatch = {
   closes: string;
   /** Weekly webinar day and time. */
   webinar: string;
+  /** Seat limit for the batch and seats already taken (set from the admin). */
+  seats: number;
+  booked: number;
 };
 
 export const BOOTCAMP_BATCHES: BootcampBatch[] = [
-  { id: "bm-01", name: "Angkatan 1", start: "2026-11-02", end: "2026-12-01", closes: "2026-10-29", webinar: "Setiap Sabtu, 09.00–11.00 WIB" },
-  { id: "bm-02", name: "Angkatan 2", start: "2026-12-07", end: "2027-01-05", closes: "2026-12-03", webinar: "Setiap Sabtu, 09.00–11.00 WIB" },
+  { id: "bm-01", name: "Angkatan 1", start: "2026-11-02", end: "2026-12-01", closes: "2026-10-29", webinar: "Setiap Sabtu, 09.00–11.00 WIB", seats: 30, booked: 18 },
+  { id: "bm-02", name: "Angkatan 2", start: "2026-12-07", end: "2027-01-05", closes: "2026-12-03", webinar: "Setiap Sabtu, 09.00–11.00 WIB", seats: 30, booked: 4 },
 ];
+
+export const batchSeatsLeft = (b: BootcampBatch) => Math.max(0, b.seats - b.booked);
 
 export const formatDate = (iso: string, withYear = true) => {
   const [y, m, d] = iso.split("-").map(Number);

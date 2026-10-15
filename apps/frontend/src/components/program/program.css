@@ -545,9 +545,6 @@
 .cp-btm-hero__ring { position: absolute; right: max(-300px, calc((100vw - var(--max)) / 2 - 300px)); top: 50%; width: min(860px, 64vw); margin-top: calc(min(860px, 64vw) * -0.57); fill: var(--scopus); opacity: .95; transform-origin: 62% 50%; }
 .cp-btm-hero .cp-sts-hero__title { font-size: clamp(42px, 4.8vw, 76px); }
 .cp-btm-hero__num { position: absolute; right: 2%; bottom: -.2em; color: transparent; font: 800 clamp(220px, 34vw, 520px)/1 var(--display); letter-spacing: -.08em; -webkit-text-stroke: 1px rgba(255,255,255,.08); user-select: none; }
-.cp-btm-buy__meta { display: grid; gap: 4px; padding: 16px 22px; background: rgba(14,12,10,.82); }
-.cp-btm-buy__meta strong { font-size: 26px; font-weight: 800; line-height: 1.1; color: #4ade80; }
-.cp-btm-buy__meta small { color: rgba(255,255,255,.6); font-size: 13px; }
 
 /* Calendar card */
 .cp-btm-cal { gap: 12px; }
@@ -699,3 +696,17 @@
   .cp-btm .cp-btm-tools, .cp-btm .cp-btm-review { grid-column: 1 / -1; }
 }
 .cp-btm-review .cp-sts-kit__copy { align-self: center; }
+
+/* Bootcamp batch seats */
+.cp-btm-batch__seats { display: grid; gap: 8px; }
+.cp-btm-batch__seats div { display: flex; align-items: baseline; justify-content: space-between; }
+.cp-btm-batch__seats span { color: var(--mute); font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.cp-btm-batch.is-next .cp-btm-batch__seats span { color: rgba(255,255,255,.55); }
+.cp-btm-batch__seats strong { color: #15803d; font-size: 22px; font-weight: 800; }
+.cp-btm-batch.is-next .cp-btm-batch__seats strong { color: #4ade80; }
+.cp-btm-batch__seats small { color: var(--mute); font-size: 14px; font-weight: 600; }
+.cp-btm-batch__seats i { display: block; height: 8px; overflow: hidden; border-radius: 99px; background: #ece8e1; }
+.cp-btm-batch.is-next .cp-btm-batch__seats i { background: rgba(255,255,255,.12); }
+.cp-btm-batch__seats b { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #22c55e, #4ade80); }
+.cp-btm-batch.is-full .cp-btm-batch__seats strong { color: var(--mute); }
+.cp-btm-batch__btn.is-disabled { background: #ece8e1; color: var(--mute); cursor: not-allowed; }

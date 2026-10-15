@@ -1,0 +1,11 @@
+/* Pagination (components/research/Pager.tsx), shared by /research and /blog. */
+.cp-rpgr { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 32px; }
+.cp-rpgr__count { color: var(--mute); font-size: 13.5px; text-align: center; }
+.cp-rpgr__count strong { color: var(--ink); font-weight: 700; }
+.cp-rpgr__ctrl { display: flex; align-items: center; gap: 6px; padding: 6px; border: 1px solid var(--hair); border-radius: 18px; background: #fff; box-shadow: 0 12px 30px -20px rgba(0,0,0,.35); }
+.cp-rpgr__btn, .cp-rpgr__num { display: grid; place-items: center; min-width: 44px; height: 44px; padding: 0 10px; border: 1px solid transparent; border-radius: 13px; background: transparent; color: var(--ink); font-size: 14px; font-weight: 700; cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease; }
+.cp-rpgr__btn:hover:not(:disabled), .cp-rpgr__num:hover:not(.is-active) { background: #fff4ea; color: var(--scopus-ink); }
+.cp-rpgr__btn:disabled { opacity: .4; cursor: not-allowed; }
+.cp-rpgr__num.is-active { background: var(--scopus); color: #fff; box-shadow: 0 8px 18px -8px rgba(233,113,28,.8); }
+.cp-rpgr__btn:focus-visible, .cp-rpgr__num:focus-visible { outline: 2px solid var(--scopus); outline-offset: 2px; }
+.cp-rpgr__gap { min-width: 24px; color: var(--mute); text-align: center; }

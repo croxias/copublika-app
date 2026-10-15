@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { PAGES } from '@/lib/cms/config/pages';
 import { SectionEditor } from '@/components/admin/cms/SectionEditor';
 import { ComingSoon } from '@/components/admin/cms/ComingSoon';
+import { ProgramOverview } from '@/components/admin/cms/ProgramOverview';
 
 /** Page configs hold functions, so they are resolved on the client by key. */
 export default function PageEditorRoute({ pageKey }: { pageKey: string }) {
@@ -19,5 +20,7 @@ export default function PageEditorRoute({ pageKey }: { pageKey: string }) {
       ))}
     </nav>
   );
-  return <SectionEditor key={pageKey} page={page} crumb={['Halaman Website', page.title]} switcher={switcher} />;
+  const overview = pageKey === 'siap-tembus-scopus' ? <ProgramOverview kind="sts" /> : pageKey === 'bootcamp-menulis' ? <ProgramOverview kind="btm" /> : null;
+  const crumb = overview ? ['Konfigurasi Website Publik', 'Program', page.title] : ['Konfigurasi Website Publik', page.title];
+  return <SectionEditor key={pageKey} page={page} crumb={crumb} switcher={overview ?? switcher} />;
 }

@@ -7,6 +7,7 @@ import { ArrowRight, CalendarDays, Check, Lock, ShieldCheck, UserRound } from "l
 import { authClient } from "@/lib/auth-client";
 import {
   BOOTCAMP_BATCHES,
+  batchSeatsLeft,
   PROGRAMS,
   STS_MENTORS,
   formatDate,
@@ -43,7 +44,7 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
   const months = useMemo(() => seatMonths(), []);
   const [monthIdx, setMonthIdx] = useState(Math.max(0, months.findIndex((m) => m.key === initialMonth)));
   const [mentor, setMentor] = useState(initialMentor ?? "");
-  const [batch, setBatch] = useState(initialBatch && BOOTCAMP_BATCHES.some((b) => b.id === initialBatch) ? initialBatch : BOOTCAMP_BATCHES[0].id);
+  const [batch, setBatch] = useState(initialBatch && BOOTCAMP_BATCHES.some((b) => b.id === initialBatch) ? initialBatch : (BOOTCAMP_BATCHES.find((b) => batchSeatsLeft(b) > 0) ?? BOOTCAMP_BATCHES[0]).id);
 
   const [form, setForm] = useState({ name: "", email: "", whatsapp: "", institution: "", password: "", confirm: "", agree: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -60,6 +61,7 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
   const validate = () => {
     const e: Record<string, string> = {};
     if (key === "siap-tembus-scopus" && (!chosenMentor || mentorFull)) e.mentor = "Pilih mentor yang masih punya kursi di bulan ini.";
+    if (key === "bootcamp-menulis" && batchSeatsLeft(chosenBatch) === 0) e.mentor = "Kursi angkatan ini sudah penuh. Pilih angkatan lain.";
     if (!user) {
       if (form.name.trim().length < 3) e.name = "Tulis nama lengkap Anda.";
       if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "Masukkan email yang valid.";
@@ -156,17 +158,19 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
           ) : (
             <div className="cp-reg__choices" role="radiogroup" aria-label="Angkatan">
               {BOOTCAMP_BATCHES.map((b) => (
-                <label key={b.id} className={`cp-reg__choice ${batch === b.id ? "is-on" : ""}`}>
-                  <input type="radio" name="angkatan" value={b.id} checked={batch === b.id} onChange={() => setBatch(b.id)} />
+                <label key={b.id} className={`cp-reg__choice ${batch === b.id ? "is-on" : ""} ${batchSeatsLeft(b) === 0 ? "is-off" : ""}`}>
+                  <input type="radio" name="angkatan" value={b.id} checked={batch === b.id} disabled={batchSeatsLeft(b) === 0} onChange={() => setBatch(b.id)} />
                   <span className="cp-reg__batch-ico" aria-hidden="true"><CalendarDays size={18} /></span>
                   <span>
                     <strong>{b.name}</strong>
                     <small>{formatDate(b.start)} – {formatDate(b.end)} · daftar s.d. {formatDate(b.closes)}</small>
                   </span>
+                  <em>{batchSeatsLeft(b) === 0 ? "Penuh" : `${batchSeatsLeft(b)} kursi`}</em>
                 </label>
               ))}
             </div>
           )}
+          {key === "bootcamp-menulis" && errors.mentor && <p className="cp-reg__err">{errors.mentor}</p>}
         </fieldset>
 
         {/* 2. Account and contact */}

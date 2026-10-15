@@ -7,7 +7,7 @@ import { BtmPlan } from "@/components/program/bootcamp/BtmPlan";
 import { FitFaq } from "@/components/program/FitFaq";
 import { SectionHead } from "@/components/program/shared";
 import { BTM_COPY } from "@/lib/content/programs";
-import { BOOTCAMP_BATCHES, PROGRAMS, formatDate, formatRupiah, webinarDates } from "@/lib/data/programs";
+import { BOOTCAMP_BATCHES, PROGRAMS, batchSeatsLeft, formatDate, formatRupiah, webinarDates } from "@/lib/data/programs";
 
 const program = PROGRAMS["bootcamp-menulis"];
 
@@ -45,11 +45,14 @@ export default function BootcampMenulisPage() {
         <div className="cp-ab-wrap">
           <SectionHead {...BTM_COPY.batches} />
           <div className="cp-btm-batches">
-            {BOOTCAMP_BATCHES.map((b, i) => (
-              <Reveal key={b.id} className={`cp-btm-batch ${i === 0 ? "is-next" : ""}`} delay={i * 0.08}>
+            {BOOTCAMP_BATCHES.map((b, i) => {
+              const left = batchSeatsLeft(b);
+              const full = left === 0;
+              return (
+              <Reveal key={b.id} className={`cp-btm-batch ${i === 0 ? "is-next" : ""} ${full ? "is-full" : ""}`} delay={i * 0.08}>
                 <div className="cp-btm-batch__top">
                   <span className="cp-btm-batch__name">{b.name}</span>
-                  <span className="cp-btm-batch__badge">{i === 0 ? "Pendaftaran dibuka" : "Segera dibuka"}</span>
+                  <span className="cp-btm-batch__badge">{full ? "Kursi penuh" : i === 0 ? "Pendaftaran dibuka" : "Segera dibuka"}</span>
                 </div>
                 <strong className="cp-btm-batch__dates">{formatDate(b.start, false)} – {formatDate(b.end)}</strong>
                 <ul>
@@ -61,14 +64,23 @@ export default function BootcampMenulisPage() {
                     <span key={d}><small>W{k + 1}</small>{formatDate(d, false)}</span>
                   ))}
                 </div>
+                <div className="cp-btm-batch__seats" aria-label={`${left} dari ${b.seats} kursi tersisa`}>
+                  <div><span>Sisa kursi</span><strong>{left}<small>/{b.seats}</small></strong></div>
+                  <i aria-hidden="true"><b style={{ width: `${(left / Math.max(1, b.seats)) * 100}%` }} /></i>
+                </div>
                 <div className="cp-btm-batch__foot">
                   <strong>{formatRupiah(program.price)}</strong>
-                  <Link href={register(b.id)} className="cp-btm-batch__btn">
-                    <CalendarDays size={15} aria-hidden="true" /> Daftar {b.name} <ArrowRight size={15} aria-hidden="true" />
-                  </Link>
+                  {full ? (
+                    <span className="cp-btm-batch__btn is-disabled">Kursi penuh</span>
+                  ) : (
+                    <Link href={register(b.id)} className="cp-btm-batch__btn">
+                      <CalendarDays size={15} aria-hidden="true" /> Daftar {b.name} <ArrowRight size={15} aria-hidden="true" />
+                    </Link>
+                  )}
                 </div>
               </Reveal>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -83,7 +95,7 @@ export default function BootcampMenulisPage() {
         <div className="cp-sts-final__rings" aria-hidden="true" />
         <div className="cp-ab-wrap cp-sts-final__wrap">
           <Reveal className="cp-sts-final__copy">
-            <span className="cp-sts-final__tag">{next.name} · mulai {formatDate(next.start)}</span>
+            <span className="cp-sts-final__tag">{next.name} · mulai {formatDate(next.start)} · sisa {batchSeatsLeft(next)} kursi</span>
             <h2>{BTM_COPY.final.title}</h2>
             <p>Pendaftaran ditutup {formatDate(next.closes)}. Daftar sekarang, akun member CoPublika dibuat sekaligus.</p>
           </Reveal>

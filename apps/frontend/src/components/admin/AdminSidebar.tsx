@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { ChevronDown, ChevronLeft, ChevronRight, UserRound } from 'lucide-react';
 
@@ -15,6 +16,8 @@ interface NavItem {
   soon?: boolean;
   /** Other routes that belong to this item (e.g. About's sub-page editors). */
   also?: string[];
+  /** Sub-menu: the item becomes a toggle that expands these links. */
+  children?: NavItem[];
 }
 
 interface NavSection {
@@ -47,18 +50,21 @@ const getNav = (demoEnabled = false): NavSection[] => [
     ]
   },
   {
-    section: 'Program',
-    items: [
-      { id: 'program-sts', name: 'Siap Tembus Scopus', href: '/admin/website/siap-tembus-scopus', icon: 'award' },
-      { id: 'program-btm', name: 'Bootcamp 30 Hari', href: '/admin/website/bootcamp-menulis', icon: 'edit' }
-    ]
-  },
-  {
-    section: 'Halaman Website',
+    section: 'Konfigurasi Website Publik',
     items: [
       { id: 'page-home', name: 'Beranda', href: '/admin/website/home', icon: 'home' },
       { id: 'page-about', name: 'About', href: '/admin/website/about', icon: 'info', also: ['/admin/website/about-team', '/admin/website/about-mentors'] },
       { id: 'page-research', name: 'Halaman Riset', href: '/admin/website/research', icon: 'layout' },
+      {
+        id: 'program',
+        name: 'Program',
+        href: '/admin/website/siap-tembus-scopus',
+        icon: 'award',
+        children: [
+          { id: 'program-sts', name: 'Siap Tembus Scopus', href: '/admin/website/siap-tembus-scopus', icon: 'award' },
+          { id: 'program-btm', name: 'Bootcamp 30 Hari', href: '/admin/website/bootcamp-menulis', icon: 'edit' }
+        ]
+      },
       { id: 'page-curation', name: 'Proses Kurasi', href: '/admin/website/curation', icon: 'route' },
       { id: 'page-contact', name: 'Kontak', href: '/admin/website/contact', icon: 'mail' }
     ]
@@ -98,7 +104,7 @@ const getNav = (demoEnabled = false): NavSection[] => [
 /** Longest matching href wins, so /admin/website/home beats /admin/website. */
 const activeId = (nav: NavSection[], pathname: string) =>
   nav
-    .flatMap((s) => s.items)
+    .flatMap((s) => s.items.flatMap((i) => i.children ?? [i]))
     .filter((i) => [i.href, ...(i.also ?? [])].some((h) => pathname === h || pathname.startsWith(`${h}/`)))
     .sort((a, b) => b.href.length - a.href.length)[0]?.id;
 
@@ -255,6 +261,8 @@ interface AdminSidebarProps {
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = false, demoEnabled = false, collapsed = false, onCollapse }) => {
   const [roleOpen, setRoleOpen] = useState(false);
+  /** Sub-menus the admin opened or closed by hand; unset groups follow the active page. */
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [role, setRole] = useState('Administrator');
   const [hoveredTooltip, setHoveredTooltip] = useState<{ label: string; top: number; left: number } | null>(null);
   const roleRef = useRef<HTMLDivElement>(null);
@@ -285,6 +293,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = f
     );
   };
 
+  const reduceMotion = useReducedMotion();
   const nav = getNav(demoEnabled);
   const activePage = activeId(nav, pathname);
   const showTooltip = (event: React.MouseEvent<HTMLAnchorElement> | React.FocusEvent<HTMLAnchorElement>, label: string) => {
@@ -319,6 +328,72 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = f
           <div className="cp-shell-sidebar-section" key={idx}>
             <h6>{section.section}</h6>
             {section.items.map((item) => {
+              if (item.children) {
+                const childActive = item.children.some((c) => c.id === activePage);
+                const open = collapsed ? false : (openGroups[item.id] ?? childActive);
+                return (
+                  <div className={`cp-shell-sidebar-group ${childActive ? 'has-active' : ''} ${open ? 'is-open' : ''}`} key={item.id}>
+                    {collapsed ? (
+                      <Link
+                        href={item.href}
+                        className={`cp-shell-sidebar-link ${childActive ? 'active' : ''}`}
+                        data-tooltip={item.name}
+                        title={item.name}
+                        aria-label={item.name}
+                      >
+                        {renderIcon(item.icon)}
+                        <span>{item.name}</span>
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        className={`cp-shell-sidebar-link cp-shell-sidebar-toggle ${childActive ? 'is-parent-active' : ''}`}
+                        aria-expanded={open}
+                        aria-controls={`nav-${item.id}`}
+                        onClick={() => setOpenGroups((g) => ({ ...g, [item.id]: !open }))}
+                      >
+                        {renderIcon(item.icon)}
+                        <span>{item.name}</span>
+                        <span className="cp-shell-sidebar-count">{item.children.length}</span>
+                        <ChevronDown size={15} strokeWidth={2.2} className="cp-shell-sidebar-caret" aria-hidden="true" />
+                      </button>
+                    )}
+                    <AnimatePresence initial={false}>
+                      {open && (
+                        <motion.div
+                          id={`nav-${item.id}`}
+                          className="cp-shell-sidebar-sub"
+                          initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          {item.children.map((child, ci) => {
+                            const isChildActive = child.id === activePage;
+                            return (
+                              <motion.div
+                                key={child.id}
+                                initial={reduceMotion ? false : { x: -8, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.25, delay: 0.05 + ci * 0.05 }}
+                              >
+                                <Link
+                                  href={child.href}
+                                  className={`cp-shell-sidebar-sublink ${isChildActive ? 'active' : ''}`}
+                                  aria-current={isChildActive ? 'page' : undefined}
+                                >
+                                  <span className="cp-shell-sidebar-subdot" aria-hidden="true" />
+                                  {child.name}
+                                </Link>
+                              </motion.div>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              }
               const isActive = item.id === activePage;
               if (item.soon) {
                 return (

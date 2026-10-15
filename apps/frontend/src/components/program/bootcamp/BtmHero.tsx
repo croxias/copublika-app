@@ -7,7 +7,7 @@ import { ArrowRight, BadgeCheck, ChartNoAxesColumn, MonitorPlay, Users } from "l
 import { Counter } from "@/components/about/motion";
 import { BTM_COPY } from "@/lib/content/programs";
 import { MARK_DOT, MARK_RING_PATH, MARK_VIEWBOX } from "@/components/brand/CopublikaMark";
-import { formatDate, webinarDates, type BootcampBatch } from "@/lib/data/programs";
+import { batchSeatsLeft, formatDate, webinarDates, type BootcampBatch } from "@/lib/data/programs";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const line = { hidden: { opacity: 0, y: "100%" }, show: { opacity: 1, y: "0%", transition: { duration: 0.9, ease: EASE } } };
@@ -67,10 +67,10 @@ export function BtmHero({ batch, registerHref }: { batch: BootcampBatch; registe
               <span>{BTM_COPY.hero.priceLabel}</span>
               <strong>Rp. <Counter value="450.000" /></strong>
             </div>
-            <div className="cp-btm-buy__meta">
-              <span>Termasuk</span>
-              <strong>{BTM_COPY.hero.includesValue}</strong>
-              <small>{BTM_COPY.hero.includesNote}</small>
+            <div className="cp-sts-buy__seats">
+              <span>{BTM_COPY.hero.seatsLabel} · {batch.name}</span>
+              <strong>{batchSeatsLeft(batch)}<small>/{batch.seats} kursi</small></strong>
+              <i style={{ ["--fill" as never]: `${(batchSeatsLeft(batch) / Math.max(1, batch.seats)) * 100}%` }} aria-hidden="true" />
             </div>
           </motion.div>
 

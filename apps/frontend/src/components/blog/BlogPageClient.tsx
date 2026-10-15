@@ -1,38 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import { BlogHero } from "./BlogHero";
-import { BlogFeaturedPost } from "./BlogFeaturedPost";
-import { BlogExplorer } from "./BlogExplorer";
-import { BlogEditorCTA } from "./BlogEditorCTA";
+import { useRef, useState } from "react";
+import { SectionHead } from "@/components/program/shared";
+import { MARK_DOT, MARK_RING_PATH, MARK_VIEWBOX } from "@/components/brand/CopublikaMark";
 import type { BlogCategory } from "@/lib/data/blog-articles";
+import { BlogEditorsPick } from "./BlogEditorsPick";
+import { BlogGrid } from "./BlogGrid";
+import { BlogHero } from "./BlogHero";
+import { BlogWriteCTA } from "./BlogWriteCTA";
 
 export function BlogPageClient() {
   const [category, setCategory] = useState<BlogCategory | "all">("all");
   const [query, setQuery] = useState("");
+  const gridRef = useRef<HTMLElement>(null);
 
-  function handleCategory(c: BlogCategory | "all") {
-    setCategory(c);
-    setQuery("");
-  }
-
-  function handleQuery(q: string) {
-    setQuery(q);
+  /** Search from the hero: show matches across every category and jump to the list. */
+  const search = (q: string) => {
     setCategory("all");
-  }
+    setQuery(q);
+    requestAnimationFrame(() => gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
 
   return (
-    <>
-      <BlogHero />
-      <BlogFeaturedPost />
-      <BlogExplorer
-        key={`${category}-${query}`}
-        category={category}
-        setCategory={handleCategory}
-        query={query}
-        setQuery={handleQuery}
-      />
-      <BlogEditorCTA />
-    </>
+    <main className="cp-pg cp-sts cp-bl">
+      <BlogHero onSearch={search} />
+
+      <section className="cp-ab-sec cp-sts-sec cp-sts-sec--warm">
+        <div className="cp-sts-sec__glow" aria-hidden="true" />
+        <div className="cp-ab-wrap">
+          <SectionHead tag="Pilihan editor" title="Mulai dari sini," accent="enam bacaan wajib." lead="Dipilih tim editor untuk Anda yang sedang menyiapkan naskah pertama atau baru saja ditolak jurnal." />
+          <BlogEditorsPick />
+        </div>
+      </section>
+
+      <section ref={gridRef} className="cp-ab-sec cp-bl-all" id="semua">
+        <div className="cp-bl-all__bg" aria-hidden="true">
+          <span className="cp-sts-hero__cols"><i /><i /><i /><i /><i /></span>
+          <svg className="cp-bl-all__ring" viewBox={MARK_VIEWBOX}><path d={MARK_RING_PATH} /><circle cx={MARK_DOT.x} cy={MARK_DOT.y} r={MARK_DOT.r} /></svg>
+          <span className="cp-bl-all__word">ARSIP</span>
+          <span className="cp-sts-hero__grain" />
+        </div>
+        <div className="cp-ab-wrap">
+          <SectionHead ink tag="Semua tulisan" title="Arsip lengkap," accent="cari yang Anda butuhkan." lead="Filter per kategori, cari topik tertentu, atau mulai dari bacaan singkat." />
+          <BlogGrid category={category} setCategory={setCategory} query={query} setQuery={setQuery} />
+        </div>
+      </section>
+
+      <BlogWriteCTA />
+    </main>
   );
 }

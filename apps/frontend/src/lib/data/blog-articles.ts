@@ -19,6 +19,9 @@ export type BlogArticle = {
   /** YYYY-MM — day intentionally omitted to match site convention */
   date: string;
   featured?: boolean;
+  /** Shown in the "Pilihan Editor" carousel, with a one-line reason. */
+  editorsPick?: boolean;
+  editorNote?: string;
   content: string; // Teks lengkap artikel dalam format Markdown/HTML
 };
 
@@ -34,6 +37,8 @@ export const BLOG_CATEGORIES: { id: BlogCategory | "all"; label: string }[] = [
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
     slug: "anatomi-naskah-q1",
+    editorsPick: true,
+    editorNote: "Bedah lengkap tiga naskah anggota yang tembus Q1, dari draf sampai acceptance.",
     title:
       "Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance",
     excerpt:
@@ -118,6 +123,8 @@ Mengirimkan naskah dengan gaya kutipan (*citation style*) dan layout yang dituju
   },
   {
     slug: "interview-reviewer-comments",
+    editorsPick: true,
+    editorNote: "Cara membaca komentar reviewer tanpa kehilangan semangat menulis.",
     title: "Wawancara: Membaca Reviewer Comments Tanpa Patah Semangat",
     excerpt:
       "Dr. Ade Putranto — reviewer aktif di 4 jurnal Q1 — berbagi cara membaca komentar reviewer sebagai data, bukan serangan personal.",
@@ -216,6 +223,8 @@ Struktur IMRaD adalah standar universal penulisan jurnal ilmiah global. Banyak p
   },
   {
     slug: "case-reject-q3-accept-q2",
+    editorsPick: true,
+    editorNote: "Satu naskah, tiga kali submit: pelajaran memilih jurnal setelah ditolak.",
     title: "Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission",
     excerpt:
       "Kronologi sembilan bulan satu naskah peserta cohort #04 — dari pertama kali di-desk-reject hingga akhirnya diterima di Q2 dengan strategi pemilihan jurnal yang berbeda.",
@@ -242,6 +251,8 @@ Ini adalah kisah naskah salah satu alumni CoPublika Cohort #04, Pak Fajar (dosen
   },
   {
     slug: "abstract-yang-membuat-reviewer-membuka",
+    editorsPick: true,
+    editorNote: "Empat kalimat abstrak yang menentukan naskah Anda dibaca atau dilewati.",
     title: "Cara Menulis Abstract yang Membuat Reviewer Membuka Naskah Anda",
     excerpt:
       "Abstract adalah pintu — bukan ringkasan. Pola 4 kalimat sederhana yang membuat editor melanjutkan membaca naskah anda, lengkap dengan contoh sebelum/sesudah.",
@@ -288,6 +299,8 @@ Penerima beasiswa akan didampingi secara komprehensif mulai dari pemetaan data p
   },
   {
     slug: "slow-scholarship",
+    editorsPick: true,
+    editorNote: "Pengingat bahwa riset yang baik butuh ritme, bukan sekadar kecepatan.",
     title: "Slow Scholarship: Mengapa Lambat Itu Tidak Apa-Apa",
     excerpt:
       "Esai panjang tentang etos kerja akademik, ritme yang berkelanjutan, dan kenapa kuantitas publikasi tidak selalu berbanding lurus dengan dampak.",
@@ -375,6 +388,8 @@ Empat alumni program intensif CoPublika membagikan pengalaman mereka menggunakan
   },
   {
     slug: "cover-letter-editor-persona",
+    editorsPick: true,
+    editorNote: "Menulis cover letter untuk editor yang sibuk, lengkap dengan contoh.",
     title: "Strategi Penulisan Cover Letter Berbasis Editor Persona",
     excerpt:
       "Cover letter yang baik bukan formalitas — itu hadiah untuk editor. Pendekatan persona-based untuk menulis cover letter yang dibaca penuh.",

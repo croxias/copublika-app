@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/components/ui/I18nProvider";
 import { authClient } from "@/lib/auth-client";
-import { BOOTCAMP_BATCHES, formatDate } from "@/lib/data/programs";
+import { BOOTCAMP_BATCHES, batchSeatsLeft, formatDate } from "@/lib/data/programs";
 
 const FlagID = (p: SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 18 18" width="18" height="18" {...p}>
@@ -125,7 +125,7 @@ export function Navbar() {
             <span className="cp-announce__pulse" />
             <span className="cp-announce__text">
               <strong>Bootcamp 30 Hari Menulis</strong>{" "}
-              <span className="cp-announce__long">— {BOOTCAMP_BATCHES[0].name} mulai {formatDate(BOOTCAMP_BATCHES[0].start)}, pendaftaran dibuka.</span>
+              <span className="cp-announce__long">— {BOOTCAMP_BATCHES[0].name} mulai {formatDate(BOOTCAMP_BATCHES[0].start)}, sisa {batchSeatsLeft(BOOTCAMP_BATCHES[0])} kursi.</span>
             </span>
             <Link href="/bootcamp-menulis" className="cp-announce__cta">
               Daftar sekarang
