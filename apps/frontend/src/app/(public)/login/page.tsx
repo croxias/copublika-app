@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/components/auth/SupabaseAuthProvider";
+import { authClient, safeNext } from "@/lib/auth-client";
 
-export default function LoginPage() {
-  const { signIn } = useAuth();
+type Search = { next?: string; reason?: string };
+
+export default function LoginPage({ searchParams }: { searchParams: Promise<Search> }) {
+  const sp = use(searchParams);
+  const next = safeNext(sp.next);
+  const gated = sp.reason === "research";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -17,11 +21,11 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const result = await signIn(email, password);
-    if (result.error) {
-      setError(result.error);
+    const { error } = await authClient.signIn.email({ email, password });
+    if (error) {
+      setError(error.status === 401 ? "Email atau password salah." : error.message ?? "Gagal masuk. Coba lagi.");
     } else {
-      window.location.href = "/";
+      window.location.href = next;
     }
 
     setLoading(false);
@@ -46,7 +50,11 @@ export default function LoginPage() {
               <span>Masuk</span>
             </div>
             <h1 className="cp-auth__title">Selamat datang kembali.</h1>
-            <p className="cp-auth__lead">Masuk untuk mengakses akun CoPublika Anda.</p>
+            <p className="cp-auth__lead">
+              {gated
+                ? "Detail proyek riset hanya bisa dibuka oleh anggota. Masuk dulu, lalu Anda langsung diarahkan kembali ke proyek tersebut."
+                : "Masuk untuk mengakses akun CoPublika Anda."}
+            </p>
           </div>
 
           {/* Form */}
@@ -119,7 +127,7 @@ export default function LoginPage() {
 
           <div className="cp-auth__footer">
             <p>Belum punya akun?{" "}
-              <Link href="/register" className="cp-auth__link">
+              <Link href={sp.next ? `/register?next=${encodeURIComponent(next)}` : "/register"} className="cp-auth__link">
                 Daftar sekarang
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14m-7-7l7 7-7 7" /></svg>
               </Link>

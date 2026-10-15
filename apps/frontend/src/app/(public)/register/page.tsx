@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/components/auth/SupabaseAuthProvider";
+import { authClient, safeNext } from "@/lib/auth-client";
 
-export default function RegisterPage() {
-  const { signUp } = useAuth();
+export default function RegisterPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+  const sp = use(searchParams);
+  const next = safeNext(sp.next);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,15 +27,19 @@ export default function RegisterPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password minimal 6 karakter.");
+    if (password.length < 8) {
+      setError("Password minimal 8 karakter.");
       setLoading(false);
       return;
     }
 
-    const result = await signUp(email, password, fullName);
-    if (result.error) {
-      setError(result.error);
+    // Sign-up also signs the member in, so a gated page can open right away.
+    const { error } = await authClient.signUp.email({ email, password, name: fullName });
+    if (error) {
+      setError(error.code === "USER_ALREADY_EXISTS" || error.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL" ? "Email ini sudah terdaftar. Silakan masuk." : error.message ?? "Gagal mendaftar. Coba lagi.");
+    } else if (sp.next) {
+      window.location.href = next;
+      return;
     } else {
       setSuccess(true);
     }
@@ -62,10 +67,10 @@ export default function RegisterPage() {
               </div>
               <h1 className="cp-auth-success__title">Pendaftaran Berhasil</h1>
               <p className="cp-auth-success__desc">
-                Silakan cek email Anda untuk verifikasi akun. Setelah terverifikasi, Anda bisa langsung masuk.
+                Akun Anda sudah aktif dan Anda sudah masuk. Mulai jelajahi proyek riset komunitas.
               </p>
-              <Link href="/login" className="cp-auth-success__cta">
-                Ke Halaman Masuk
+              <Link href="/research#proyek" className="cp-auth-success__cta">
+                Jelajahi proyek riset
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14m-7-7l7 7-7 7" /></svg>
               </Link>
             </div>
@@ -207,7 +212,7 @@ export default function RegisterPage() {
 
           <div className="cp-auth__footer">
             <p>Sudah punya akun?{" "}
-              <Link href="/login" className="cp-auth__link">
+              <Link href={sp.next ? `/login?next=${encodeURIComponent(next)}` : "/login"} className="cp-auth__link">
                 Masuk di sini
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14m-7-7l7 7-7 7" /></svg>
               </Link>
