@@ -7,6 +7,7 @@ import './ui-foundation.css';
 import './sidebar.css';
 import './batch-management.css';
 import './sidebar-interactions.css';
+import './cms.css';
 
 export const metadata: Metadata = {
   title: {

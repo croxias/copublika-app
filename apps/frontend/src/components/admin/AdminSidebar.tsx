@@ -11,6 +11,10 @@ interface NavItem {
   icon: string;
   badge?: string;
   soft?: boolean;
+  /** Planned for a later phase: shown greyed out with "Segera", not clickable. */
+  soon?: boolean;
+  /** Other routes that belong to this item (e.g. About's sub-page editors). */
+  also?: string[];
 }
 
 interface NavSection {
@@ -18,10 +22,9 @@ interface NavSection {
   items: NavItem[];
 }
 
-const getNav = (demoEnabled = false): NavSection[] => {
-  const stagingHref = (href: string) => demoEnabled ? href : '#';
-
-  return [
+// Structure: docs/superpowers/specs/2026-10-14-admin-cms-public-pages-design.md \u00a73.
+// Menus that only exist as a staging preview stay reachable in demo mode.
+const getNav = (demoEnabled = false): NavSection[] => [
   {
     section: 'Ringkasan',
     items: [
@@ -30,47 +33,68 @@ const getNav = (demoEnabled = false): NavSection[] => {
     ]
   },
   {
+    section: 'Konten',
+    items: [
+      { id: 'blog', name: 'Artikel Blog', href: '/admin/blog', icon: 'edit' },
+      { id: 'events', name: 'Agenda Event', href: '/admin/events', icon: 'calendar' }
+    ]
+  },
+  {
+    section: 'Riset',
+    items: [
+      { id: 'projects', name: 'Riset & Proyek', href: '/admin/projects', icon: 'file' },
+      { id: 'publications', name: 'Publikasi Anggota', href: '/admin/publications', icon: 'book' }
+    ]
+  },
+  {
+    section: 'Halaman Website',
+    items: [
+      { id: 'page-home', name: 'Beranda', href: '/admin/website/home', icon: 'home' },
+      { id: 'page-about', name: 'About', href: '/admin/website/about', icon: 'info', also: ['/admin/website/about-team', '/admin/website/about-mentors'] },
+      { id: 'page-research', name: 'Halaman Riset', href: '/admin/website/research', icon: 'layout' },
+      { id: 'page-program', name: 'Siap Tembus Scopus', href: '/admin/website/program', icon: 'award' },
+      { id: 'page-curation', name: 'Proses Kurasi', href: '/admin/website/curation', icon: 'route' },
+      { id: 'page-contact', name: 'Kontak', href: '/admin/website/contact', icon: 'mail' }
+    ]
+  },
+  {
+    section: 'Pustaka Bersama',
+    items: [
+      { id: 'people', name: 'Tim & Mentor', href: '/admin/library/people', icon: 'users' },
+      { id: 'testimonials', name: 'Testimoni', href: '/admin/library/testimonials', icon: 'quote' },
+      { id: 'faqs', name: 'FAQ', href: '/admin/library/faqs', icon: 'help' }
+    ]
+  },
+  {
     section: 'Kurasi',
     items: [
-      { id: 'applicants', name: 'Verifikasi Pendaftar', href: stagingHref('/admin/applicants'), icon: 'user-check', badge: demoEnabled ? 'Preview' : '14' },
-      { id: 'batches', name: 'Manajemen Batch', href: stagingHref('/admin/batches'), icon: 'clock' },
-      { id: 'members', name: 'Anggota', href: stagingHref('/admin/members'), icon: 'users', badge: demoEnabled ? 'Preview' : '1.240', soft: true }
+      { id: 'batches', name: 'Manajemen Batch', href: '/admin/batches', icon: 'clock' },
+      { id: 'applicants', name: 'Verifikasi Pendaftar', href: '/admin/applicants', icon: 'user-check', ...(demoEnabled ? { badge: 'Preview', soft: true } : { soon: true }) },
+      { id: 'members', name: 'Anggota', href: '/admin/members', icon: 'users', soon: true }
     ]
   },
   {
-    section: 'Tata Kelola Riset',
+    section: 'Program',
     items: [
-      { id: 'projects', name: 'Riset & Proyek', href: stagingHref('/admin/projects'), icon: 'file', badge: demoEnabled ? 'Preview' : '8' },
-      { id: 'clusters', name: 'Cluster Riset', href: stagingHref('/admin/clusters'), icon: 'grid' }
-    ]
-  },
-  {
-    section: 'Program & Pembelajaran',
-    items: [
-      { id: 'lms', name: 'Halaman Program - Siap Tembus Scopus', href: stagingHref('/admin/lms'), icon: 'book' },
-      { id: 'templates', name: 'Gudang Template', href: stagingHref('/admin/templates'), icon: 'package' }
-    ]
-  },
-  {
-    section: 'Konten Website',
-    items: [
-      { id: 'website-blog', name: 'Artikel Blog', href: stagingHref('/admin/blog'), icon: 'edit' },
-      { id: 'website-events', name: 'Agenda Event', href: stagingHref('/admin/events'), icon: 'calendar' },
-      { id: 'website-hero-slider', name: 'Hero Slider', href: stagingHref('/admin/website/hero-slider'), icon: 'layout' },
-      { id: 'website-config', name: 'Konfigurasi Website', href: stagingHref('/admin/website/config'), icon: 'sliders' },
-      { id: 'website-about', name: 'Halaman About', href: stagingHref('/admin/website/about'), icon: 'info' },
-      { id: 'website-research', name: 'Research Project \u2014 Landing', href: stagingHref('/admin/website/research-project'), icon: 'file' }
+      { id: 'lms', name: 'Modul LMS', href: '/admin/lms', icon: 'book', soon: true },
+      { id: 'templates', name: 'Template Vault', href: '/admin/templates', icon: 'package', soon: true }
     ]
   },
   {
     section: 'Sistem',
     items: [
       { id: 'settings', name: 'Pengaturan Situs', href: '/admin/settings', icon: 'settings' },
-      { id: 'audit', name: 'Audit & Keamanan', href: stagingHref('/admin/audit'), icon: 'shield' }
+      { id: 'audit', name: 'Audit & Keamanan', href: '/admin/audit', icon: 'shield', soon: true }
     ]
   }
 ];
-};
+
+/** Longest matching href wins, so /admin/website/home beats /admin/website. */
+const activeId = (nav: NavSection[], pathname: string) =>
+  nav
+    .flatMap((s) => s.items)
+    .filter((i) => [i.href, ...(i.also ?? [])].some((h) => pathname === h || pathname.startsWith(`${h}/`)))
+    .sort((a, b) => b.href.length - a.href.length)[0]?.id;
 
 const ICONS: Record<string, React.ReactNode> = {
   'dashboard': (
@@ -176,18 +200,54 @@ const ICONS: Record<string, React.ReactNode> = {
     <g>
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </g>
+  ),
+  'home': (
+    <g>
+      <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />
+    </g>
+  ),
+  'award': (
+    <g>
+      <circle cx="12" cy="9" r="6" />
+      <path d="m8.5 14.2-1.5 7.8 5-3 5 3-1.5-7.8" />
+    </g>
+  ),
+  'route': (
+    <g>
+      <circle cx="6" cy="19" r="2.5" />
+      <circle cx="18" cy="5" r="2.5" />
+      <path d="M8.5 19H17a3.5 3.5 0 0 0 0-7H7a3.5 3.5 0 0 1 0-7h8.5" />
+    </g>
+  ),
+  'mail': (
+    <g>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </g>
+  ),
+  'quote': (
+    <g>
+      <path d="M4 21c3 0 7-1 7-8V5H4v8h4" />
+      <path d="M14 21c3 0 7-1 7-8V5h-7v8h4" />
+    </g>
+  ),
+  'help': (
+    <g>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01" />
+    </g>
   )
 };
 
 interface AdminSidebarProps {
-  activePage: string;
+  pathname: string;
   isOpen?: boolean;
   demoEnabled?: boolean;
   collapsed?: boolean;
   onCollapse?: () => void;
 }
 
-export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, isOpen = false, demoEnabled = false, collapsed = false, onCollapse }) => {
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = false, demoEnabled = false, collapsed = false, onCollapse }) => {
   const [roleOpen, setRoleOpen] = useState(false);
   const [role, setRole] = useState('Administrator');
   const [hoveredTooltip, setHoveredTooltip] = useState<{ label: string; top: number; left: number } | null>(null);
@@ -220,6 +280,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, isOpen =
   };
 
   const nav = getNav(demoEnabled);
+  const activePage = activeId(nav, pathname);
   const showTooltip = (event: React.MouseEvent<HTMLAnchorElement> | React.FocusEvent<HTMLAnchorElement>, label: string) => {
     if (!collapsed) return;
     const rect = event.currentTarget.getBoundingClientRect();
@@ -253,10 +314,25 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, isOpen =
             <h6>{section.section}</h6>
             {section.items.map((item) => {
               const isActive = item.id === activePage;
+              if (item.soon) {
+                return (
+                  <span
+                    className="cp-shell-sidebar-link is-soon"
+                    aria-disabled="true"
+                    title={collapsed ? `${item.name} (segera)` : 'Tersedia di fase berikutnya'}
+                    key={item.id}
+                  >
+                    {renderIcon(item.icon)}
+                    <span>{item.name}</span>
+                    <span className="badge soon">Segera</span>
+                  </span>
+                );
+              }
               return (
                 <Link
                   href={item.href}
                   className={`cp-shell-sidebar-link ${isActive ? 'active' : ''}`}
+                  aria-current={isActive ? 'page' : undefined}
                   data-tooltip={item.name}
                   title={collapsed ? item.name : undefined}
                   aria-label={collapsed ? item.name : undefined}
@@ -280,7 +356,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, isOpen =
         ))}
       </nav>
 
-      {!demoEnabled && <div className="cp-shell-sidebar-foot"><Link href="/admin/batches" className="cp-batch-card"><div className="label">Batch Management</div><div className="name">September 2025</div><div className="meta">204 / 300 kuota terisi</div><div className="bar"><span style={{ width: '68%' }}></span></div></Link></div>}
     </aside>
   );
 };

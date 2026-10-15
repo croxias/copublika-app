@@ -5,16 +5,18 @@ import { usePathname } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
 import { StagingProvider } from '@/lib/staging';
+import { CmsProvider } from '@/lib/cms/store';
 
 export default function AdminShellClient({ children, demoEnabled = false }: { children: React.ReactNode; demoEnabled?: boolean }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => typeof window !== 'undefined' && window.localStorage.getItem('copublika-sidebar-collapsed') === 'true');
-  const activePage = pathname?.split('/admin/')[1]?.split('/')[0] || 'dashboard';
-
-  useEffect(() => {
-    window.localStorage.setItem('copublika-sidebar-collapsed', String(sidebarCollapsed));
-  }, [sidebarCollapsed]);
+  // An explicit choice wins; without one, mid-size screens (981-1279px) start with the icon rail
+  // so the content keeps enough width.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const saved = window.localStorage.getItem('copublika-sidebar-collapsed');
+    return saved === null ? window.innerWidth > 980 && window.innerWidth < 1280 : saved === 'true';
+  });
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -26,13 +28,19 @@ export default function AdminShellClient({ children, demoEnabled = false }: { ch
 
   const handleMenuToggle = useCallback(() => setSidebarOpen((prev) => !prev), []);
   const handleOverlayClick = useCallback(() => setSidebarOpen(false), []);
-  const handleSidebarCollapse = useCallback(() => setSidebarCollapsed((value) => !value), []);
+  const handleSidebarCollapse = useCallback(() => {
+    setSidebarCollapsed((value) => {
+      window.localStorage.setItem('copublika-sidebar-collapsed', String(!value));
+      return !value;
+    });
+  }, []);
 
   return (
     <StagingProvider enabled={demoEnabled}>
+    <CmsProvider>
 <div className="cp-admin-body" data-sidebar-collapsed={sidebarCollapsed ? 'true' : 'false'}>
        <div className="cp-admin">
-        <AdminSidebar activePage={activePage} isOpen={sidebarOpen} demoEnabled={demoEnabled} collapsed={sidebarCollapsed} onCollapse={handleSidebarCollapse} />
+        <AdminSidebar pathname={pathname ?? ''} isOpen={sidebarOpen} demoEnabled={demoEnabled} collapsed={sidebarCollapsed} onCollapse={handleSidebarCollapse} />
         {sidebarOpen && (
           <div className="cp-sidebar-overlay" role="button" tabIndex={0} aria-label="Close sidebar" onClick={handleOverlayClick} onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -48,6 +56,7 @@ export default function AdminShellClient({ children, demoEnabled = false }: { ch
         </div>
       </div>
     </div>
+    </CmsProvider>
     </StagingProvider>
   );
 }

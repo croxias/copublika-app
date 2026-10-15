@@ -1,7 +1,16 @@
-import ProductionSettingsPage from './ProductionSettingsClient';
-import { StagingSettings } from '@/components/admin/StagingCrudPage';
+'use client';
+
+import { SectionEditor } from '@/components/admin/cms/SectionEditor';
+import { CmsResetCard } from '@/components/admin/cms/CmsResetCard';
+import { PAGES } from '@/lib/cms/config/pages';
 
 export default function SettingsPage() {
-  const demoEnabled = process.env.NEXT_PUBLIC_COPUBLIKA_DEMO_MODE === 'true';
-  return demoEnabled ? <StagingSettings /> : <ProductionSettingsPage />;
+  const page = PAGES.settings;
+  return (
+    page && (
+      <SectionEditor page={page} crumb={['Sistem', 'Pengaturan Situs']}>
+        <CmsResetCard />
+      </SectionEditor>
+    )
+  );
 }
