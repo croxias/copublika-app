@@ -5,6 +5,7 @@ import { useReducedMotion } from "framer-motion";
 import { ArrowRight, Move3d } from "lucide-react";
 import { PUBS } from "@/lib/data/publications";
 import { focusResearch } from "./events";
+import { MARK_DOT, MARK_PATH, MARK_VIEWBOX } from "@/components/brand/CopublikaMark";
 
 type Vec = { x: number; y: number; z: number };
 type Field = { name: string; pubs: number; q1: number; links: string[]; p: Vec };
@@ -68,23 +69,6 @@ function arc(a: Vec, b: Vec, steps = 24): Vec[] {
 
 const FIELDS = buildFields();
 
-/**
- * The CoPublika mark rebuilt as one SVG path: an open "C" ring broken by a dot on the left,
- * around a three-quarter disc (bottom-right quadrant cut away). Same centre for every piece.
- */
-const MARK_C = { x: 345, y: 320 };
-const ringPoint = (r: number, deg: number) => {
-  const a = (deg * Math.PI) / 180;
-  return `${(MARK_C.x + r * Math.cos(a)).toFixed(1)} ${(MARK_C.y + r * Math.sin(a)).toFixed(1)}`;
-};
-const ringSegment = (from: number, to: number, R = 300, r = 244) =>
-  `M${ringPoint(R, from)} A${R} ${R} 0 0 0 ${ringPoint(R, to)} L${ringPoint(r, to)} A${r} ${r} 0 0 1 ${ringPoint(r, from)}Z`;
-const MARK_PATH = [
-  ringSegment(-90, -166),
-  ringSegment(166, 90),
-  `M${MARK_C.x} ${MARK_C.y} L${MARK_C.x + 172} ${MARK_C.y} A172 172 0 1 0 ${MARK_C.x} ${MARK_C.y + 172}Z`,
-].join(" ");
-const MARK_DOT = { x: MARK_C.x - 272, y: MARK_C.y, r: 25 };
 /** Back-to-front copies of the mark; stacked along Z they read as one extruded solid. */
 const MARK_LAYERS = Array.from({ length: 14 }, (_, i) => 13 - i);
 
@@ -328,7 +312,7 @@ export function FieldGlobe() {
         <div className="cp-fg__mark-stage" aria-hidden="true">
           <div ref={markRef} className="cp-fg__mark">
             {MARK_LAYERS.map((i) => (
-              <svg key={i} viewBox="0 0 560 640" className="cp-fg__mark-layer" style={{ ["--z" as never]: i }}>
+              <svg key={i} viewBox={MARK_VIEWBOX} className="cp-fg__mark-layer" style={{ ["--z" as never]: i }}>
                 <path d={MARK_PATH} />
                 <circle cx={MARK_DOT.x} cy={MARK_DOT.y} r={MARK_DOT.r} />
               </svg>

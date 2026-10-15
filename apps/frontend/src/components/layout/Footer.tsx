@@ -14,7 +14,11 @@ const COLS = [
   },
   {
     title: "Program",
-    items: [["Siap Tembus Scopus", "/siap-tembus-scopus"]],
+    items: [
+      ["Siap Tembus Scopus 1-on-1", "/siap-tembus-scopus"],
+      ["Bootcamp 30 Hari Menulis", "/bootcamp-menulis"],
+      ["Daftar program", "/daftar"],
+    ],
   },
   {
     title: "Contact",

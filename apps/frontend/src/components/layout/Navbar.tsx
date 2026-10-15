@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/components/ui/I18nProvider";
 import { authClient } from "@/lib/auth-client";
+import { BOOTCAMP_BATCHES, formatDate } from "@/lib/data/programs";
 
 const FlagID = (p: SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 18 18" width="18" height="18" {...p}>
@@ -28,7 +29,7 @@ const LANGS = [
   { code: "EN", label: "English", Flag: FlagEN },
 ];
 
-type NavChild = { href: string; title: string; sub: string; badge?: string; icon: "star" | "info" | "team" | "mentor" };
+type NavChild = { href: string; title: string; sub: string; badge?: string; icon: "star" | "info" | "team" | "mentor" | "pen" };
 type NavItem = { id: string; label: string; href: string; children?: NavChild[] };
 
 const NAV: NavItem[] = [
@@ -49,7 +50,8 @@ const NAV: NavItem[] = [
     label: "Program",
     href: "/siap-tembus-scopus",
     children: [
-      { href: "/siap-tembus-scopus", title: "Siap Tembus Scopus", sub: "Bootcamp 12 minggu untuk publikasi terindeks Scopus Q1–Q3.", badge: "Flagship", icon: "star" },
+      { href: "/siap-tembus-scopus", title: "Siap Tembus Scopus 1-on-1", sub: "1 sesi online 90 menit + 4 review artikel bersama mentor pilihan.", badge: "Rp. 600rb", icon: "star" },
+      { href: "/bootcamp-menulis", title: "Bootcamp 30 Hari Menulis", sub: "Webinar mingguan, tools, pelacak menulis, dan review gratis mentor.", badge: "Rp. 450rb", icon: "pen" },
     ],
   },
   { id: "blog", label: "Blog", href: "/blog" },
@@ -62,6 +64,7 @@ const NAV_ICON: Record<NavChild["icon"], React.ReactNode> = {
   info: <><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>,
   team: <><circle cx="9" cy="8" r="3" /><circle cx="17" cy="9" r="2.5" /><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" /><path d="M15 14.6c.6-.3 1.3-.4 2-.4 2.5 0 4.5 2 4.5 4.5" /></>,
   mentor: <><path d="M22 10L12 5 2 10l10 5 10-5z" /><path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5" /></>,
+  pen: <><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z" /></>,
 };
 
 function isActive(pathname: string, href: string) {
@@ -121,10 +124,10 @@ export function Navbar() {
           <div className="cp-announce__inner">
             <span className="cp-announce__pulse" />
             <span className="cp-announce__text">
-              <strong>Batch #07</strong>{" "}
-              <span className="cp-announce__long">— pendaftaran dibuka, 24 kursi tersisa.</span>
+              <strong>Bootcamp 30 Hari Menulis</strong>{" "}
+              <span className="cp-announce__long">— {BOOTCAMP_BATCHES[0].name} mulai {formatDate(BOOTCAMP_BATCHES[0].start)}, pendaftaran dibuka.</span>
             </span>
-            <Link href="/siap-tembus-scopus" className="cp-announce__cta">
+            <Link href="/bootcamp-menulis" className="cp-announce__cta">
               Daftar sekarang
             </Link>
             <button
@@ -258,8 +261,8 @@ export function Navbar() {
                 <Link href="/login" className="cp-navx__btn cp-navx__btn--ghost">
                   Log In
                 </Link>
-                <Link href="/register" className="cp-navx__btn cp-navx__btn--solid">
-                  <span>Join Batch</span>
+                <Link href="/daftar" className="cp-navx__btn cp-navx__btn--solid">
+                  <span>Daftar<span className="cp-navx__btn-extra"> Program</span></span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
@@ -324,8 +327,8 @@ export function Navbar() {
                   <Link href="/login" onClick={() => setMobile(false)} className="cp-navx__btn cp-navx__btn--ghost">
                     Log In
                   </Link>
-                  <Link href="/register" onClick={() => setMobile(false)} className="cp-navx__btn cp-navx__btn--solid">
-                    Join Batch →
+                  <Link href="/daftar" onClick={() => setMobile(false)} className="cp-navx__btn cp-navx__btn--solid">
+                    Daftar Program →
                   </Link>
                 </>
               )}
