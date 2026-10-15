@@ -107,7 +107,7 @@ export function BlogHero() {
       />
 
       {/* ───────── Content grid ───────── */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+      <div className="relative z-10 cp-wrap mx-auto w-full max-w-[var(--max)] px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
         <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-12 lg:gap-16">
           {/* ═══════ LEFT COLUMN — Masthead ═══════ */}
           <motion.div

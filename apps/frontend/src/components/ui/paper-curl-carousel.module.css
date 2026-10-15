@@ -1,0 +1,165 @@
+/* Paper Curl Carousel. Colours come from the site tokens in globals.css, so the
+   rail follows light/dark mode; the sheet's paper stock is the `paper` prop. */
+
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+.stage[data-holding="true"] { cursor: grabbing; }
+.stage:focus-visible { box-shadow: inset 0 0 0 2px var(--scopus); }
+
+.canvas,
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+.canvas { transition: opacity 400ms ease; }
+.fallback { object-fit: cover; }
+
+.rail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 64px;
+  flex-shrink: 0;
+  padding: 0 4px 0 2px;
+  border-top: 1px solid var(--hair-strong);
+}
+
+.caption {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+.caption > * { animation: in 260ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+.caption > :nth-child(2) { animation-delay: 40ms; }
+.caption > :nth-child(3) { animation-delay: 80ms; }
+
+.count {
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mute);
+}
+.count b { font-weight: 600; color: var(--scopus); }
+
+.title {
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sub {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--mute);
+}
+
+.controls { display: flex; gap: 8px; flex-shrink: 0; }
+
+.btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--hair-strong);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 160ms ease-out, border-color 200ms ease, color 200ms ease;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.35; cursor: default; }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover:not(:disabled) { border-color: var(--scopus); color: var(--scopus); }
+}
+
+.ring {
+  position: absolute;
+  inset: -1px;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  transform: rotate(-90deg);
+  color: var(--scopus);
+}
+.ring circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-dasharray: 121;
+  stroke-dashoffset: 121;
+  animation: ring linear forwards;
+}
+
+.clock {
+  position: absolute;
+  width: 0;
+  height: 0;
+  animation: clock linear forwards;
+}
+.root[data-paused="true"] .ring circle,
+.root[data-paused="true"] .clock {
+  animation-play-state: paused;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes ring { to { stroke-dashoffset: 0; } }
+/* Runs only to fire onAnimationEnd; nothing is drawn. */
+@keyframes clock { from { opacity: 0; } to { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .caption > * { animation-name: fade; }
+}
+@media (max-width: 560px) {
+  .sub { display: none; }
+}

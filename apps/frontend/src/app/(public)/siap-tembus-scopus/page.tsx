@@ -20,7 +20,7 @@ const OUTPUTS = [
   "Satu naskah lengkap (5.000–8.000 kata) siap di-submit ke jurnal target.",
   "Daftar jurnal target dengan analisis fit, scope, dan timeline publikasi.",
   "Cover letter + response-to-reviewer template yang sudah teruji.",
-  "Jaringan 24 rekan cohort + akses alumni network CoPublika seumur hidup.",
+  "Jaringan 24 rekan satu batch + akses alumni network CoPublika seumur hidup.",
 ];
 
 const CURRICULUM = [
@@ -68,7 +68,7 @@ export default async function SiapTembusScopusPage() {
   const seatsRemaining = activeBatch?.seatsRemaining ?? 24;
   const seatsTotal = activeBatch?.seatsTotal ?? 60;
   const filled = Math.round(((seatsTotal - seatsRemaining) / seatsTotal) * 100);
-  const cohortLabel = activeBatch ? `Cohort #${activeBatch.number}` : "Cohort #07";
+  const cohortLabel = activeBatch ? `Batch #${activeBatch.number}` : "Batch #07";
   const joinHref = activeBatch ? `/join-batch?batchId=${activeBatch.id}` : "/join-batch";
   return (
     <main className="cp-stsz">

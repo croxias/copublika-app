@@ -12,7 +12,7 @@ const STEPS = [
   },
   {
     title: "Council review",
-    desc: "Curation Council evaluates fit with cohort focus, collaboration potential, and execution readiness.",
+    desc: "Curation Council evaluates fit with batch focus, collaboration potential, and execution readiness.",
   },
   {
     title: "Decision",
@@ -27,11 +27,11 @@ const STEPS = [
 export default function CurationProcessPage() {
   return (
     <section className="py-24">
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="cp-wrap w-full max-w-[var(--max)] mx-auto">
         <SectionHeader
           eyebrow="Curation Process"
           title="How batch admissions work."
-          description="Selective intake ensures each cohort has strong collaboration fit and publication execution capacity."
+          description="Selective intake ensures each batch has strong collaboration fit and publication execution capacity."
           align="center"
         />
         <div className="mt-14 space-y-4 max-w-4xl mx-auto">

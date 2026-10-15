@@ -26,7 +26,7 @@ const FEATURED: Featured[] = [
     title:
       "Anatomi Naskah yang Diterima Q1: Membedah Tiga Naskah CoPublika dari Submit hingga Acceptance",
     desc:
-      "Tiga naskah peserta cohort #05 berhasil diterima di jurnal Q1 dalam 6 bulan terakhir. Kami membedah pola umum, kesalahan yang dihindari, dan kerangka berpikir di balik revisi-revisi penting.",
+      "Tiga naskah peserta Batch #05 berhasil diterima di jurnal Q1 dalam 6 bulan terakhir. Kami membedah pola umum, kesalahan yang dihindari, dan kerangka berpikir di balik revisi-revisi penting.",
     avatar: "https://i.pravatar.cc/80?img=8",
     name: "Dr. Ade Putranto",
     role: "Pendiri · Editor jurnal Q1",
@@ -66,7 +66,7 @@ const FEATURED: Featured[] = [
     date: "05 Apr 2025",
     title: "Dari Reject di Q3 ke Accept di Q2: Satu Naskah, Tiga Submission, Sembilan Bulan",
     desc:
-      "Studi kasus naskah peserta cohort #04. Kronologi lengkap setiap submission, reviewer comments, dan keputusan strategis di setiap titik.",
+      "Studi kasus naskah peserta Batch #04. Kronologi lengkap setiap submission, reviewer comments, dan keputusan strategis di setiap titik.",
     avatar: "https://i.pravatar.cc/80?img=12",
     name: "Fajar Ramadhan",
     role: "Mentor · Engineering",
@@ -116,17 +116,16 @@ export function BlogFeatured() {
   const list = [...CARDS, ...CARDS];
 
   return (
-    <section className="cp-blog" id="blog-section">
+    <section className="cp-blog cp-surface-ink" id="blog-section">
       <div className="cp-blog__wrap">
         {/* ── Section Header: two-col with "Lihat semua" on right ── */}
-        <div className="cp-section-head cp-section-head--two">
+        <div className="cp-section-head cp-section-head--link" data-reveal>
           <div>
             <div className="cp-sh-tag">
               <span className="cp-sh-tag__bar" />
-              <span className="cp-sh-tag__num">07</span>
               <span>Tulisan terbaru</span>
             </div>
-            <h2 className="cp-sh-h">Dari editor &amp; mentor.</h2>
+            <h2 className="cp-sh-h cp-sh-h--line">Dari editor <span className="cp-sh-h-accent">&amp; mentor.</span></h2>
           </div>
           <div className="cp-blog__head-right">
             <Link href="/blog" className="cp-sh-link">

@@ -1,80 +1,98 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
-const META = [
-  { l: "Durasi", v: "12 Minggu" },
-  { l: "Format", v: "Hybrid" },
+const WEEKS = 12;
+
+const DETAILS = [
   { l: "Mulai", v: "15 Sep 2025" },
-  { l: "Kuota", v: "24" },
+  { l: "Durasi", v: "12 minggu" },
+  { l: "Format", v: "Hybrid" },
+  { l: "Kuota", v: "24 peserta" },
 ];
 
+// Each module spans a range of the 12 weeks; the timeline draws it as a bar.
 const CURRICULUM = [
-  { n: "01", t: "Pemilihan Topik & Jurnal Target", w: "W 1–2" },
-  { n: "02", t: "Tinjauan Pustaka Sistematis", w: "W 3–4" },
-  { n: "03", t: "Metodologi & Analisis Data", w: "W 5–6" },
-  { n: "04", t: "Penulisan Akademik Bahasa Inggris", w: "W 7–8" },
-  { n: "05", t: "Klinik Manuskrip & Peer Review", w: "W 9–10" },
-  { n: "06", t: "Submission & Strategi Revisi", w: "W 11–12" },
+  { t: "Pemilihan topik & jurnal target", from: 1, to: 2 },
+  { t: "Tinjauan pustaka sistematis", from: 3, to: 4 },
+  { t: "Metodologi & analisis data", from: 5, to: 6 },
+  { t: "Penulisan akademik bahasa Inggris", from: 7, to: 8 },
+  { t: "Klinik naskah & peer review", from: 9, to: 10 },
+  { t: "Submission & strategi revisi", from: 11, to: 12 },
 ];
 
 export function ProgramHighlight() {
   return (
     <section className="cp-feature">
       <div className="cp-feature__wrap">
-        <div className="cp-section-head cp-section-head--center">
-          <div className="cp-sh-tag" style={{ marginBottom: 16 }}>
-            <span className="cp-sh-tag__num">04</span>
-            <span>Program unggulan</span>
+        <div className="cp-section-head" data-reveal>
+          <div>
+            <div className="cp-sh-tag">
+              <span className="cp-sh-tag__bar" />
+              <span>Program unggulan</span>
+            </div>
+            <h2 className="cp-sh-h cp-sh-h--line">
+              Siap Tembus Scopus, <span className="cp-sh-h-accent">sampai terbit.</span>
+            </h2>
           </div>
-          <h2 className="cp-sh-h">Siap Tembus Scopus.</h2>
-          <p className="cp-sh-sub">
-            Bootcamp 12 minggu untuk mendampingi anda menerbitkan satu artikel di jurnal
-            terindeks Scopus — dari draft hingga acceptance letter.
-          </p>
         </div>
 
-        <div className="cp-pf">
-          <div className="cp-pf__left">
-            <div className="cp-pf__tag">
-              <span className="cp-pf__tag-dot" />
-              <span>Cohort #07 — Pendaftaran Dibuka</span>
+        <div className="cp-prog">
+          {/* Curriculum as a 12-week timeline */}
+          <div className="cp-prog__plan" data-reveal>
+            <div className="cp-prog__plan-head">
+              <p className="cp-prog__eyebrow">Kurikulum</p>
+              <div className="cp-prog__weeks" aria-hidden="true">
+                {Array.from({ length: WEEKS }, (_, i) => (
+                  <span key={i}>{i === 0 || (i + 1) % 4 === 0 ? `M${i + 1}` : ""}</span>
+                ))}
+              </div>
             </div>
-            <h2 className="cp-pf__h">Dari ide ke acceptance letter dalam 12 minggu.</h2>
-            <p className="cp-pf__lead">
-              Modul terstruktur, mentor 1-on-1 dengan rekam jejak Scopus, klinik manuskrip
-              mingguan, dan akses ke editor tamu dari jurnal Q1–Q3.
-            </p>
-            <div className="cp-pf__meta">
-              {META.map((m) => (
-                <div key={m.l}>
-                  <span className="cp-pf__meta-l">{m.l}</span>
-                  <span className="cp-pf__meta-v">{m.v}</span>
+            <ol className="cp-prog__rows">
+              {CURRICULUM.map((c, i) => (
+                <li key={c.t} className="cp-prog__row" style={{ "--i": i } as CSSProperties}>
+                  <span className="cp-prog__module">{c.t}</span>
+                  <span className="cp-prog__lane" aria-label={`Minggu ${c.from}–${c.to}`}>
+                    <span
+                      className="cp-prog__bar"
+                      style={{ "--from": c.from - 1, "--span": c.to - c.from + 1 } as CSSProperties}
+                    />
+                  </span>
+                  <span className="cp-prog__when">
+                    M{c.from}–{c.to}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* Admission pass */}
+          <aside className="cp-ticket" data-reveal aria-label="Pendaftaran Batch 7">
+            <div className="cp-ticket__top">
+              <p className="cp-ticket__status">
+                <span aria-hidden="true" /> Pendaftaran dibuka
+              </p>
+              <p className="cp-ticket__batch">Batch 7</p>
+              <h3 className="cp-ticket__title">Siap Tembus Scopus</h3>
+              <p className="cp-ticket__note">Kursi terbatas agar setiap peserta mendapat pendampingan penuh.</p>
+            </div>
+            <div className="cp-ticket__tear" aria-hidden="true" />
+            <dl className="cp-ticket__details">
+              {DETAILS.map((d) => (
+                <div key={d.l}>
+                  <dt>{d.l}</dt>
+                  <dd>{d.v}</dd>
                 </div>
               ))}
-            </div>
-            <div className="cp-pf__ctas">
-              <Link href="/siap-tembus-scopus" className="cp-pf__btn cp-pf__btn--accent">
-                Daftar Sekarang <span className="cp-pf__arr">→</span>
+            </dl>
+            <div className="cp-ticket__ctas">
+              <Link href="/siap-tembus-scopus" className="cp-ticket__btn cp-ticket__btn--accent">
+                Daftar sekarang <span aria-hidden="true">→</span>
               </Link>
-              <Link href="/siap-tembus-scopus" className="cp-pf__btn cp-pf__btn--line">
-                Unduh Silabus
+              <Link href="/siap-tembus-scopus" className="cp-ticket__btn cp-ticket__btn--line">
+                Unduh silabus
               </Link>
             </div>
-          </div>
-          <div className="cp-pf__right">
-            <div className="cp-pf__tag" style={{ marginBottom: 24 }}>
-              <span>Modul</span>
-              <span style={{ color: "#666" }}>/ 12 Weeks</span>
-            </div>
-            <div className="cp-pf__curri">
-              {CURRICULUM.map((c) => (
-                <div key={c.n} className="cp-pf__curri-item">
-                  <span className="cp-pf__curri-n">{c.n}</span>
-                  <span className="cp-pf__curri-t">{c.t}</span>
-                  <span className="cp-pf__curri-d">{c.w}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          </aside>
         </div>
       </div>
     </section>

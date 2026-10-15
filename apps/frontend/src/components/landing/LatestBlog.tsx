@@ -7,7 +7,7 @@ import type { BlogPost } from "@/types";
 export function LatestBlog({ posts }: { posts: BlogPost[] }) {
   return (
     <section className="py-20 bg-[var(--surface)]">
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="cp-wrap w-full max-w-[var(--max)] mx-auto">
         <div className="flex items-end justify-between gap-6">
           <SectionHeader
             eyebrow="Editorial"

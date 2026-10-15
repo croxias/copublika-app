@@ -8,6 +8,7 @@ import { BlogFeatured } from "@/components/landing/BlogFeatured";
 import { AlumniMarquee } from "@/components/landing/AlumniMarquee";
 import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <AlumniMarquee />
       <FAQ />
       <FinalCTA />
+      <ScrollReveal />
     </>
   );
 }

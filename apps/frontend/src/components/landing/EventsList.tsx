@@ -1,33 +1,35 @@
 import Link from "next/link";
+import { EventsBoard, type LandingEvent } from "./EventsBoard";
 
-const EVENTS = [
+// Placeholder agenda until events come from the CMS.
+export const EVENTS: LandingEvent[] = [
   {
-    d: "12",
-    m: "Jun",
-    title: "Klinik Manuskrip: Membedah Reviewer Comments",
-    sub: "Bersama Dr. Aulia Rahmawati, Editor Asia Pacific Journal of Education",
+    date: "2026-10-24",
+    title: "Klinik Naskah: Membedah Komentar Reviewer",
+    sub: "Bersama Dr. Aulia Rahmawati, editor Asia Pacific Journal of Education",
     where: "Daring · Zoom",
+    status: "Segera",
   },
   {
-    d: "24",
-    m: "Jun",
+    date: "2026-11-07",
     title: "Editor Roundtable: Strategi Memilih Jurnal Q1–Q2",
-    sub: "Diskusi panel 3 editor jurnal Scopus dari Asia Tenggara",
+    sub: "Diskusi panel tiga editor jurnal Scopus dari Asia Tenggara",
     where: "Daring · Webinar",
+    status: "Pendaftaran dibuka",
   },
   {
-    d: "08",
-    m: "Jul",
+    date: "2026-11-21",
     title: "Workshop Luring: Academic Writing dengan Anchor Sentences",
-    sub: "2 hari intensif, pendampingan tata-tulis Bahasa Inggris akademik",
+    sub: "Dua hari intensif pendampingan tata tulis bahasa Inggris akademik",
     where: "Luring · Yogyakarta",
+    status: "Pendaftaran dibuka",
   },
   {
-    d: "22",
-    m: "Jul",
+    date: "2026-12-05",
     title: "Doctoral Forum: Membangun Jejaring Internasional Sejak S3",
-    sub: "Sharing dari 4 alumni S3 ITB, UI, UGM, dan Universitas Indonesia",
+    sub: "Berbagi pengalaman dari empat alumni S3 ITB, UI, UGM, dan Unair",
     where: "Hybrid · Jakarta",
+    status: "Pendaftaran dibuka",
   },
 ];
 
@@ -35,14 +37,13 @@ export function EventsList() {
   return (
     <section className="cp-events">
       <div className="cp-events__wrap">
-        <div className="cp-section-head cp-section-head--two">
+        <div className="cp-section-head cp-section-head--link" data-reveal>
           <div>
             <div className="cp-sh-tag">
               <span className="cp-sh-tag__bar" />
-              <span className="cp-sh-tag__num">06</span>
               <span>Agenda</span>
             </div>
-            <h2 className="cp-sh-h">Acara mendatang.</h2>
+            <h2 className="cp-sh-h cp-sh-h--line">Acara <span className="cp-sh-h-accent">mendatang.</span></h2>
           </div>
           <div className="cp-blog__head-right">
             <Link href="/event" className="cp-sh-link">
@@ -54,26 +55,7 @@ export function EventsList() {
           </div>
         </div>
 
-        <div className="cp-events__list">
-          {EVENTS.map((e) => (
-            <Link key={e.title} href="/event" className="cp-event">
-              <div className="cp-event__date">
-                <span className="cp-event__d">{e.d}</span>
-                <span className="cp-event__m">{e.m}</span>
-              </div>
-              <div className="cp-event__info">
-                <h4>{e.title}</h4>
-                <div className="cp-event__sub">{e.sub}</div>
-              </div>
-              <div className="cp-event__where">{e.where}</div>
-              <div className="cp-event__go">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <EventsBoard events={EVENTS} />
       </div>
     </section>
   );

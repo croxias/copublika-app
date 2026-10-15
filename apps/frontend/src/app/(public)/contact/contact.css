@@ -709,3 +709,19 @@ html[data-theme="dark"] .cp-contact-channel-card:hover .cp-contact-channel-card_
   background: var(--ch-color);
   color: #fff;
 }
+
+/* Wide screens: wider brand panel, channels and form side by side instead of a 680px column. */
+@media (min-width: 1680px) {
+  .cp-contact-layout { grid-template-columns: clamp(380px, 24vw, 560px) 1fr; }
+  .cp-contact-right {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) minmax(0, 760px);
+    justify-content: center;
+    align-content: center;
+    align-items: start;
+    gap: 32px;
+    padding: 56px clamp(48px, 4vw, 96px);
+  }
+  .cp-contact-channels, .cp-contact-form-card { max-width: none; }
+  .cp-contact-channels__grid { grid-template-columns: 1fr; }
+}

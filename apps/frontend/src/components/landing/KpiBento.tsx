@@ -4,7 +4,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 export function KpiBento({ kpis }: { kpis: { label: string; value: string }[] }) {
   return (
     <section className="py-20">
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="cp-wrap w-full max-w-[var(--max)] mx-auto">
         <SectionHeader
           eyebrow="Proof of momentum"
           title="A research engine built for measurable output."

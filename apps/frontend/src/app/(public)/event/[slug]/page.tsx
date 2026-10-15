@@ -27,7 +27,7 @@ function EventHero({ event }: { event: Event }) {
     <section className="cp-ed-hero-v2">
       <div className="cp-ed-hero-v2__orb" aria-hidden="true" />
       <div className="cp-ed-hero-v2__orb2" aria-hidden="true" />
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8" style={{ position: "relative", zIndex: 1 }}>
+      <div className="cp-wrap w-full max-w-[var(--max)] mx-auto" style={{ position: "relative", zIndex: 1 }}>
         <Link href="/event" className="cp-ed-back">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M10 12L6 8L10 4" strokeLinecap="round" strokeLinejoin="round" />
@@ -113,7 +113,7 @@ function EventContent({ event }: { event: Event }) {
 
   return (
     <section className="cp-ed-section">
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="cp-wrap w-full max-w-[var(--max)] mx-auto">
         <div className="cp-ed-grid">
           <div>
             {event.blocks?.map((block: EventBlock, i: number) => (
@@ -214,7 +214,7 @@ function EventContent({ event }: { event: Event }) {
                     </Link>{" "}
                     — 1 klik, data prefill otomatis. Belum jadi member?{" "}
                     <Link href="/join-batch" className="font-bold text-brand hover:underline">
-                      Join Cohort →
+                      Gabung Batch →
                     </Link>
                   </div>
                 </>
@@ -289,7 +289,7 @@ function EventCTA() {
     <section className="cp-ed-related-v2">
       <div className="cp-ed-related-v2__grid" aria-hidden="true" />
       <div className="cp-ed-related-v2__orbit" aria-hidden="true" />
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="cp-wrap w-full max-w-[var(--max)] mx-auto">
         <div className="cp-ed-related-v2__inner">
           <div className="cp-ed-related-v2__head">
             <h2>Acara <span>serupa</span>.</h2>

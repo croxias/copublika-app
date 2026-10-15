@@ -10,12 +10,12 @@ type Card = {
   journal: string;
 };
 
-const CARDS: Card[] = [
+export const CARDS: Card[] = [
   {
     q: "q1",
     qLabel: "Scopus Q1",
     img: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=720&q=80&auto=format&fit=crop",
-    cat: "Education",
+    cat: "Pendidikan",
     year: "2025",
     title:
       "Generative AI Adoption in Indonesian Higher Education: A National Survey of 12 Universities",
@@ -25,7 +25,7 @@ const CARDS: Card[] = [
     q: "q2",
     qLabel: "Scopus Q2",
     img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=720&q=80&auto=format&fit=crop",
-    cat: "Public Health",
+    cat: "Kesehatan masyarakat",
     year: "2025",
     title: "Digital Health Literacy Among Rural Indonesian Communities Post-COVID",
     journal: "Health Promotion Intl.",
@@ -34,7 +34,7 @@ const CARDS: Card[] = [
     q: "q1",
     qLabel: "Scopus Q1",
     img: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=720&q=80&auto=format&fit=crop",
-    cat: "Sustainability",
+    cat: "Keberlanjutan",
     year: "2025",
     title: "Circular Economy Practices in Central Java's Textile MSMEs",
     journal: "Sustainability",
@@ -43,7 +43,7 @@ const CARDS: Card[] = [
     q: "q3",
     qLabel: "Scopus Q3",
     img: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=720&q=80&auto=format&fit=crop",
-    cat: "Linguistics",
+    cat: "Linguistik",
     year: "2024",
     title:
       "Reading Comprehension Strategies in English-Medium Instruction: Indonesian Polytechnics",
@@ -53,7 +53,7 @@ const CARDS: Card[] = [
     q: "q2",
     qLabel: "Scopus Q2",
     img: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=720&q=80&auto=format&fit=crop",
-    cat: "Pedagogy",
+    cat: "Pedagogi",
     year: "2024",
     title:
       "Anchor Sentences as a Heuristic for L2 Academic Writing: A Quasi-Experimental Study",
@@ -63,7 +63,7 @@ const CARDS: Card[] = [
     q: "q3",
     qLabel: "Scopus Q3",
     img: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=720&q=80&auto=format&fit=crop",
-    cat: "Publishing",
+    cat: "Penerbitan",
     year: "2024",
     title:
       "Reviewer Comment Framing and Author Response: A Discourse Analysis of 240 Revision Letters",
@@ -73,7 +73,7 @@ const CARDS: Card[] = [
     q: "q2",
     qLabel: "Scopus Q2",
     img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=720&q=80&auto=format&fit=crop",
-    cat: "Sociology",
+    cat: "Sosiologi",
     year: "2024",
     title:
       "Network Effects in Early-Career Academic Writing Communities: A Social Capital Perspective",
@@ -83,7 +83,7 @@ const CARDS: Card[] = [
     q: "q1",
     qLabel: "Scopus Q1",
     img: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=720&q=80&auto=format&fit=crop",
-    cat: "Biotech",
+    cat: "Bioteknologi",
     year: "2024",
     title: "Microbiome Profiling in Indonesian Fermented Foods: A Multi-Province Survey",
     journal: "Food Microbiology",
@@ -92,7 +92,7 @@ const CARDS: Card[] = [
     q: "q2",
     qLabel: "Scopus Q2",
     img: "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=720&q=80&auto=format&fit=crop",
-    cat: "Education",
+    cat: "Pendidikan",
     year: "2024",
     title: "Flipped Classroom in Engineering Programs: A 3-Year Longitudinal Study",
     journal: "IEEE Trans. on Ed.",
@@ -101,7 +101,7 @@ const CARDS: Card[] = [
     q: "q3",
     qLabel: "Scopus Q3",
     img: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=720&q=80&auto=format&fit=crop",
-    cat: "Economics",
+    cat: "Ekonomi",
     year: "2024",
     title: "SME Resilience and Digital Payment Adoption in Post-Pandemic Jakarta",
     journal: "Asian Econ. Papers",
@@ -112,16 +112,15 @@ export function ResearchMarquee() {
   // duplicate for seamless loop
   const list = [...CARDS, ...CARDS];
   return (
-    <section className="cp-research">
+    <section className="cp-research cp-surface-ink">
       <div className="cp-research__wrap">
-        <div className="cp-section-head cp-section-head--two">
+        <div className="cp-section-head cp-section-head--link" data-reveal>
           <div>
             <div className="cp-sh-tag">
               <span className="cp-sh-tag__bar" />
-              <span className="cp-sh-tag__num">05</span>
               <span>Riset terkini</span>
             </div>
-            <h2 className="cp-sh-h cp-sh-h--nowrap">Publikasi anggota komunitas.</h2>
+            <h2 className="cp-sh-h cp-sh-h--line">Publikasi <span className="cp-sh-h-accent">anggota komunitas.</span></h2>
           </div>
           <div className="cp-blog__head-right">
             <Link href="/research" className="cp-sh-link">
@@ -138,19 +137,25 @@ export function ResearchMarquee() {
         <div className="cp-marquee__track">
           {list.map((c, i) => (
             <Link key={`${c.title}-${i}`} className="cp-rc" href="/research">
-              <div className="cp-rc__thumb">
-                <span className={`cp-rc__q cp-rc__q--${c.q}`}>{c.qLabel}</span>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={c.img} alt="" loading="lazy" />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="cp-rc__img" src={c.img} alt="" loading="lazy" />
+              <span className="cp-rc__shade" aria-hidden="true" />
+              <span className={`cp-rc__q cp-rc__q--${c.q}`}>{c.qLabel}</span>
               <div className="cp-rc__body">
                 <div className="cp-rc__meta">
                   <span>{c.cat}</span>
-                  <span className="cp-rc__sep">/</span>
+                  <span className="cp-rc__sep">·</span>
                   <span>{c.year}</span>
                 </div>
                 <h4 className="cp-rc__title">{c.title}</h4>
                 <div className="cp-rc__journal">{c.journal}</div>
+                <span className="cp-rc__lock">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <rect x="4" y="11" width="16" height="10" rx="2" />
+                    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                  </svg>
+                  Abstrak lengkap untuk anggota
+                </span>
               </div>
             </Link>
           ))}

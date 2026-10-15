@@ -10,7 +10,7 @@ export default async function EventPage() {
         <div className="cp-ev-hero-v2__orb1" aria-hidden="true" />
         <div className="cp-ev-hero-v2__orb2" aria-hidden="true" />
         <div className="cp-ev-hero-v2__orb3" aria-hidden="true" />
-        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="cp-wrap w-full max-w-[var(--max)] mx-auto">
           <div className="cp-ev-hero-v2__wrap">
             <div className="cp-ev-hero-v2__eyebrow">Kalender Kegiatan Akademik</div>
             <h1>
@@ -39,8 +39,8 @@ export default async function EventPage() {
         </div>
       </section>
 
-      <section className="cp-section--tight" style={{ background: "var(--paper)" }}>
-        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="cp-section--tight" style={{ background: "var(--paper)", paddingLeft: 0, paddingRight: 0 }}>
+        <div className="cp-wrap w-full max-w-[var(--max)] mx-auto">
           <EventClient events={events} />
         </div>
       </section>

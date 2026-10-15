@@ -122,14 +122,13 @@ export function AlumniMarquee() {
   return (
     <section className="cp-testi-section">
       <div className="cp-testi-section__wrap">
-        <div className="cp-section-head cp-section-head--two">
+        <div className="cp-section-head cp-section-head--two" data-reveal>
           <div>
             <div className="cp-sh-tag">
               <span className="cp-sh-tag__bar" />
-              <span className="cp-sh-tag__num">08</span>
               <span>Suara komunitas</span>
             </div>
-            <h2 className="cp-sh-h cp-sh-h--nowrap">Suara dari komunitas.</h2>
+            <h2 className="cp-sh-h">Cerita dari <span className="cp-sh-h-accent">komunitas.</span></h2>
           </div>
         </div>
       </div>
