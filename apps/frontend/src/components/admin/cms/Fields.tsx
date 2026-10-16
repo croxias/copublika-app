@@ -213,7 +213,7 @@ function FieldInput({ field: f, value, values, onChange, error, errors, path, ct
   }
 
   return (
-    <div className={`cms-field ${wide ? 'cms-field--wide' : ''} ${error ? 'has-error' : ''}`} data-path={path}>
+    <div className={`cms-field ${wide ? 'cms-field--wide' : ''} ${'third' in f && f.third ? 'cms-field--third' : ''} ${error ? 'has-error' : ''}`} data-path={path}>
       {labelRow}
       {control}
       {f.help && !error && <p className="cms-help">{f.help}</p>}

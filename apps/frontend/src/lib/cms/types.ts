@@ -10,7 +10,8 @@ export type CollectionKey =
   | 'heroSlides'
   | 'people'
   | 'testimonials'
-  | 'faqs';
+  | 'faqs'
+  | 'registrations';
 
 export type Values = Record<string, unknown>;
 
@@ -33,6 +34,8 @@ type FieldBase = {
   visibleIf?: (values: Values) => boolean;
   /** Small icon beside the label. */
   icon?: GroupIcon;
+  /** One third of the row, so three short fields sit side by side. */
+  third?: boolean;
 };
 
 export type Option = { value: string; label: string; /** Second line in dropdown menus. */ hint?: string };
@@ -162,7 +165,8 @@ export type SectionTab = {
   manager?: 'heroSlides';
   /** Live schematic of the public section beside the form; clicking a part opens its group. */
   preview?: 'why' | 'program' | 'aboutHero' | 'aboutIntro' | 'aboutVision' | 'aboutJourney' | 'teamOrg' | 'join'
-    | 'blogHero' | 'blogPicks' | 'blogArchive' | 'blogWrite' | 'blogDetail';
+    | 'blogHero' | 'blogPicks' | 'blogArchive' | 'blogWrite' | 'blogDetail'
+    | 'eventHero' | 'eventNext' | 'eventAgenda' | 'eventDetail';
 };
 
 export type PageConfig = {

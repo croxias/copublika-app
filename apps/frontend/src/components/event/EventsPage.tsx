@@ -7,6 +7,7 @@ import { ArrowRight, ArrowUpRight, CalendarDays, CalendarPlus, LayoutList, MapPi
 import type { Event } from "@/types";
 import { CopublikaMark, MARK_DOT, MARK_RING_PATH, MARK_VIEWBOX } from "@/components/brand/CopublikaMark";
 import { SectionHead } from "@/components/program/shared";
+import { EVENT_COPY } from "@/lib/content/event";
 import { Calendar3D } from "./Calendar3D";
 import { EventTable } from "./EventTable";
 import { EventMonth } from "./EventMonth";
@@ -53,17 +54,15 @@ export function EventsPage({ events }: { events: Event[] }) {
         </div>
         <div className="cp-sts-hero__wrap">
           <motion.div className="cp-sts-hero__copy" initial={reduce ? false : "hidden"} animate="show" variants={{ show: { transition: { staggerChildren: 0.09 } } }}>
-            <motion.span className="cp-sts-pill" variants={fade}><i aria-hidden="true" /> Kalender kegiatan akademik</motion.span>
+            <motion.span className="cp-sts-pill" variants={fade}><i aria-hidden="true" /> {EVENT_COPY.hero.pill}</motion.span>
             <h1 id="cp-evp-title" className="cp-sts-hero__title">
-              <span className="cp-sts-mask"><motion.span variants={line}>Agenda</motion.span></span>
-              <span className="cp-sts-mask"><motion.span variants={line} className="is-accent">komunitas.</motion.span></span>
+              <span className="cp-sts-mask"><motion.span variants={line}>{EVENT_COPY.hero.title}</motion.span></span>
+              <span className="cp-sts-mask"><motion.span variants={line} className="is-accent">{EVENT_COPY.hero.accent}</motion.span></span>
             </h1>
-            <motion.p className="cp-sts-hero__lead" variants={fade}>
-              Webinar, klinik manuskrip, workshop, dan forum doktoral bersama editor dan reviewer jurnal. Sebagian besar gratis untuk anggota CoPublika.
-            </motion.p>
+            <motion.p className="cp-sts-hero__lead" variants={fade}>{EVENT_COPY.hero.lead}</motion.p>
             <motion.div className="cp-evp-hero__ctas" variants={fade}>
-              <a href="#terdekat" className="cp-ab-btn cp-ab-btn--primary">Lihat acara terdekat <ArrowRight size={16} aria-hidden="true" /></a>
-              <button type="button" className="cp-evp-btn-ghost" onClick={openCalendar}><CalendarDays size={16} aria-hidden="true" /> Kalender lengkap</button>
+              <a href="#terdekat" className="cp-ab-btn cp-ab-btn--primary">{EVENT_COPY.hero.ctaPrimary} <ArrowRight size={16} aria-hidden="true" /></a>
+              <button type="button" className="cp-evp-btn-ghost" onClick={openCalendar}><CalendarDays size={16} aria-hidden="true" /> {EVENT_COPY.hero.ctaSecondary}</button>
             </motion.div>
             <motion.dl className="cp-bl-stats" variants={fade}>
               {stats.map((s) => (
@@ -85,7 +84,7 @@ export function EventsPage({ events }: { events: Event[] }) {
       {featured && (
         <section className="cp-ab-sec cp-sts-sec cp-sts-sec--warm cp-evp-next" id="terdekat" aria-labelledby="cp-evp-next-title">
           <div className="cp-ab-wrap">
-            <SectionHead tag="Acara terdekat" title="Jangan sampai" accent="ketinggalan." lead="Pendaftaran masih dibuka. Simpan jadwalnya ke kalender Anda supaya tidak terlewat." />
+            <SectionHead {...EVENT_COPY.next} />
             <FeaturedEvent event={featured} now={now} />
             {rest.length > 0 && (
               <div className="cp-evp-after">
@@ -235,7 +234,7 @@ function Agenda({ sectionRef, events, all, mode, setMode, todayKey }: { sectionR
     <section ref={sectionRef} className="cp-ab-sec cp-evp-agenda" id="agenda" aria-labelledby="cp-evp-agenda-title">
       <div className="cp-ab-wrap">
         <div className="cp-evp-agenda__head">
-          <SectionHead tag="Jadwal lengkap" title="Agenda" accent="berkelanjutan." lead="Cari berdasarkan topik atau pembicara, saring per jenis acara, atau lihat semuanya dalam kalender bulanan." />
+          <SectionHead {...EVENT_COPY.agenda} />
         </div>
         <div className="cp-evp-bar">
           <label className="cp-evp-search">

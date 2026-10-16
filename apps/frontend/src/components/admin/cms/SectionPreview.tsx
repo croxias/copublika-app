@@ -2,6 +2,7 @@
 
 import type { FieldContext, SectionTab, Values } from '@/lib/cms/types';
 import { GroupIconView } from './SectionGroups';
+import { EventAgendaPreview, EventDetailPreview, EventHeroPreview, EventNextPreview } from './EventPagePreviews';
 import { BlogArchivePreview, BlogDetailPreview, BlogHeroPreview, BlogPicksPreview, BlogWritePreview } from './BlogPagePreviews';
 import { AboutHeroPreview, AboutIntroPreview, AboutJourneyPreview, AboutVisionPreview, JoinPreview, TeamOrgPreview } from './AboutPreviews';
 
@@ -31,6 +32,10 @@ export function SectionPreview({ kind, ...props }: Props & { kind: NonNullable<S
       {kind === 'blogArchive' && <BlogArchivePreview {...props} />}
       {kind === 'blogWrite' && <BlogWritePreview {...props} />}
       {kind === 'blogDetail' && <BlogDetailPreview {...props} />}
+      {kind === 'eventHero' && <EventHeroPreview {...props} />}
+      {kind === 'eventNext' && <EventNextPreview {...props} />}
+      {kind === 'eventAgenda' && <EventAgendaPreview {...props} />}
+      {kind === 'eventDetail' && <EventDetailPreview {...props} />}
     </div>
   );
 }

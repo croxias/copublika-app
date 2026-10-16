@@ -9,10 +9,12 @@ import {
 import type { Event } from "@/types";
 import { CopublikaMark, MARK_DOT, MARK_RING_PATH, MARK_VIEWBOX } from "@/components/brand/CopublikaMark";
 import { formatRupiah } from "@/lib/data/programs";
+import { EVENT_COPY } from "@/lib/content/event";
+import { addRegistration } from "@/lib/cms/registrations";
 import { categoryOf, downloadIcs, seatsLeft, when } from "./eventMeta";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const NON_MEMBER_PRICE = 75_000;
+const NON_MEMBER_PRICE = EVENT_COPY.detail.nonMemberPrice;
 
 const initials = (name = "") => name.replace(/^(dr|prof)\.?\s+/i, "").split(/[\s,]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
@@ -249,8 +251,8 @@ export function EventDetail({ event, related }: { event: Event; related: Event[]
           <div className="cp-ab-wrap">
             <div className="cp-evd-more__head">
               <div>
-                <span className="cp-evd-sec__k">Agenda lainnya</span>
-                <h2 id="cp-evd-more-title">Acara <span>berikutnya.</span></h2>
+                <span className="cp-evd-sec__k">{EVENT_COPY.detail.moreTag}</span>
+                <h2 id="cp-evd-more-title">{EVENT_COPY.detail.moreTitle} <span>{EVENT_COPY.detail.moreAccent}</span></h2>
               </div>
               <Link href="/event#agenda" className="cp-evd-more__all">Semua agenda <ArrowRight size={16} aria-hidden="true" /></Link>
             </div>
@@ -365,7 +367,10 @@ function RegisterDialog({ event, onClose, onCalendar }: { event: Event; onClose:
     if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) errs.email = "Email belum valid.";
     if (!form.org.trim()) errs.org = "Isi institusi atau kampus Anda.";
     setErrors(errs);
-    if (!Object.keys(errs).length) setDone(true);
+    if (Object.keys(errs).length) return;
+    // Staging: the admin's Agenda Event → Pendaftar tab reads it from this browser.
+    addRegistration({ eventId: event.id, eventTitle: event.title, name: form.name.trim(), email: form.email.trim(), org: form.org.trim(), question: form.question.trim(), paid: event.isPaid });
+    setDone(true);
   };
   const field = (key: keyof typeof form, label: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
     <label className={`cp-evd-field ${errors[key] ? "has-error" : ""}`}>
@@ -383,7 +388,7 @@ function RegisterDialog({ event, onClose, onCalendar }: { event: Event; onClose:
         {done ? (
           <div className="cp-evd-done">
             <span className="cp-evd-done__ico" aria-hidden="true"><CheckCircle2 size={34} /></span>
-            <h3>Pendaftaran diterima.</h3>
+            <h3>{EVENT_COPY.detail.doneTitle}</h3>
             <p>Terima kasih, {form.name.split(" ")[0]}. Tautan dan materi dikirim ke <b>{form.email}</b> 24 jam sebelum acara.</p>
             <div className="cp-evd-done__ctas">
               <button type="button" className="cp-ab-btn cp-ab-btn--primary" onClick={onCalendar}><CalendarPlus size={16} aria-hidden="true" /> Simpan ke kalender</button>

@@ -58,6 +58,7 @@ const getNav = (demoEnabled = false, reviewCount = 0): NavSection[] => [
       { id: 'page-about', name: 'About', href: '/admin/website/about', icon: 'info', also: ['/admin/website/about-team', '/admin/website/about-mentors'] },
       { id: 'page-research', name: 'Halaman Riset', href: '/admin/website/research', icon: 'layout' },
       { id: 'page-blog', name: 'Halaman Blog', href: '/admin/website/blog', icon: 'book' },
+      { id: 'page-event', name: 'Halaman Event', href: '/admin/website/event', icon: 'calendar' },
       {
         id: 'program',
         name: 'Program',

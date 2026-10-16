@@ -1,6 +1,6 @@
-import type { CmsItem, CollectionConfig, Option, StatusTone, Values } from '../types';
+import type { CmsItem, CollectionConfig, FieldContext, Option, StatusTone, Values } from '../types';
+import { HOLDS_SEAT } from '../registrations';
 import { PUBLISH_ARCHIVE_STATUSES } from './status';
-import { formatDate } from '@/components/admin/cms/ui';
 
 export type EventPhase = 'upcoming' | 'live' | 'ended';
 
@@ -18,9 +18,9 @@ export const EVENT_TYPES: Option[] = [
   { value: 'forum', label: 'Forum' },
 ];
 
-const FORMATS: Option[] = [
-  { value: 'online', label: 'Online' },
-  { value: 'offline', label: 'Offline' },
+export const FORMATS: Option[] = [
+  { value: 'online', label: 'Daring' },
+  { value: 'offline', label: 'Luring' },
   { value: 'hybrid', label: 'Hybrid' },
 ];
 
@@ -52,6 +52,46 @@ function PhaseBadge({ item }: { item: Values }) {
   );
 }
 
+/** Seats held by sign-ups (registered, attended, no-show) for one event. */
+export const seatsTaken = (eventId: string, ctx?: FieldContext) =>
+  (ctx?.collections.registrations ?? []).filter((r) => r.eventId === eventId && HOLDS_SEAT.includes(r.status as never)).length;
+
+/** Display name of the speaker: the linked person, or the guest name. */
+export function speakerName(x: Values, ctx?: FieldContext) {
+  if (!x.guestSpeaker && x.speakerId && ctx) {
+    const p = ctx.collections.people?.find((y) => y.id === x.speakerId);
+    if (p) return String(p.name ?? '');
+  }
+  return String(x.speakerName ?? '');
+}
+
+const typeLabel = (v: unknown) => EVENT_TYPES.find((t) => t.value === v)?.label ?? '—';
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+function DateTile({ x }: { x: Values }) {
+  const d = String(x.date ?? '');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return <span className="cms-muted">—</span>;
+  return (
+    <span className="evt-date">
+      <b>{Number(d.slice(8))}</b>
+      <span><strong>{MONTHS[Number(d.slice(5, 7)) - 1]} {d.slice(0, 4)}</strong><small>{x.time ? `${String(x.time)} WIB` : '—'}</small></span>
+    </span>
+  );
+}
+
+function Quota({ x, ctx }: { x: CmsItem; ctx: FieldContext }) {
+  const cap = Number(x.capacity) || 0;
+  const taken = seatsTaken(x.id, ctx);
+  const share = cap ? Math.min(1, taken / cap) : 0;
+  const tone = cap && taken >= cap ? 'is-full' : share >= 0.85 ? 'is-low' : '';
+  return (
+    <span className={`evt-quota ${tone}`} title={`${taken} pendaftar dari ${cap || '—'} kursi`}>
+      <span>{taken}<small>/{cap || '—'}</small></span>
+      <i aria-hidden="true"><b style={{ width: `${share * 100}%` }} /></i>
+    </span>
+  );
+}
+
 const PHASE_RANK: Record<EventPhase, number> = { live: 0, upcoming: 1, ended: 2 };
 const dateValue = (x: CmsItem) => new Date(String(x.date ?? '')).getTime() || 0;
 
@@ -61,7 +101,7 @@ export const eventsConfig: CollectionConfig = {
   singular: 'event',
   statuses: PUBLISH_ARCHIVE_STATUSES,
   initialStatus: 'draft',
-  drawer: 'lg',
+  drawer: 'center',
   // Running and upcoming events first (soonest on top), finished ones after (latest on top).
   sortBy: (a, b) => {
     const pa = eventPhase(a);
@@ -70,12 +110,13 @@ export const eventsConfig: CollectionConfig = {
     return pa === 'ended' ? dateValue(b) - dateValue(a) : dateValue(a) - dateValue(b);
   },
   titleOf: (x) => String(x.title ?? ''),
-  subtitleOf: (x) => [x.location, FORMATS.find((f) => f.value === x.format)?.label].filter(Boolean).join(' · '),
+  subtitleOf: (x, ctx) => [speakerName(x, ctx), x.pinned ? '★ disematkan' : ''].filter(Boolean).join(' · ') || '—',
   publicHref: (x) => (x.slug ? `/event/${x.slug}` : null),
   columns: [
-    { label: 'Tanggal', width: '130px', render: (x) => <span className="cms-nowrap">{formatDate(String(x.date ?? ''))}{x.time ? <small className="cms-muted"> · {String(x.time)}</small> : null}</span> },
-    { label: 'Fase', width: '130px', render: (x) => <PhaseBadge item={x} /> },
-    { label: 'Tipe', width: '110px', render: (x) => <span className="cms-pill">{EVENT_TYPES.find((t) => t.value === x.type)?.label ?? '—'}</span> },
+    { label: 'Tanggal', width: '150px', render: (x) => <DateTile x={x} /> },
+    { label: 'Jenis & tempat', width: '170px', render: (x) => <span className="evt-place"><span className="cms-pill">{typeLabel(x.type)}</span><strong>{FORMATS.find((f) => f.value === x.format)?.label ?? '—'}</strong><small>{String(x.location ?? '')}</small></span> },
+    { label: 'Kuota', width: '130px', render: (x, ctx) => <Quota x={x} ctx={ctx} /> },
+    { label: 'Fase', width: '110px', render: (x) => <PhaseBadge item={x} /> },
   ],
   filter: { label: 'Fase', options: () => PHASES, match: (x, v) => eventPhase(x) === v },
   defaults: () => ({
@@ -83,7 +124,9 @@ export const eventsConfig: CollectionConfig = {
     slug: '',
     type: 'webinar',
     sub: '',
-    description: '',
+    summary: '',
+    about: '',
+    gains: [],
     date: '',
     time: '19:30',
     duration: '90 menit',
@@ -95,7 +138,10 @@ export const eventsConfig: CollectionConfig = {
     memberOnly: false,
     capacity: '',
     registrationUrl: '',
+    pinned: false,
     phaseOverride: '',
+    guestSpeaker: false,
+    speakerId: '',
     speakerName: '',
     speakerRole: '',
     speakerAvatar: '',
@@ -105,56 +151,70 @@ export const eventsConfig: CollectionConfig = {
     benefits: [],
   }),
   fields: [
-    { key: 'title', label: 'Judul event', type: 'text', required: true, max: 120, wide: true },
-    { key: 'slug', label: 'Slug (alamat URL)', type: 'slug', from: 'title', required: true, help: 'Tampil sebagai copublika.id/event/slug.' },
-    { key: 'type', label: 'Tipe event', type: 'select', required: true, options: EVENT_TYPES },
-    { key: 'sub', label: 'Subjudul kartu beranda', type: 'text', max: 80, wide: true, help: 'Satu kalimat pendek di kartu agenda Beranda, mis. pembicara.' },
-    { type: 'heading', key: 'when', label: 'Waktu & tempat' },
-    { key: 'date', label: 'Tanggal', type: 'date', required: true },
-    { key: 'time', label: 'Jam mulai (WIB)', type: 'time' },
-    { key: 'duration', label: 'Durasi', type: 'text', max: 24, placeholder: '90 menit · 2 jam · 2 hari' },
-    { key: 'format', label: 'Format', type: 'select', required: true, options: FORMATS },
-    { key: 'location', label: 'Lokasi', type: 'text', required: true, max: 80, placeholder: 'Zoom · Yogyakarta · Hybrid Jakarta' },
-    { key: 'language', label: 'Bahasa', type: 'text', max: 24 },
+    { type: 'heading', key: 'h-info', icon: 'file', label: 'Info event' },
+    { key: 'title', icon: 'heading', label: 'Judul event', type: 'text', required: true, max: 120, wide: true },
+    { key: 'slug', icon: 'link', label: 'Slug (alamat URL)', type: 'slug', from: 'title', required: true, help: 'Tampil sebagai copublika.id/event/slug.' },
+    { key: 'type', icon: 'tag', label: 'Jenis event', type: 'select', required: true, options: EVENT_TYPES },
+    { key: 'summary', icon: 'quote', label: 'Ringkasan', type: 'textarea', required: true, max: 240, rows: 3, help: 'Muncul di bawah judul halaman event, kartu acara terdekat, dan hasil pencarian.' },
+    { key: 'sub', icon: 'text', label: 'Subjudul kartu Beranda', type: 'text', max: 80, wide: true, help: 'Satu kalimat pendek di kartu agenda Beranda.' },
+    { key: 'pinned', icon: 'star', label: 'Sematkan sebagai acara terdekat', type: 'toggle', wide: true, help: 'Tampil di tiket "Acara terdekat" /event selama belum lewat. Kosongkan untuk memakai acara dengan tanggal terdekat.' },
+
+    { type: 'heading', key: 'h-when', icon: 'calendar', label: 'Waktu & tempat' },
+    { key: 'date', icon: 'calendar', label: 'Tanggal', type: 'date', required: true },
+    { key: 'time', icon: 'progress', label: 'Jam mulai (WIB)', type: 'time', required: true },
+    { key: 'duration', icon: 'progress', label: 'Durasi', type: 'text', max: 24, placeholder: '90 menit · 2 jam · 2 hari' },
+    { key: 'format', icon: 'display', label: 'Format', type: 'select', required: true, options: FORMATS },
+    { key: 'location', icon: 'building', label: 'Lokasi / platform', type: 'text', required: true, max: 80, placeholder: 'Zoom · Yogyakarta · Hybrid Jakarta' },
+    { key: 'language', icon: 'text', label: 'Bahasa', type: 'text', max: 24 },
     {
       key: 'phaseOverride',
-      label: 'Fase',
+      icon: 'eye',
+      label: 'Fase (manual)',
       type: 'select',
-      wide: true,
-      options: [
-        { value: 'upcoming', label: 'Paksa: Upcoming' },
-        { value: 'live', label: 'Paksa: Live' },
-        { value: 'ended', label: 'Paksa: Selesai' },
-      ],
-      help: 'Kosong (—) = otomatis: Upcoming sebelum mulai, Live selama acara (jam mulai + durasi), lalu Selesai. Pilih manual hanya jika jadwal berubah mendadak.',
+      options: [{ value: '', label: 'Otomatis dari tanggal' }, ...PHASES],
+      help: 'Biarkan otomatis kecuali acara ditunda atau dibatalkan.',
     },
-    { type: 'heading', key: 'access', label: 'Akses & pendaftaran' },
-    { key: 'isPaid', label: 'Event berbayar', type: 'toggle' },
-    { key: 'price', label: 'Harga', type: 'number', min: 0, suffix: 'Rupiah', visibleIf: (v) => !!v.isPaid },
-    { key: 'memberOnly', label: 'Khusus anggota', type: 'toggle', help: 'Anggota mendaftar dari dashboard member; tamu diarahkan untuk bergabung dulu.' },
-    { key: 'capacity', label: 'Kuota peserta', type: 'number', min: 1, suffix: 'orang' },
-    { key: 'registrationUrl', label: 'Link pendaftaran', type: 'url', wide: true, help: 'Kosongkan untuk memakai form pendaftaran CoPublika.' },
-    { type: 'heading', key: 'h-speaker', label: 'Pembicara', help: 'Tampil di halaman detail event dan di bawah judul pada daftar /event.' },
-    { key: 'speakerName', label: 'Nama pembicara', type: 'text', max: 60 },
-    { key: 'speakerRole', label: 'Jabatan / afiliasi', type: 'text', max: 80 },
-    { key: 'speakerAvatar', label: 'Foto pembicara (URL)', type: 'image', wide: true },
-    { key: 'speakerBadges', label: 'Label kredensial', type: 'tags', max: 4, placeholder: 'mis. Reviewer Q1' },
-    { type: 'heading', key: 'content', label: 'Isi halaman event' },
-    { key: 'description', label: 'Deskripsi event', type: 'markdown', required: true },
+
+    { type: 'heading', key: 'h-access', icon: 'ticket', label: 'Akses & pendaftaran', help: 'Kursi terisi dihitung dari tab Pendaftar; setelah kuota penuh, pendaftar baru masuk daftar tunggu. Event khusus anggota meminta tamu masuk dulu.' },
+    { key: 'capacity', icon: 'users', label: 'Kuota peserta', type: 'number', min: 1, suffix: 'orang', required: true, third: true },
+    { key: 'isPaid', icon: 'ticket', label: 'Event berbayar', type: 'toggle', third: true },
+    { key: 'memberOnly', icon: 'shield', label: 'Khusus anggota', type: 'toggle', third: true },
+    { key: 'price', icon: 'ticket', label: 'Harga', type: 'number', min: 0, suffix: 'Rupiah', required: true, visibleIf: (v) => !!v.isPaid, help: 'Tampil sebagai "Rp. 150.000".', third: true },
+    { key: 'registrationUrl', icon: 'link', label: 'Link pendaftaran eksternal', type: 'url', wide: true, help: 'Opsional. Kosongkan untuk memakai form CoPublika (disarankan).' },
+    { key: 'benefits', icon: 'star', label: 'Fasilitas peserta', type: 'tags', max: 6, help: 'Daftar bercentang di kartu pendaftaran, mis. "Rekaman lengkap".' },
+
+    { type: 'heading', key: 'h-speaker', icon: 'mentor', label: 'Pembicara' },
+    { key: 'guestSpeaker', icon: 'users', label: 'Pembicara tamu', type: 'toggle', wide: true, onLabel: 'Ya, bukan tim atau mentor CoPublika' },
+    { key: 'speakerId', icon: 'user', label: 'Pembicara', type: 'ref', collection: 'people', visibleIf: (v) => !v.guestSpeaker, help: 'Dipilih dari Pustaka → Tim & Mentor; foto dan profil ikut dari sana.' },
+    { key: 'speakerName', icon: 'user', label: 'Nama pembicara', type: 'text', max: 60, visibleIf: (v) => !!v.guestSpeaker },
+    { key: 'speakerRole', icon: 'building', label: 'Profil singkat', type: 'textarea', max: 220, rows: 2, visibleIf: (v) => !!v.guestSpeaker },
+    { key: 'speakerAvatar', icon: 'image', label: 'Foto pembicara', type: 'image', wide: true, aspect: '1 / 1', visibleIf: (v) => !!v.guestSpeaker },
+    { key: 'speakerBadges', icon: 'tag', label: 'Label kredensial', type: 'tags', max: 4, placeholder: 'mis. Reviewer Q1', visibleIf: (v) => !!v.guestSpeaker },
+
+    { type: 'heading', key: 'h-about', icon: 'pen', label: 'Tentang acara', help: 'Bagian "Tentang acara" di halaman detail.' },
+    { key: 'about', icon: 'pen', label: 'Isi', type: 'richtext', required: true },
+
+    { type: 'heading', key: 'h-gains', icon: 'steps', label: 'Yang didapat', help: 'Kartu bercentang "Yang Anda dapatkan".' },
+    { key: 'gains', icon: 'star', label: 'Poin yang didapat peserta', type: 'tags', max: 8, placeholder: 'Ketik satu poin lalu Enter' },
+
+    { type: 'heading', key: 'h-schedule', icon: 'steps', label: 'Susunan acara' },
     {
       key: 'schedule',
-      label: 'Rundown',
+      label: 'Susunan acara',
       type: 'repeater',
       addLabel: 'Tambah sesi',
       maxItems: 12,
       itemTitle: (v) => [v.time, v.title].filter(Boolean).join(' · '),
       fields: [
-        { key: 'time', label: 'Waktu', type: 'text', required: true, max: 16, placeholder: '19:30' },
+        { key: 'time', label: 'Waktu', type: 'text', required: true, max: 24, placeholder: '19.30 — 19.45' },
         { key: 'title', label: 'Sesi', type: 'text', required: true, max: 60 },
-        { key: 'description', label: 'Keterangan', type: 'textarea', max: 160, rows: 2 },
+        { key: 'description', label: 'Keterangan', type: 'textarea', max: 200, rows: 2 },
       ],
     },
-    { key: 'targetAudience', label: 'Cocok untuk', type: 'tags', help: 'Daftar peserta yang paling cocok, satu per tag.' },
-    { key: 'benefits', label: 'Yang didapat peserta', type: 'tags', help: 'Tampil di kartu pendaftaran.' },
+
+    { type: 'heading', key: 'h-audience', icon: 'users', label: 'Untuk siapa' },
+    { key: 'targetAudience', icon: 'users', label: 'Peserta yang paling cocok', type: 'tags', max: 6, help: 'Satu poin per tag.' },
   ],
+  // Only one pinned event at a time.
+  afterSave: (saved, all) => (saved.pinned ? all.map((x) => (x.id !== saved.id && x.pinned ? { ...x, pinned: false } : x)) : all),
 };

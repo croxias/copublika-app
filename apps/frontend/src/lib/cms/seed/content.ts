@@ -1,7 +1,6 @@
 import { BLOG_ARTICLES } from '@/lib/data/blog-articles';
 import { fallbackEvents } from '@/lib/data/fallbacks';
 import { EVENTS as LANDING_EVENTS } from '@/components/landing/EventsList';
-import type { Event } from '@/types';
 import type { CmsItem } from '../types';
 import { personId } from '../slug';
 import { PEOPLE } from './people';
@@ -43,43 +42,46 @@ const blog: CmsItem[] = BLOG_ARTICLES.map((a, i) => {
 
 const FORMAT: Record<string, string> = { daring: 'online', luring: 'offline', hybrid: 'hybrid' };
 
-/** Event detail blocks as Markdown, so the description field holds the full page copy. */
-function toMarkdown(e: Event): string {
-  const parts = [e.description];
-  for (const b of e.blocks ?? []) {
-    parts.push(`## ${b.heading}`);
-    parts.push(...(b.paragraphs ?? []));
-    if (b.checkmarks?.length) parts.push(b.checkmarks.map((c) => `- ${c}`).join('\n'));
-  }
-  return parts.join('\n\n');
-}
 
-// The landing agenda (components/landing/EventsList.tsx) lists the first four
-// detail-page events with newer dates and a card subtitle; it wins on those.
+const PARAGRAPH_BREAK = '\n\n';
+
+// The landing agenda keeps its card subtitle; dates come from the detail data (WIB).
 const landingFor = (i: number) => (i < LANDING_EVENTS.length ? LANDING_EVENTS[i] : undefined);
+const wib = (iso: string) => {
+  const d = new Date(iso);
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(d);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
+  return { date: `${get('year')}-${get('month')}-${get('day')}`, time: `${get('hour')}:${get('minute')}` };
+};
 
 const events: CmsItem[] = fallbackEvents.map((e, i) => {
   const landing = landingFor(i);
   const [, where] = e.location.split(' · ');
+  const w = wib(e.date);
   return {
     id: e.id,
     title: e.title,
     slug: e.slug,
     type: e.type ?? 'webinar',
     sub: landing?.sub ?? '',
-    description: toMarkdown(e),
-    date: landing?.date ?? e.date.slice(0, 10),
-    time: (e.time ?? '').slice(0, 5).replace('.', ':'),
+    summary: e.description,
+    about: (e.blocks ?? []).flatMap((b) => b.paragraphs ?? []).join(PARAGRAPH_BREAK),
+    gains: (e.blocks ?? []).flatMap((b) => b.checkmarks ?? []),
+    date: w.date,
+    time: w.time,
     duration: e.duration ?? '',
     format: FORMAT[(e.format ?? e.location).split(' ')[0].toLowerCase()] ?? 'online',
     location: where ?? e.location,
     language: e.language ?? 'Indonesia',
     isPaid: e.isPaid,
-    price: '',
+    price: e.isPaid ? 150000 : '',
     memberOnly: !!e.memberOnly,
     capacity: e.capacity,
     registrationUrl: '',
+    pinned: false,
     phaseOverride: '',
+    guestSpeaker: true,
+    speakerId: '',
     speakerName: e.speaker?.name ?? '',
     speakerRole: e.speaker?.role ?? '',
     speakerAvatar: e.speaker?.avatar ?? '',
