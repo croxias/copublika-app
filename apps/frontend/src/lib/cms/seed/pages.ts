@@ -18,33 +18,5 @@ export const seed: SeedPart = {
         { title: 'Member activation', desc: 'Approved members are staged for program onboarding and collaboration sprint kickoff.' },
       ],
     },
-
-    // ── Kontak ──
-    'contact.hero': {
-      badge: 'Contact',
-      title: 'Sapa kami.',
-      sub: 'Pertanyaan, kolaborasi, atau ajakan menulis tamu — kami respons dalam 24 jam kerja.',
-    },
-    'contact.channels': {
-      heading: 'Saluran Langsung',
-      channels: [
-        { label: 'Email', value: 'halo@copublika.id', href: 'mailto:halo@copublika.id' },
-        { label: 'WhatsApp', value: '+62 813 2025 0707', href: 'https://wa.me/6281320250707' },
-        { label: 'Instagram', value: '@copublika.id', href: 'https://instagram.com/copublika.id' },
-        { label: 'Threads', value: '@copublika.id', href: 'https://threads.net/@copublika.id' },
-      ],
-    },
-    'contact.form': {
-      title: 'Kirim Pesan',
-      topics: [{ label: 'Program' }, { label: 'Kolaborasi' }, { label: 'Tulisan Tamu' }, { label: 'Lainnya' }],
-      consent: 'Dengan mengirim, anda setuju kami menyimpan email untuk merespons.',
-      successTitle: 'Pesan terkirim!',
-      successDesc: 'Tim kami akan merespons dalam 24 jam kerja.',
-    },
-    'contact.location': {
-      visible: true,
-      label: 'Lokasi',
-      address: 'Jl. Cik Di Tiro No. 24, Bandung, Indonesia',
-    },
   },
 };

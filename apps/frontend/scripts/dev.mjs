@@ -27,10 +27,23 @@ let quickCrashes = 0;
 function start() {
   const startedAt = Date.now();
   const nodeOptions = [process.env.NODE_OPTIONS, `--max-old-space-size=${heapMb}`].filter(Boolean).join(" ");
-  child = spawn(process.execPath, [nextBin, ...args], { stdio: "inherit", env: { ...process.env, NODE_OPTIONS: nodeOptions } });
+  let duplicate = false;
+  child = spawn(process.execPath, [nextBin, ...args], { stdio: ["inherit", "pipe", "pipe"], env: { ...process.env, NODE_OPTIONS: nodeOptions, FORCE_COLOR: "1" } });
+  // Pass output through, watching for Next's "already running" refusal.
+  for (const [from, to] of [[child.stdout, process.stdout], [child.stderr, process.stderr]]) {
+    from.on("data", (buf) => {
+      if (String(buf).includes("Another next dev server is already running")) duplicate = true;
+      to.write(buf);
+    });
+  }
 
   child.on("exit", (code, signal) => {
     if (stopping || code === 0 || signal === "SIGINT" || signal === "SIGTERM") process.exit(code ?? 0);
+    // Another `next dev` already owns the port (e.g. one left from an earlier run): don't loop.
+    if (duplicate) {
+      console.error("\n[dev] Another next dev server is already running. Stop it first (see the PID above), then run pnpm dev again.");
+      process.exit(1);
+    }
 
     quickCrashes = Date.now() - startedAt < QUICK_CRASH_MS ? quickCrashes + 1 : 0;
     if (quickCrashes >= MAX_QUICK_CRASHES) {

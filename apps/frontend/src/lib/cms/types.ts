@@ -11,7 +11,8 @@ export type CollectionKey =
   | 'people'
   | 'testimonials'
   | 'faqs'
-  | 'registrations';
+  | 'registrations'
+  | 'messages';
 
 export type Values = Record<string, unknown>;
 

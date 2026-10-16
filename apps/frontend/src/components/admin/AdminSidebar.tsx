@@ -29,7 +29,7 @@ interface NavSection {
 
 // Structure: docs/superpowers/specs/2026-10-14-admin-cms-public-pages-design.md \u00a73.
 // Menus that only exist as a staging preview stay reachable in demo mode.
-const getNav = (demoEnabled = false, reviewCount = 0): NavSection[] => [
+const getNav = (demoEnabled = false, reviewCount = 0, newMessages = 0): NavSection[] => [
   {
     section: 'Ringkasan',
     items: [
@@ -41,7 +41,8 @@ const getNav = (demoEnabled = false, reviewCount = 0): NavSection[] => [
     section: 'Konten',
     items: [
       { id: 'blog', name: 'Artikel Blog', href: '/admin/blog', icon: 'edit', ...(reviewCount ? { badge: String(reviewCount) } : {}) },
-      { id: 'events', name: 'Agenda Event', href: '/admin/events', icon: 'calendar' }
+      { id: 'events', name: 'Agenda Event', href: '/admin/events', icon: 'calendar' },
+      { id: 'messages', name: 'Kotak Pesan', href: '/admin/messages', icon: 'mail', ...(newMessages ? { badge: String(newMessages) } : {}) }
     ]
   },
   {
@@ -300,7 +301,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = f
   const reduceMotion = useReducedMotion();
   // Writer submissions waiting for an editor show as a count on Artikel Blog.
   const cms = useCms();
-  const nav = getNav(demoEnabled, (cms.collections.blog ?? []).filter(inQueue).length);
+  const nav = getNav(demoEnabled, (cms.collections.blog ?? []).filter(inQueue).length, (cms.collections.messages ?? []).filter((m) => m.status === 'new').length);
   const activePage = activeId(nav, pathname);
   const showTooltip = (event: React.MouseEvent<HTMLAnchorElement> | React.FocusEvent<HTMLAnchorElement>, label: string) => {
     if (!collapsed) return;

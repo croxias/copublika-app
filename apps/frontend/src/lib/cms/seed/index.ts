@@ -14,12 +14,13 @@ import { seed as people } from './people';
 import { seed as blog } from './blog';
 import { seed as review } from './review';
 import { seed as eventPage } from './event';
+import { seed as contact } from './contact';
 
 const EMPTY: Record<CollectionKey, []> = {
-  blog: [], events: [], projects: [], publications: [], heroSlides: [], people: [], testimonials: [], faqs: [], registrations: [],
+  blog: [], events: [], projects: [], publications: [], heroSlides: [], people: [], testimonials: [], faqs: [], registrations: [], messages: [],
 };
 
-const parts: SeedPart[] = [content, research, programs, library, home, pages, about, settings, testimonials, people, blog, review, eventPage];
+const parts: SeedPart[] = [content, research, programs, library, home, pages, about, settings, testimonials, people, blog, review, eventPage, contact];
 
 /** Initial CMS content: what the public site shows today, before any admin edit. */
 export const CMS_SEED: CmsState = {
