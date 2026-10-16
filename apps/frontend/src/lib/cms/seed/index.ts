@@ -6,7 +6,6 @@ import { seed as research } from './research';
 import { seed as programs } from './programs';
 import { seed as library } from './library';
 import { seed as home } from './home';
-import { seed as pages } from './pages';
 import { seed as about } from './about';
 import { seed as settings } from './settings';
 import { seed as testimonials } from './testimonials';
@@ -15,12 +14,16 @@ import { seed as blog } from './blog';
 import { seed as review } from './review';
 import { seed as eventPage } from './event';
 import { seed as contact } from './contact';
+import { SIGNUP_SEED } from '../signups';
+import { MEMBER_SEED } from '../members';
+
+const signups: SeedPart = { collections: { signups: SIGNUP_SEED, members: MEMBER_SEED } };
 
 const EMPTY: Record<CollectionKey, []> = {
-  blog: [], events: [], projects: [], publications: [], heroSlides: [], people: [], testimonials: [], faqs: [], registrations: [], messages: [],
+  blog: [], events: [], projects: [], publications: [], heroSlides: [], people: [], testimonials: [], faqs: [], registrations: [], messages: [], replyTemplates: [], signups: [], members: [],
 };
 
-const parts: SeedPart[] = [content, research, programs, library, home, pages, about, settings, testimonials, people, blog, review, eventPage, contact];
+const parts: SeedPart[] = [content, research, programs, library, home, about, settings, testimonials, people, blog, review, eventPage, contact, signups];
 
 /** Initial CMS content: what the public site shows today, before any admin edit. */
 export const CMS_SEED: CmsState = {

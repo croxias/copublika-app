@@ -9,7 +9,7 @@ export const seed: SeedPart = {
       logoUrl: '/logo-white.png',
     },
     'settings.contact': {
-      email: 'halo@copublika.id',
+      email: 'copublika@gmail.com',
       whatsapp: '+62 813 2025 0707',
       instagram: 'https://instagram.com/copublika.id',
       threads: 'https://threads.net/@copublika.id',
@@ -31,7 +31,6 @@ export const seed: SeedPart = {
       legal: [
         { label: 'Terms', href: '/' },
         { label: 'Privacy', href: '/' },
-        { label: 'Council Charter', href: '/curation-process' },
       ],
     },
   },

@@ -14,6 +14,7 @@ import type { CmsItem, Field, FieldContext, GroupIcon, Values } from '@/lib/cms/
 import { GroupIconView } from './SectionGroups';
 import { renderMarkdown, validate, wordCount, type Errors } from './validate';
 import { RichTextInput } from './RichText';
+import { GeoInput } from './GeoInput';
 
 type FieldsProps = {
   fields: Field[];
@@ -156,6 +157,9 @@ function FieldInput({ field: f, value, values, onChange, error, errors, path, ct
       break;
     case 'markdown':
       control = <MarkdownInput id={id} value={str} onChange={onChange} invalid={!!error} />;
+      break;
+    case 'geo':
+      control = <GeoInput id={id} value={str} onChange={onChange} invalid={!!error} query={f.queryFrom ? String(values[f.queryFrom] ?? '') : ''} />;
       break;
     case 'richtext':
       control = <RichTextInput id={id} value={str} onChange={onChange} invalid={!!error} placeholder={f.placeholder} />;

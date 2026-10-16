@@ -21,6 +21,14 @@ export const MARK_PATH = [
 ].join(" ");
 export const MARK_DOT = { x: C.x - 272, y: C.y, r: 25 };
 
+/** The mark's pieces, for animating them one by one. All share MARK_CENTER. */
+export const MARK_CENTER = C;
+export const MARK_PARTS = {
+  ringTop: ringSegment(-90, -166),
+  ringBottom: ringSegment(166, 90),
+  disc: `M${C.x} ${C.y} L${C.x + 172} ${C.y} A172 172 0 1 0 ${C.x} ${C.y + 172}Z`,
+};
+
 /** The mark as one shape; colour it with `fill` (currentColor by default). */
 export function CopublikaMark({ className }: { className?: string }) {
   return (

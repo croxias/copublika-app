@@ -17,13 +17,13 @@ const COLS = [
     items: [
       ["Siap Tembus Scopus 1-on-1", "/siap-tembus-scopus"],
       ["Bootcamp 30 Hari Menulis", "/bootcamp-menulis"],
-      ["Daftar program", "/daftar"],
+      ["Pendaftaran", "/daftar"],
     ],
   },
   {
     title: "Contact",
     items: [
-      ["hello@copublika.id", "mailto:hello@copublika.id"],
+      ["copublika@gmail.com", "mailto:copublika@gmail.com"],
       ["Contact Form", "/contact"],
       ["Press", "/contact"],
     ],
@@ -33,7 +33,6 @@ const COLS = [
     items: [
       ["Terms", "/"],
       ["Privacy", "/"],
-      ["Council Charter", "/curation-process"],
     ],
   },
 ] as const;

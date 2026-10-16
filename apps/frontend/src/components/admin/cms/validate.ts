@@ -1,4 +1,5 @@
 import type { Field, Values } from '@/lib/cms/types';
+import { parseCoords } from '@/lib/data/geo';
 
 export type Errors = Record<string, string>;
 
@@ -28,6 +29,10 @@ export function validate(fields: Field[], values: Values, prefix = ''): Errors {
     }
     if (f.type === 'tags' && f.max && Array.isArray(v) && v.length > f.max) {
       errors[path] = `Maksimal ${f.max} item (sekarang ${v.length}).`;
+    }
+    if (f.type === 'geo' && !parseCoords(v)) {
+      errors[path] = 'Koordinat tidak valid. Contoh: -6.9034, 107.6181.';
+      continue;
     }
     if (f.type === 'url' && !/^(\/|https?:\/\/|mailto:|tel:|#)/.test(String(v).trim())) {
       errors[path] = 'Harus diawali / (halaman internal) atau https://';

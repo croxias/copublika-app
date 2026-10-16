@@ -1,5 +1,14 @@
 import type { Field, PageConfig, Values } from '../types';
 
+export const CHANNEL_KEYS = [
+  { key: 'email', label: 'Email' },
+  { key: 'whatsapp', label: 'WhatsApp' },
+  { key: 'instagram', label: 'Instagram' },
+  { key: 'threads', label: 'Threads' },
+  { key: 'linkedin', label: 'LinkedIn' },
+  { key: 'youtube', label: 'YouTube' },
+];
+
 const s = (v: Values, k: string) => String(v[k] ?? '');
 
 const head: Field[] = [
@@ -18,7 +27,7 @@ export const page: PageConfig = {
     {
       key: 'contact.hero',
       label: 'Hero',
-      description: 'Bagian atas halaman. Kartu di kanan meneruskan pengunjung ke tim yang tepat sesuai topik yang dipilih.',
+      description: 'Bagian atas halaman. Semua pesan dibalas oleh Tim Admin CoPublika.',
       fields: [
         { type: 'heading', key: 'h-text', label: 'Teks pembuka', short: 'Teks', icon: 'text' },
         { key: 'badge', label: 'Label kecil', type: 'text', max: 30 },
@@ -26,7 +35,6 @@ export const page: PageConfig = {
         { key: 'accent', label: 'Judul baris 2 (oranye)', type: 'text', max: 20 },
         { key: 'lead', label: 'Paragraf pembuka', type: 'textarea', required: true, max: 260, wide: true },
         { type: 'heading', key: 'h-router', label: 'Kartu penerus pesan', short: 'Kartu', icon: 'cursor' },
-        { key: 'routerTitle', label: 'Judul kartu', type: 'text', max: 40, wide: true },
         { key: 'cta', label: 'Tombol', type: 'text', required: true, max: 24 },
       ],
     },
@@ -41,11 +49,11 @@ export const page: PageConfig = {
           type: 'repeater',
           maxItems: 6,
           addLabel: 'Tambah topik',
-          itemTitle: (v) => `${s(v, 'label')} → ${s(v, 'team')}`,
+          itemTitle: (v) => `${s(v, 'label')} · target ${s(v, 'replyHours') || '—'} jam`,
           fields: [
             { key: 'label', label: 'Topik', type: 'text', required: true, max: 24 },
-            { key: 'team', label: 'Diteruskan ke', type: 'text', required: true, max: 30 },
-            { key: 'reply', label: 'Perkiraan balasan', type: 'text', required: true, max: 24, placeholder: '± 1 hari kerja' },
+            { key: 'reply', label: 'Perkiraan balasan (tampil di web)', type: 'text', required: true, max: 24, placeholder: '± 1 hari kerja' },
+            { key: 'replyHours', label: 'Target balasan', type: 'number', required: true, min: 1, max: 168, suffix: 'jam', help: 'Dipakai Kotak Pesan untuk menandai pesan yang mendekati atau lewat target.' },
             { key: 'channel', label: 'Saluran terbaik', type: 'text', max: 20 },
             { key: 'hint', label: 'Contoh pertanyaan', type: 'textarea', max: 140, rows: 2, wide: true },
           ],
@@ -57,20 +65,8 @@ export const page: PageConfig = {
       label: 'Saluran & jam',
       description: 'Kartu saluran langsung dan jam layanan. Status "Buka sekarang" dihitung otomatis dari jam WIB.',
       fields: [
-        { type: 'heading', key: 'h-ch', label: 'Saluran langsung', short: 'Saluran', icon: 'link' },
-        {
-          key: 'channels',
-          label: 'Saluran',
-          type: 'repeater',
-          maxItems: 6,
-          addLabel: 'Tambah saluran',
-          itemTitle: (v) => `${s(v, 'label')} · ${s(v, 'value')}`,
-          fields: [
-            { key: 'label', label: 'Nama saluran', type: 'text', required: true, max: 20 },
-            { key: 'value', label: 'Teks yang tampil', type: 'text', required: true, max: 40 },
-            { key: 'href', label: 'Link', type: 'url', required: true, wide: true, placeholder: 'mailto:…, https://wa.me/…' },
-          ],
-        },
+        { type: 'heading', key: 'h-ch', label: 'Saluran langsung', short: 'Saluran', icon: 'link', help: 'Alamat dan nomor diambil dari Pengaturan Situs → Kontak & sosial. Di sini cukup pilih saluran yang tampil.' },
+        ...CHANNEL_KEYS.map((c): Field => ({ key: `show_${c.key}`, label: `Tampilkan ${c.label}`, type: 'toggle', third: true })),
         { type: 'heading', key: 'h-hours', label: 'Jam layanan (WIB)', short: 'Jam', icon: 'calendar', help: 'Kosongkan jam buka untuk hari libur.' },
         {
           key: 'days',
@@ -108,9 +104,12 @@ export const page: PageConfig = {
       label: 'Lokasi',
       hideable: true,
       fields: [
+        { type: 'heading', key: 'h-addr', label: 'Alamat', icon: 'building' },
         { key: 'label', label: 'Label kecil', type: 'text', max: 20 },
         { key: 'address', label: 'Alamat', type: 'textarea', required: true, max: 160, rows: 2, wide: true },
-        { key: 'mapQuery', label: 'Pencarian peta', type: 'text', max: 100, wide: true, help: 'Teks yang dicari di Google Maps untuk peta kecil.' },
+        { type: 'heading', key: 'h-geo', label: 'Titik di Google Maps', icon: 'link', help: 'Peta kecil dan tombol rute di halaman Kontak memakai titik ini.' },
+        { key: 'coords', label: 'Koordinat lokasi', type: 'geo', queryFrom: 'address', wide: true, help: 'Tempel link Google Maps, atau isi lintang dan bujur.' },
+        { key: 'mapQuery', label: 'Cadangan pencarian peta', type: 'text', max: 100, wide: true, help: 'Dipakai hanya jika koordinat kosong.' },
       ],
     },
     {

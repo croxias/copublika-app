@@ -7,7 +7,6 @@ import { page as research } from './page-research';
 import { page as blog } from './page-blog';
 import { page as event } from './page-event';
 import { btmPage, stsPage } from './page-programs';
-import { page as curation } from './page-curation';
 import { page as contact } from './page-contact';
 import { page as settings } from './page-settings';
 
@@ -22,7 +21,6 @@ export const PAGES: Record<string, PageConfig | null> = {
   event,
   'siap-tembus-scopus': stsPage,
   'bootcamp-menulis': btmPage,
-  curation,
   contact,
   settings,
 };

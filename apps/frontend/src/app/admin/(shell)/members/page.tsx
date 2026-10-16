@@ -1,5 +1,7 @@
-import AdminPlaceholder from '@/components/admin/AdminPlaceholder';
+'use client';
+
+import { MembersAdmin } from '@/components/admin/cms/MembersAdmin';
 
 export default function MembersPage() {
-  return <AdminPlaceholder title="Anggota" eyebrow="Curation" description="Direktori anggota akan tersedia setelah sumber data admin terhubung." />;
+  return <MembersAdmin />;
 }

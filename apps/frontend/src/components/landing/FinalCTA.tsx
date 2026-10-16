@@ -28,7 +28,7 @@ export function FinalCTA() {
             Tidak perlu menunggu siap.
           </p>
           <div className="cp-cta-final__group">
-            <Link href="/register" className="cp-cta-final__btn cp-cta-final__btn--accent">
+            <Link href="/daftar?program=member&paket=gratis" className="cp-cta-final__btn cp-cta-final__btn--accent">
               Gabung komunitas
               <span className="cp-cta-final__arr">→</span>
             </Link>

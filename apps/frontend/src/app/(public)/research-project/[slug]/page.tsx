@@ -163,7 +163,7 @@ export default async function ResearchPreviewPage({ params }: { params: Promise<
                   <div className="cp-rd-locked__veil">
                     <Lock size={20} />
                     <strong>Metodologi penuh terbuka untuk anggota.</strong>
-                    <Link href="/register" className="cp-ab-btn cp-ab-btn--primary">Gabung komunitas</Link>
+                    <Link href="/daftar?program=member&paket=gratis" className="cp-ab-btn cp-ab-btn--primary">Gabung komunitas</Link>
                   </div>
                 </div>
               )}
@@ -229,7 +229,7 @@ export default async function ResearchPreviewPage({ params }: { params: Promise<
               <h3>{project.status === "recruiting" ? "Tertarik bergabung sebagai co-author?" : "Ingin ikut proyek seperti ini?"}</h3>
               <p>Gabung komunitas, pilih cluster yang sesuai, dan kenali tim riset yang sedang berjalan.</p>
               <div className="cp-rd-card__ctas">
-                <Link href="/register" className="cp-ab-btn cp-ab-btn--primary">Gabung komunitas <span className="cp-ab-btn__arr" aria-hidden="true">→</span></Link>
+                <Link href="/daftar?program=member&paket=gratis" className="cp-ab-btn cp-ab-btn--primary">Gabung komunitas <span className="cp-ab-btn__arr" aria-hidden="true">→</span></Link>
                 <Link href="/contact" className="cp-ab-btn cp-ab-btn--line">Tanya tim</Link>
               </div>
             </Reveal>

@@ -1,5 +1,7 @@
-import ApplicantsClient from './ApplicantsClient';
+'use client';
 
-export default function ApplicantsPage() {
-  return <ApplicantsClient />;
+import { SignupsAdmin } from '@/components/admin/cms/SignupsAdmin';
+
+export default function PendaftaranPage() {
+  return <SignupsAdmin />;
 }

@@ -170,7 +170,7 @@ const cta = {
   headingAccent: 'paragraf pertama',
   text: 'Bergabunglah dengan ratusan akademisi yang sedang membangun rekam jejak publikasi mereka, bersama. Tidak perlu menunggu siap.',
   primaryLabel: 'Gabung komunitas',
-  primaryHref: '/register',
+  primaryHref: '/daftar?program=member&paket=gratis',
   secondaryLabel: 'Hubungi kami',
   secondaryHref: '/contact',
   trust: [

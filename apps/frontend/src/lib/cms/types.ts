@@ -12,7 +12,10 @@ export type CollectionKey =
   | 'testimonials'
   | 'faqs'
   | 'registrations'
-  | 'messages';
+  | 'messages'
+  | 'replyTemplates'
+  | 'signups'
+  | 'members';
 
 export type Values = Record<string, unknown>;
 
@@ -54,6 +57,8 @@ export type Field =
     })
   | (FieldBase & { type: 'textarea'; max?: number; rows?: number; placeholder?: string })
   | (FieldBase & { type: 'markdown' })
+  /** "lat, lng" with a Google Maps link reader and live map; `queryFrom` names the address field. */
+  | (FieldBase & { type: 'geo'; queryFrom?: string })
   /** Visual editor (headings, lists, quotes, links, images); stored as Markdown. */
   | (FieldBase & { type: 'richtext'; placeholder?: string })
   | (FieldBase & { type: 'number'; min?: number; max?: number; suffix?: string })

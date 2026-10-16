@@ -3,25 +3,42 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CalendarDays, Check, Lock, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowRight, BadgeCheck, CalendarDays, Check, Lock, MailCheck, ShieldCheck, UserRound } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import {
   BOOTCAMP_BATCHES,
   batchSeatsLeft,
+  MEMBER_PLANS,
   PROGRAMS,
+  PROGRAM_MEMBER_MONTHS,
   STS_MENTORS,
   formatDate,
   formatRupiah,
   monthLabel,
   seatMonths,
   seatsLeft,
+  type MemberPlanKey,
   type ProgramKey,
 } from "@/lib/data/programs";
+import { passwordProblem } from "@/lib/password";
+import { addSignup } from "@/lib/cms/signups";
+import { PasswordFields } from "./PasswordFields";
+import { PolicyDialog, type PolicyTab } from "./PolicyDialog";
+import { EMPTY_PROFILE, MEMBER_ROLES, MemberProfileFields, maskId, scholarId, validateProfile, type MemberProfile } from "./MemberProfileFields";
+
+/** What can be registered: member activation alone, or a program. */
+export type RegKey = ProgramKey | "member";
+
+/** `was` is the normal price of an item given free (membership bundled with a program). */
+export type OrderItem = { label: string; detail?: string; amount: number; was?: number };
 
 export type Order = {
   code: string;
-  program: ProgramKey;
+  program: RegKey;
   detail: string;
+  items: OrderItem[];
+  /** Member registration only; the identity number is kept masked. */
+  profile?: { role: string; institution: string; id: string; scholar: string | null };
   name: string;
   email: string;
   whatsapp: string;
@@ -32,21 +49,31 @@ export type Order = {
 
 export const ORDER_KEY = "cp-last-order";
 
-type Props = { program: ProgramKey; mentor?: string; month?: string; batch?: string };
+type Props = { program: RegKey; plan?: MemberPlanKey; mentor?: string; month?: string; batch?: string };
 
-/** Registration for one program. A guest also gets a member account in the same step. */
-export function RegisterForm({ program: key, mentor: initialMentor, month: initialMonth, batch: initialBatch }: Props) {
+/**
+ * Registration for member activation or one program. A guest gets a member account in the
+ * same step, and activation (one year) is added to the order unless the member is active.
+ */
+export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: initialMentor, month: initialMonth, batch: initialBatch }: Props) {
   const router = useRouter();
-  const program = PROGRAMS[key];
+  const program = key === "member" ? null : PROGRAMS[key];
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+  const plan = MEMBER_PLANS[planKey];
+  const isFree = key === "member" && plan.price === 0;
+  // A new member describes themselves first; a signed-in member renewing already has a profile.
+  const showProfile = key === "member" && !user;
+  const accountStep = key === "member" ? (showProfile ? 2 : 1) : 2;
 
   const months = useMemo(() => seatMonths(), []);
   const [monthIdx, setMonthIdx] = useState(Math.max(0, months.findIndex((m) => m.key === initialMonth)));
   const [mentor, setMentor] = useState(initialMentor ?? "");
   const [batch, setBatch] = useState(initialBatch && BOOTCAMP_BATCHES.some((b) => b.id === initialBatch) ? initialBatch : (BOOTCAMP_BATCHES.find((b) => batchSeatsLeft(b) > 0) ?? BOOTCAMP_BATCHES[0]).id);
 
-  const [form, setForm] = useState({ name: "", email: "", whatsapp: "", institution: "", password: "", confirm: "", agree: false });
+  const [form, setForm] = useState({ name: "", email: "", whatsapp: "", address: "", institution: "", password: "", confirm: "", agree: false, news: false });
+  const [policy, setPolicy] = useState<{ open: boolean; tab: PolicyTab }>({ open: false, tab: "privasi" });
+  const [profile, setProfile] = useState<MemberProfile>(EMPTY_PROFILE);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -58,6 +85,15 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
   const chosenBatch = BOOTCAMP_BATCHES.find((b) => b.id === batch)!;
   const mentorFull = chosenMentor ? seatsLeft(chosenMentor.id, monthIdx) === 0 : false;
 
+  const programDetail = key === "siap-tembus-scopus" ? `${chosenMentor?.name ?? "Mentor belum dipilih"} · ${months[monthIdx].label}` : key === "bootcamp-menulis" ? `${chosenBatch.name} · ${formatDate(chosenBatch.start)} – ${formatDate(chosenBatch.end)}` : "";
+  const items: OrderItem[] = program
+    ? [
+        { label: program.name, detail: programDetail, amount: program.price },
+        { label: `Member CoPublika ${PROGRAM_MEMBER_MONTHS / 12} tahun`, detail: "Bonus peserta program", amount: 0, was: MEMBER_PLANS.tahunan.price },
+      ]
+    : [{ label: plan.name, detail: plan.price ? "Masa aktif 12 bulan" : "Masa aktif bulan pertama", amount: plan.price }];
+  const total = items.reduce((n, x) => n + x.amount, 0);
+
   const validate = () => {
     const e: Record<string, string> = {};
     if (key === "siap-tembus-scopus" && (!chosenMentor || mentorFull)) e.mentor = "Pilih mentor yang masih punya kursi di bulan ini.";
@@ -65,12 +101,14 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
     if (!user) {
       if (form.name.trim().length < 3) e.name = "Tulis nama lengkap Anda.";
       if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "Masukkan email yang valid.";
-      if (form.password.length < 8) e.password = "Password minimal 8 karakter.";
-      if (form.confirm !== form.password) e.confirm = "Password tidak sama.";
+      const pw = passwordProblem(form.password);
+      if (pw) e.password = pw;
+      if (!form.confirm) e.confirm = "Ulangi password Anda.";
+      else if (form.confirm !== form.password) e.confirm = "Password tidak sama.";
     }
     if (!/^(\+62|62|0)8\d{7,12}$/.test(form.whatsapp.replace(/[\s-]/g, ""))) e.whatsapp = "Masukkan nomor WhatsApp aktif, mis. 0812xxxxxxx.";
-    if (!form.agree) e.agree = "Centang persetujuan untuk melanjutkan.";
-    return e;
+    if (!form.agree) e.agree = "Setujui Kebijakan Privasi dan Syarat Keanggotaan untuk melanjutkan.";
+    return showProfile ? { ...validateProfile(profile), ...e } : e;
   };
 
   const submit = async (ev: React.FormEvent) => {
@@ -99,16 +137,35 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
     }
     // Front-end phase: the order is kept in this browser until the backend stores it.
     const order: Order = {
-      code: `CP-${key === "siap-tembus-scopus" ? "STS" : "BTM"}-${Date.now().toString(36).toUpperCase().slice(-6)}`,
+      code: `CP-${key === "siap-tembus-scopus" ? "STS" : key === "bootcamp-menulis" ? "BTM" : "MBR"}-${Date.now().toString(36).toUpperCase().slice(-6)}`,
       program: key,
-      detail: key === "siap-tembus-scopus" ? `${chosenMentor!.name} · ${months[monthIdx].label}` : `${chosenBatch.name} · ${formatDate(chosenBatch.start)} – ${formatDate(chosenBatch.end)}`,
+      detail: program ? programDetail : plan.price ? `Aktif ${plan.months} bulan sejak pembayaran dikonfirmasi` : "Masa aktif bulan pertama, gratis",
+      items,
+      ...(showProfile && profile.role
+        ? { profile: { role: MEMBER_ROLES[profile.role].label, institution: profile.institution.trim(), id: `${MEMBER_ROLES[profile.role].id.name} ${maskId(profile.idNumber)}`, scholar: scholarId(profile.scholar) } }
+        : {}),
       name: user?.name ?? form.name.trim(),
       email: user?.email ?? form.email.trim(),
       whatsapp: form.whatsapp.trim(),
-      total: program.price,
+      total,
       newAccount,
       createdAt: new Date().toISOString(),
     };
+    // Staging: the registration also lands in the admin queue (Keanggotaan → Pendaftaran).
+    addSignup({
+      code: order.code,
+      kind: key === "member" ? planKey : key,
+      name: order.name,
+      email: order.email,
+      whatsapp: order.whatsapp,
+      address: form.address.trim(),
+      role: showProfile ? profile.role : "",
+      institution: showProfile ? profile.institution.trim() : form.institution.trim(),
+      idNumber: showProfile ? profile.idNumber.trim() : "",
+      scholar: showProfile ? scholarId(profile.scholar) ?? "" : "",
+      detail: order.detail,
+      total,
+    });
     try {
       sessionStorage.setItem(ORDER_KEY, JSON.stringify(order));
     } catch {
@@ -117,12 +174,14 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
     router.push("/daftar/selesai");
   };
 
-  const loginHref = `/login?next=${encodeURIComponent(`/daftar?program=${key}${mentor ? `&mentor=${mentor}` : ""}${key === "siap-tembus-scopus" ? `&bulan=${months[monthIdx].key}` : `&angkatan=${batch}`}`)}`;
+  const loginHref = `/login?next=${encodeURIComponent(`/daftar?program=${key}${key === "member" ? `&paket=${planKey}` : ""}${mentor ? `&mentor=${mentor}` : ""}${key === "siap-tembus-scopus" ? `&bulan=${months[monthIdx].key}` : key === "bootcamp-menulis" ? `&angkatan=${batch}` : ""}`)}`;
+
 
   return (
     <div className="cp-reg">
       <form className="cp-reg__form" onSubmit={submit} noValidate>
         {/* 1. Program choice */}
+        {key !== "member" && (
         <fieldset className="cp-reg__step">
           <legend><span>1</span> {key === "siap-tembus-scopus" ? "Mentor & bulan" : "Angkatan"}</legend>
 
@@ -172,10 +231,20 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
           )}
           {key === "bootcamp-menulis" && errors.mentor && <p className="cp-reg__err">{errors.mentor}</p>}
         </fieldset>
+        )}
+
+        {/* 1. Academic profile (new members) */}
+        {showProfile && (
+          <fieldset className="cp-reg__step">
+            <legend><span>1</span> Profil akademik</legend>
+            <p className="cp-reg__hint">Ceritakan siapa Anda. Data ini membantu kami menyiapkan keanggotaan yang sesuai. <span className="cp-reg__reqnote"><span className="cp-reg__req" title="Wajib diisi">*<span className="sr-only"> (wajib)</span></span> wajib diisi</span></p>
+            <MemberProfileFields value={profile} onChange={setProfile} errors={errors} />
+          </fieldset>
+        )}
 
         {/* 2. Account and contact */}
         <fieldset className="cp-reg__step">
-          <legend><span>2</span> Data diri & akun member</legend>
+          <legend><span>{accountStep}</span> {key === "member" ? "Akun & kontak" : "Data diri & akun member"}</legend>
 
           {isPending ? (
             <p className="cp-reg__muted">Memeriksa sesi…</p>
@@ -183,7 +252,7 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
             <div className="cp-reg__member">
               <UserRound size={18} aria-hidden="true" />
               <span>
-                Mendaftar sebagai <strong>{user.name}</strong> ({user.email}). Program akan ditambahkan ke akun member Anda.
+                Mendaftar sebagai <strong>{user.name}</strong> ({user.email}). {key === "member" ? (plan.price ? "Keanggotaan Anda diaktifkan satu tahun setelah pembayaran." : "Masa aktif member Anda ditambah satu bulan.") : `Program dan keanggotaan ${PROGRAM_MEMBER_MONTHS / 12} tahun ditambahkan ke akun Anda.`}
               </span>
             </div>
           ) : (
@@ -192,41 +261,59 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
             </p>
           )}
 
+
           <div className="cp-reg__grid">
             {!user && (
               <>
-                <Field label="Nama lengkap" error={errors.name}>
+                <Field label="Nama lengkap" required error={errors.name}>
                   <input value={form.name} onChange={set("name")} autoComplete="name" aria-invalid={!!errors.name} placeholder="Dr. Nama Lengkap" />
                 </Field>
-                <Field label="Email" error={errors.email}>
+                <Field label="Email" required error={errors.email}>
                   <input type="email" value={form.email} onChange={set("email")} autoComplete="email" aria-invalid={!!errors.email} placeholder="nama@institusi.ac.id" />
                 </Field>
               </>
             )}
-            <Field label="Nomor WhatsApp" error={errors.whatsapp} hint="Untuk konfirmasi jadwal dan pembayaran.">
+            <Field label="Nomor WhatsApp" required error={errors.whatsapp} hint={key === "member" ? "Untuk konfirmasi pendaftaran." : "Untuk konfirmasi jadwal dan pembayaran."}>
               <input type="tel" inputMode="tel" value={form.whatsapp} onChange={set("whatsapp")} autoComplete="tel" aria-invalid={!!errors.whatsapp} placeholder="0812 3456 7890" />
             </Field>
-            <Field label="Institusi" optional>
-              <input value={form.institution} onChange={set("institution")} autoComplete="organization" placeholder="Universitas / lembaga" />
+            <Field label="Alamat" optional hint="Jalan, kota, dan provinsi.">
+              <input value={form.address} onChange={set("address")} autoComplete="street-address" placeholder="Jl. Merdeka No. 10, Bandung, Jawa Barat" />
             </Field>
+            {key !== "member" && (
+              <Field label="Institusi" optional wide>
+                <input value={form.institution} onChange={set("institution")} autoComplete="organization" placeholder="Universitas / lembaga" />
+              </Field>
+            )}
             {!user && (
-              <>
-                <Field label="Buat password" error={errors.password} hint="Minimal 8 karakter.">
-                  <input type="password" value={form.password} onChange={set("password")} autoComplete="new-password" aria-invalid={!!errors.password} />
-                </Field>
-                <Field label="Ulangi password" error={errors.confirm}>
-                  <input type="password" value={form.confirm} onChange={set("confirm")} autoComplete="new-password" aria-invalid={!!errors.confirm} />
-                </Field>
-              </>
+              <PasswordFields
+                password={form.password}
+                confirm={form.confirm}
+                onPassword={(v) => setForm((f) => ({ ...f, password: v }))}
+                onConfirm={(v) => setForm((f) => ({ ...f, confirm: v }))}
+                errors={{ password: errors.password, confirm: errors.confirm }}
+              />
             )}
           </div>
 
-          <label className={`cp-reg__agree ${errors.agree ? "has-error" : ""}`}>
-            <input type="checkbox" checked={form.agree} onChange={set("agree")} aria-invalid={!!errors.agree} />
-            <span className="cp-reg__box" aria-hidden="true"><Check size={13} strokeWidth={3} /></span>
-            <span>Saya setuju data ini dipakai untuk pendaftaran program dan akun member CoPublika.</span>
-          </label>
-          {errors.agree && <p className="cp-reg__err">{errors.agree}</p>}
+          <div className="cp-reg__consent">
+            <label className={`cp-reg__agree ${errors.agree ? "has-error" : ""}`}>
+              <input type="checkbox" checked={form.agree} onChange={set("agree")} aria-invalid={!!errors.agree} />
+              <span className="cp-reg__box" aria-hidden="true"><Check size={13} strokeWidth={3} /></span>
+              <span>
+                Saya telah membaca dan menyetujui{" "}
+                <button type="button" className="cp-reg__doc" onClick={(e) => { e.preventDefault(); setPolicy({ open: true, tab: "syarat" }); }}>Syarat Keanggotaan</button>{" "}
+                dan{" "}
+                <button type="button" className="cp-reg__doc" onClick={(e) => { e.preventDefault(); setPolicy({ open: true, tab: "privasi" }); }}>Kebijakan Privasi</button>{" "}
+                CoPublika, serta mengizinkan data saya diproses untuk {key === "member" ? "pendaftaran" : "pendaftaran program dan"} keanggotaan. <span className="cp-reg__req" title="Wajib diisi">*<span className="sr-only"> (wajib)</span></span>
+              </span>
+            </label>
+            {errors.agree && <p className="cp-reg__err">{errors.agree}</p>}
+            <label className="cp-reg__agree is-optional">
+              <input type="checkbox" checked={form.news} onChange={set("news")} />
+              <span className="cp-reg__box" aria-hidden="true"><Check size={13} strokeWidth={3} /></span>
+              <span>Kirimi saya info batch, event, dan program baru lewat email. <em>Opsional</em></span>
+            </label>
+          </div>
         </fieldset>
 
         {submitError && (
@@ -235,15 +322,34 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
           </p>
         )}
 
-        <button type="submit" className="cp-ab-btn cp-ab-btn--primary cp-reg__submit" disabled={busy}>
-          {busy ? "Memproses…" : <>Daftar & lanjut ke pembayaran <ArrowRight size={16} aria-hidden="true" /></>}
+        {showProfile && (
+          <aside className="cp-reg__next" aria-label="Langkah selanjutnya">
+            <span className="cp-reg__next-ico" aria-hidden="true"><MailCheck size={20} /></span>
+            <div>
+              <strong>Langkah selanjutnya</strong>
+              <p>Setelah pendaftaran disetujui admin, <b>link aktivasi akun</b> kami kirim ke {form.email.trim() ? <b>{form.email.trim()}</b> : "email Anda"} dalam 1×24 jam.</p>
+            </div>
+          </aside>
+        )}
+
+        <button type="submit" className="cp-ab-btn cp-ab-btn--primary cp-reg__submit" disabled={busy || !form.agree} aria-describedby={form.agree ? undefined : "cp-reg-lock"}>
+          {busy ? "Memproses…" : <>{isFree ? "Daftar member gratis" : "Daftar & lanjut ke pembayaran"} <ArrowRight size={16} aria-hidden="true" /></>}
         </button>
+        {!form.agree && <p className="cp-reg__lock" id="cp-reg-lock"><Lock size={13} aria-hidden="true" /> Centang persetujuan Syarat Keanggotaan dan Kebijakan Privasi untuk mengaktifkan tombol.</p>}
       </form>
+
+      <PolicyDialog
+        open={policy.open}
+        tab={policy.tab}
+        onTab={(tab) => setPolicy((p) => ({ ...p, tab }))}
+        onOpenChange={(open) => setPolicy((p) => ({ ...p, open }))}
+        onAgree={() => setForm((f) => ({ ...f, agree: true }))}
+      />
 
       {/* Order summary */}
       <aside className="cp-reg__summary" aria-label="Ringkasan pesanan">
         <span className="cp-reg__k">Ringkasan pesanan</span>
-        <h2>{program.name}</h2>
+        <h2>{program ? program.name : plan.name}</h2>
         <dl>
           {key === "siap-tembus-scopus" ? (
             <>
@@ -251,33 +357,54 @@ export function RegisterForm({ program: key, mentor: initialMentor, month: initi
               <div><dt>Bulan</dt><dd>{monthLabel(months[monthIdx].key)}</dd></div>
               <div><dt>Termasuk</dt><dd>1 sesi online 90 menit + 4 review</dd></div>
             </>
-          ) : (
+          ) : key === "bootcamp-menulis" ? (
             <>
               <div><dt>Angkatan</dt><dd>{chosenBatch.name}</dd></div>
               <div><dt>Jadwal</dt><dd>{formatDate(chosenBatch.start)} – {formatDate(chosenBatch.end)}</dd></div>
               <div><dt>Webinar</dt><dd>{chosenBatch.webinar}</dd></div>
             </>
+          ) : (
+            <>
+              {showProfile && (
+                <>
+                  <div><dt>Kategori</dt><dd>{profile.role ? MEMBER_ROLES[profile.role].label : "Belum dipilih"}</dd></div>
+                  <div><dt>Afiliasi</dt><dd>{profile.institution.trim() || "—"}</dd></div>
+                  <div><dt>Google Scholar</dt><dd>{scholarId(profile.scholar) ? "Terhubung" : "Belum ditambahkan"}</dd></div>
+                </>
+              )}
+              <div><dt>Masa aktif</dt><dd>{plan.months} bulan</dd></div>
+              <div><dt>Biaya</dt><dd>{plan.price ? `${formatRupiah(plan.price)} per tahun` : "Gratis"}</dd></div>
+            </>
           )}
         </dl>
+        <ul className="cp-reg__lines">
+          {items.map((x) => (
+            <li key={x.label}>
+              <span>{x.label}{x.detail && <small>{x.detail}</small>}</span>
+              <b>{x.was ? <><s>{formatRupiah(x.was)}</s> Gratis</> : x.amount ? formatRupiah(x.amount) : "Gratis"}</b>
+            </li>
+          ))}
+        </ul>
         <div className="cp-reg__total">
           <span>Total</span>
-          <strong>{formatRupiah(program.price)}</strong>
+          <strong>{total ? formatRupiah(total) : "Gratis"}</strong>
         </div>
         <ul className="cp-reg__perks">
-          <li><ShieldCheck size={15} aria-hidden="true" /> Akun member CoPublika aktif otomatis</li>
-          <li><Lock size={15} aria-hidden="true" /> Pembayaran dikonfirmasi tim setelah pendaftaran</li>
+          <li><BadgeCheck size={15} aria-hidden="true" /> {program ? `Member ${PROGRAM_MEMBER_MONTHS / 12} tahun tanpa biaya aktivasi` : `Member aktif ${plan.months} bulan`}</li>
+          <li><ShieldCheck size={15} aria-hidden="true" /> Akun member CoPublika dibuat otomatis</li>
+          {total > 0 && <li><Lock size={15} aria-hidden="true" /> Pembayaran dikonfirmasi tim setelah pendaftaran</li>}
         </ul>
-        <Link href={program.href} className="cp-reg__change">Lihat detail program</Link>
+        <Link href={program ? program.href : "/daftar"} className="cp-reg__change">{program ? "Lihat detail program" : "Lihat semua program"}</Link>
       </aside>
     </div>
   );
 }
 
-function Field({ label, error, hint, optional, children }: { label: string; error?: string; hint?: string; optional?: boolean; children: React.ReactNode }) {
+function Field({ label, error, hint, optional, required, wide, children }: { label: string; error?: string; hint?: string; optional?: boolean; required?: boolean; wide?: boolean; children: React.ReactNode }) {
   return (
-    <label className={`cp-reg__field ${error ? "has-error" : ""}`}>
+    <label className={`cp-reg__field ${wide ? "is-wide" : ""} ${error ? "has-error" : ""}`}>
       <span className="cp-reg__label">
-        {label} {optional && <em>opsional</em>}
+        {label} {required && <span className="cp-reg__req" title="Wajib diisi">*<span className="sr-only"> (wajib)</span></span>} {optional && <em>opsional</em>}
       </span>
       {children}
       {error ? <span className="cp-reg__err">{error}</span> : hint ? <span className="cp-reg__fhint">{hint}</span> : null}

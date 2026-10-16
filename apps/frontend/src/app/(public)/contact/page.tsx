@@ -4,7 +4,7 @@ import { getIndonesiaMap } from "@/lib/data/indonesia-map";
 
 export const metadata: Metadata = {
   title: "Kontak — CoPublika",
-  description: "Pertanyaan program, kolaborasi riset, atau tulisan tamu. Kami teruskan ke tim yang tepat dan membalas dalam satu hari kerja.",
+  description: "Pertanyaan program, kolaborasi riset, atau tulisan tamu. Tim Admin CoPublika membalas dalam satu hari kerja.",
 };
 
 export default function Page() {

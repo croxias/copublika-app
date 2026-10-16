@@ -7,9 +7,10 @@ import { ArrowRight, AtSign, Check, CheckCircle2, ChevronDown, Clock3, Copy, Mai
 import { CopublikaMark } from "@/components/brand/CopublikaMark";
 import { SectionHead } from "@/components/program/shared";
 import { CONTACT_COPY, type ContactTopic } from "@/lib/content/contact";
-import { addMessage } from "@/lib/cms/messages";
+import { RESPONDER, addMessage } from "@/lib/cms/messages";
 import type { IndonesiaMap as MapData } from "@/lib/data/indonesia-map";
 import { IndonesiaMap } from "./IndonesiaMap";
+import { mapsDirectionsUrl, mapsEmbedUrl, mapsOpenUrl, parseCoords } from "@/lib/data/geo";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const C = CONTACT_COPY;
@@ -162,7 +163,7 @@ function ContactForm({ topic, setTopic }: { topic: number; setTopic: (i: number)
             <p>{C.form.successText}</p>
             <dl className="cp-ct-done__meta">
               <div><dt>Nomor referensi</dt><dd>{sent.code}</dd></div>
-              <div><dt>Diteruskan ke</dt><dd>{sent.topic.team}</dd></div>
+              <div><dt>Dibalas oleh</dt><dd>{RESPONDER}</dd></div>
               <div><dt>Perkiraan balasan</dt><dd>{sent.topic.reply}</dd></div>
             </dl>
             <button type="button" className="cp-evp-btn-ghost" onClick={() => { setSent(null); setForm({ name: "", org: "", email: "", whatsapp: "", message: "" }); }}>Kirim pesan lain</button>
@@ -182,7 +183,7 @@ function ContactForm({ topic, setTopic }: { topic: number; setTopic: (i: number)
                 </button>
               ))}
             </fieldset>
-            <p className="cp-ct-route"><Users size={14} aria-hidden="true" /> Diteruskan ke <b>{t.team}</b> · balasan {t.reply}</p>
+            <p className="cp-ct-route"><Users size={14} aria-hidden="true" /> Dibalas oleh <b>{RESPONDER}</b> · balasan {t.reply}</p>
             <div className="cp-ct-grid">
               {field("name", "Nama lengkap", { autoComplete: "name", placeholder: "Dr. Ahmad Rifai" })}
               {field("org", "Institusi", { autoComplete: "organization", placeholder: "Universitas / lembaga" }, true)}
@@ -258,15 +259,18 @@ function Hours() {
 }
 
 function Office() {
-  const q = encodeURIComponent(C.location.mapQuery);
+  const pin = parseCoords(C.location.coords);
   return (
     <section className="cp-ct-card cp-ct-office">
       <span className="cp-ct-card__k"><MapPin size={14} aria-hidden="true" /> {C.location.label}</span>
       <p className="cp-ct-office__addr">{C.location.address}</p>
       <div className="cp-ct-office__map">
-        <iframe title="Peta kantor CoPublika" src={`https://www.google.com/maps?q=${q}&output=embed`} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+        <iframe title="Peta kantor CoPublika" src={mapsEmbedUrl(pin, C.location.mapQuery, 16)} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
       </div>
-      <Link href={`https://www.google.com/maps/search/?api=1&query=${q}`} target="_blank" rel="noopener noreferrer" className="cp-ct-office__go">Buka di Google Maps <ArrowRight size={14} aria-hidden="true" /></Link>
+      <div className="cp-ct-office__links">
+        <Link href={mapsDirectionsUrl(pin, C.location.mapQuery)} target="_blank" rel="noopener noreferrer" className="cp-ct-office__go">Petunjuk arah <ArrowRight size={14} aria-hidden="true" /></Link>
+        <Link href={mapsOpenUrl(pin, C.location.mapQuery)} target="_blank" rel="noopener noreferrer" className="cp-ct-office__go is-quiet">Buka di Google Maps</Link>
+      </div>
     </section>
   );
 }

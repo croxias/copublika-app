@@ -53,6 +53,54 @@ export const PROGRAMS: Record<ProgramKey, Program> = {
 export const formatRupiah = (n: number) => `Rp. ${n.toLocaleString("id-ID")}`;
 
 /* ---------------------------------------------------------------------------
+   Membership: free registration for the first month, then yearly activation.
+   Program participants get the yearly activation free.
+   --------------------------------------------------------------------------- */
+
+export type MemberPlanKey = "gratis" | "tahunan";
+
+export type MemberPlan = {
+  key: MemberPlanKey;
+  name: string;
+  price: number;
+  months: number;
+  unit: string;
+  tagline: string;
+  features: string[];
+  includes: string[];
+};
+
+export const MEMBER_PLANS: Record<MemberPlanKey, MemberPlan> = {
+  gratis: {
+    key: "gratis",
+    name: "Registrasi Member",
+    price: 0,
+    months: 1,
+    unit: "bulan pertama",
+    tagline: "Buat akun member dan kenali komunitas peneliti CoPublika selama satu bulan pertama.",
+    features: ["Profil anggota & Google Scholar", "Akses detail proyek riset komunitas", "Ruang Penulis untuk Blog CoPublika"],
+    includes: ["Bisa mendaftar program CoPublika", "Info batch dan event member lebih dulu"],
+  },
+  tahunan: {
+    key: "tahunan",
+    name: "Aktivasi Member",
+    price: 75_000,
+    months: 12,
+    unit: "per tahun",
+    tagline: "Lanjutkan keanggotaan satu tahun penuh saat masa aktif bulan pertama Anda habis.",
+    features: ["Member aktif 12 bulan", "Semua akses member tetap terbuka", "Riwayat profil & tulisan tersimpan"],
+    includes: ["Bisa diperpanjang setiap tahun", "Gratis jika Anda ikut program"],
+  },
+};
+
+export const MEMBERSHIP = { name: "Member CoPublika" };
+
+/** Program participants get a year of membership with the program, at no charge. */
+export const PROGRAM_MEMBER_MONTHS = 12;
+
+export const memberPlanKey = (v: unknown): MemberPlanKey => (v === "tahunan" ? "tahunan" : "gratis");
+
+/* ---------------------------------------------------------------------------
    Siap Tembus Scopus: mentors and monthly seats
    --------------------------------------------------------------------------- */
 

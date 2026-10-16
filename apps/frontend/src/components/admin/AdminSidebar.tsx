@@ -29,7 +29,7 @@ interface NavSection {
 
 // Structure: docs/superpowers/specs/2026-10-14-admin-cms-public-pages-design.md \u00a73.
 // Menus that only exist as a staging preview stay reachable in demo mode.
-const getNav = (demoEnabled = false, reviewCount = 0, newMessages = 0): NavSection[] => [
+const getNav = (reviewCount = 0, newMessages = 0, newSignups = 0, pendingMembers = 0): NavSection[] => [
   {
     section: 'Ringkasan',
     items: [
@@ -42,7 +42,7 @@ const getNav = (demoEnabled = false, reviewCount = 0, newMessages = 0): NavSecti
     items: [
       { id: 'blog', name: 'Artikel Blog', href: '/admin/blog', icon: 'edit', ...(reviewCount ? { badge: String(reviewCount) } : {}) },
       { id: 'events', name: 'Agenda Event', href: '/admin/events', icon: 'calendar' },
-      { id: 'messages', name: 'Kotak Pesan', href: '/admin/messages', icon: 'mail', ...(newMessages ? { badge: String(newMessages) } : {}) }
+      { id: 'messages', name: 'Kotak Pesan', href: '/admin/messages', icon: 'mail', also: ['/admin/messages/templates'], ...(newMessages ? { badge: String(newMessages) } : {}) }
     ]
   },
   {
@@ -70,7 +70,6 @@ const getNav = (demoEnabled = false, reviewCount = 0, newMessages = 0): NavSecti
           { id: 'program-btm', name: 'Bootcamp 30 Hari', href: '/admin/website/bootcamp-menulis', icon: 'edit' }
         ]
       },
-      { id: 'page-curation', name: 'Proses Kurasi', href: '/admin/website/curation', icon: 'route' },
       { id: 'page-contact', name: 'Kontak', href: '/admin/website/contact', icon: 'mail' }
     ]
   },
@@ -83,11 +82,11 @@ const getNav = (demoEnabled = false, reviewCount = 0, newMessages = 0): NavSecti
     ]
   },
   {
-    section: 'Kurasi',
+    section: 'Keanggotaan',
     items: [
       { id: 'batches', name: 'Manajemen Batch', href: '/admin/batches', icon: 'clock' },
-      { id: 'applicants', name: 'Verifikasi Pendaftar', href: '/admin/applicants', icon: 'user-check', ...(demoEnabled ? { badge: 'Preview', soft: true } : { soon: true }) },
-      { id: 'members', name: 'Anggota', href: '/admin/members', icon: 'users', soon: true }
+      { id: 'applicants', name: 'Pendaftaran', href: '/admin/applicants', icon: 'user-check', ...(newSignups ? { badge: String(newSignups) } : {}) },
+      { id: 'members', name: 'Anggota', href: '/admin/members', icon: 'users', ...(pendingMembers ? { badge: String(pendingMembers) } : {}) }
     ]
   },
   {
@@ -264,7 +263,7 @@ interface AdminSidebarProps {
   onCollapse?: () => void;
 }
 
-export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = false, demoEnabled = false, collapsed = false, onCollapse }) => {
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = false, collapsed = false, onCollapse }) => {
   const [roleOpen, setRoleOpen] = useState(false);
   /** Sub-menus the admin opened or closed by hand; unset groups follow the active page. */
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
@@ -301,7 +300,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = f
   const reduceMotion = useReducedMotion();
   // Writer submissions waiting for an editor show as a count on Artikel Blog.
   const cms = useCms();
-  const nav = getNav(demoEnabled, (cms.collections.blog ?? []).filter(inQueue).length, (cms.collections.messages ?? []).filter((m) => m.status === 'new').length);
+  const nav = getNav((cms.collections.blog ?? []).filter(inQueue).length, (cms.collections.messages ?? []).filter((m) => m.status === 'new').length, (cms.collections.signups ?? []).filter((s) => s.status === 'new' || s.status === 'need_info' || s.status === 'awaiting_payment').length, (cms.collections.members ?? []).filter((m) => m.status === 'pending').length);
   const activePage = activeId(nav, pathname);
   const showTooltip = (event: React.MouseEvent<HTMLAnchorElement> | React.FocusEvent<HTMLAnchorElement>, label: string) => {
     if (!collapsed) return;
