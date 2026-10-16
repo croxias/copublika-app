@@ -54,6 +54,8 @@ const people: CmsItem[] = PEOPLE.map((p, i) => ({
   instagramUrl: p.instagramUrl ?? '',
   email: p.email ?? '',
   topics: p.topics ?? [],
+  // Core mentors already write for the blog; others get access from Tim & Mentor.
+  canWrite: p.kind === 'both',
   status: 'published',
   order: i + 1,
   updatedAt: SEEDED_AT,

@@ -4,6 +4,7 @@ import { page as about } from './page-about';
 import { page as aboutTeam } from './page-about-team';
 import { page as aboutMentors } from './page-about-mentors';
 import { page as research } from './page-research';
+import { page as blog } from './page-blog';
 import { btmPage, stsPage } from './page-programs';
 import { page as curation } from './page-curation';
 import { page as contact } from './page-contact';
@@ -16,6 +17,7 @@ export const PAGES: Record<string, PageConfig | null> = {
   'about-team': aboutTeam,
   'about-mentors': aboutMentors,
   research,
+  blog,
   'siap-tembus-scopus': stsPage,
   'bootcamp-menulis': btmPage,
   curation,

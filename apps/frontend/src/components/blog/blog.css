@@ -514,3 +514,15 @@
 @media (prefers-reduced-motion: reduce) {
   .cp-bd-pn__item, .cp-bd-pn__item > img, .cp-bd-pn__ring, .cp-bd-row, .cp-bd-row__thumb { transition: none; }
 }
+
+/* Link to Ruang Penulis under the guest-writer CTA */
+.cp-bw__desk { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; color: rgba(255,255,255,.7); font-size: 14px; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 4px; transition: color .2s, text-decoration-color .2s; }
+.cp-bw__desk:hover { color: #ffb27a; text-decoration-color: #ffb27a; }
+
+/* Images, links and dividers written with the admin editor */
+.cp-bd-figure { margin: clamp(28px, 4vw, 44px) 0; }
+.cp-bd-figure img { display: block; width: 100%; height: auto; border-radius: 18px; }
+.cp-bd-figure figcaption { margin-top: 10px; color: var(--mute); font-size: calc(var(--bd-fs, 18px) * .78); line-height: 1.5; text-align: center; }
+.cp-bd-link { color: var(--scopus-ink, #c2540f); font-weight: 600; text-decoration: underline; text-decoration-color: rgba(233,113,28,.4); text-underline-offset: 4px; transition: text-decoration-color .2s; }
+.cp-bd-link:hover { text-decoration-color: currentColor; }
+.cp-bd-hr { margin: clamp(32px, 4vw, 48px) auto; width: 80px; border: 0; border-top: 3px solid var(--scopus); }

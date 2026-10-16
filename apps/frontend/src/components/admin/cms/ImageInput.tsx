@@ -15,6 +15,28 @@ type Meta = { w: number; h: number; bytes?: number; name?: string };
  * resized and stored as a WebP data URL; the backend phase swaps this for object storage
  * and keeps the same field value contract (a string the <img> can load).
  */
+/** Downscales an image file to `maxWidth` and encodes it as a WebP data URL (staging uploads). */
+export async function encodeImage(file: File, maxWidth = MAX_WIDTH) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, maxWidth / bitmap.width);
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  canvas.getContext('2d')!.drawImage(bitmap, 0, 0, w, h);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/webp', 0.82));
+  if (!blob) throw new Error('encode');
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+  return { dataUrl, w, h, bytes: blob.size };
+}
+
 export function ImageInput({
   id,
   value,
@@ -48,24 +70,8 @@ export function ImageInput({
     if (file.size > MAX_FILE_MB * 1024 * 1024) return setProblem(`Ukuran file ${(file.size / 1048576).toFixed(1)} MB, maksimal ${MAX_FILE_MB} MB.`);
     setBusy(true);
     try {
-      const bitmap = await createImageBitmap(file);
-      const scale = Math.min(1, MAX_WIDTH / bitmap.width);
-      const w = Math.round(bitmap.width * scale);
-      const h = Math.round(bitmap.height * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      canvas.getContext('2d')!.drawImage(bitmap, 0, 0, w, h);
-      bitmap.close();
-      const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/webp', 0.82));
-      if (!blob) throw new Error('encode');
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result));
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-      setMeta({ w, h, bytes: blob.size, name: file.name });
+      const { dataUrl, w, h, bytes } = await encodeImage(file, MAX_WIDTH);
+      setMeta({ w, h, bytes, name: file.name });
       setUrlMode(false);
       onChange(dataUrl);
     } catch {

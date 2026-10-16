@@ -3,30 +3,43 @@ import { fallbackEvents } from '@/lib/data/fallbacks';
 import { EVENTS as LANDING_EVENTS } from '@/components/landing/EventsList';
 import type { Event } from '@/types';
 import type { CmsItem } from '../types';
+import { personId } from '../slug';
+import { PEOPLE } from './people';
 import type { SeedPart } from './types';
 import { SEEDED_AT } from './types';
 
-// Blog: the article catalog the public /blog page renders today.
-const blog: CmsItem[] = BLOG_ARTICLES.map((a, i) => ({
-  id: `blog-${a.slug}`,
-  title: a.title,
-  slug: a.slug,
-  category: a.category,
-  excerpt: a.excerpt,
-  cover: a.cover,
-  coverAlt: a.title,
-  author: a.author,
-  // The catalog only has YYYY-MM; pin to the first of the month.
-  publishAt: `${a.date}-01T08:00`,
-  readTime: a.readTime.replace('min', 'menit'),
-  content: a.content,
-  featured: !!a.featured,
-  metaTitle: '',
-  metaDescription: '',
-  status: 'published',
-  order: i + 1,
-  updatedAt: SEEDED_AT,
-}));
+// Blog: the article catalog the public /blog page renders today. Authors that are in the
+// people library are linked to it; anyone else is seeded as a guest author.
+// "Fajar Ramadhan" in the catalog is "Fajar Ramadhan, Ph.D." in the library.
+const personOf = (name: string) => PEOPLE.find((p) => p.name === name || p.name.startsWith(`${name},`));
+
+const blog: CmsItem[] = BLOG_ARTICLES.map((a, i) => {
+  const person = personOf(a.author);
+  return {
+    id: `blog-${a.slug}`,
+    title: a.title,
+    slug: a.slug,
+    category: a.category,
+    excerpt: a.excerpt,
+    cover: a.cover,
+    coverAlt: a.title,
+    guestAuthor: !person,
+    authorId: person ? personId(person.name) : '',
+    author: a.author,
+    authorAffiliation: '',
+    // The catalog only has YYYY-MM; pin to the first of the month.
+    publishAt: `${a.date}-01T08:00`,
+    readTime: a.readTime.replace('min', 'menit'),
+    content: a.content,
+    editorsPick: !!a.editorsPick,
+    editorNote: a.editorNote ?? '',
+    metaTitle: '',
+    metaDescription: '',
+    status: 'published',
+    order: i + 1,
+    updatedAt: SEEDED_AT,
+  };
+});
 
 const FORMAT: Record<string, string> = { daring: 'online', luring: 'offline', hybrid: 'hybrid' };
 

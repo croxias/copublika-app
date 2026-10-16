@@ -2,6 +2,7 @@
 
 import type { FieldContext, SectionTab, Values } from '@/lib/cms/types';
 import { GroupIconView } from './SectionGroups';
+import { BlogArchivePreview, BlogDetailPreview, BlogHeroPreview, BlogPicksPreview, BlogWritePreview } from './BlogPagePreviews';
 import { AboutHeroPreview, AboutIntroPreview, AboutJourneyPreview, AboutVisionPreview, JoinPreview, TeamOrgPreview } from './AboutPreviews';
 
 const str = (v: unknown) => (v === undefined || v === null ? '' : String(v));
@@ -25,6 +26,11 @@ export function SectionPreview({ kind, ...props }: Props & { kind: NonNullable<S
       {kind === 'aboutJourney' && <AboutJourneyPreview {...props} />}
       {kind === 'teamOrg' && <TeamOrgPreview {...props} />}
       {kind === 'join' && <JoinPreview {...props} />}
+      {kind === 'blogHero' && <BlogHeroPreview {...props} />}
+      {kind === 'blogPicks' && <BlogPicksPreview {...props} />}
+      {kind === 'blogArchive' && <BlogArchivePreview {...props} />}
+      {kind === 'blogWrite' && <BlogWritePreview {...props} />}
+      {kind === 'blogDetail' && <BlogDetailPreview {...props} />}
     </div>
   );
 }

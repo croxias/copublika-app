@@ -31,6 +31,8 @@ type FieldBase = {
   wide?: boolean;
   /** Hide the field unless this returns true for the current values. */
   visibleIf?: (values: Values) => boolean;
+  /** Small icon beside the label. */
+  icon?: GroupIcon;
 };
 
 export type Option = { value: string; label: string; /** Second line in dropdown menus. */ hint?: string };
@@ -48,6 +50,8 @@ export type Field =
     })
   | (FieldBase & { type: 'textarea'; max?: number; rows?: number; placeholder?: string })
   | (FieldBase & { type: 'markdown' })
+  /** Visual editor (headings, lists, quotes, links, images); stored as Markdown. */
+  | (FieldBase & { type: 'richtext'; placeholder?: string })
   | (FieldBase & { type: 'number'; min?: number; max?: number; suffix?: string })
   | (FieldBase & { type: 'date' | 'time' | 'datetime' })
   | (FieldBase & { type: 'select'; options: Option[] | ((ctx: FieldContext) => Option[]) })
@@ -94,7 +98,8 @@ export type Field =
 
 export type GroupIcon =
   | 'heading' | 'link' | 'display' | 'users' | 'orbit' | 'mentor' | 'shield' | 'progress'
-  | 'steps' | 'calendar' | 'ticket' | 'cursor' | 'quote' | 'help' | 'chart' | 'text';
+  | 'steps' | 'calendar' | 'ticket' | 'cursor' | 'quote' | 'help' | 'chart' | 'text'
+  | 'file' | 'user' | 'image' | 'star' | 'pen' | 'search' | 'tag' | 'building' | 'eye';
 
 /** Lets option lists and pickers read the rest of the CMS (e.g. clusters). */
 export type FieldContext = { sections: Record<string, Values>; collections: Record<CollectionKey, CmsItem[]> };
@@ -119,6 +124,10 @@ export type CollectionConfig = {
   initialStatus: string;
   titleOf: (item: Values) => string;
   subtitleOf?: (item: Values, ctx: FieldContext) => string;
+  /** Records the table lists; others live elsewhere (e.g. writer drafts in the review queue). */
+  listFilter?: (item: CmsItem) => boolean;
+  /** Small image beside the title in the table (e.g. an article cover). */
+  thumbOf?: (item: Values) => string;
   /** Extra filter dropdown next to the status filter. */
   filter?: { label: string; options: (ctx: FieldContext) => Option[]; match: (item: CmsItem, value: string) => boolean };
   /** Manual ordering with up/down arrows; otherwise sorted by `sortBy`. */
@@ -126,10 +135,12 @@ export type CollectionConfig = {
   sortBy?: (a: CmsItem, b: CmsItem) => number;
   /** Public URL of a record, for "Lihat di web". */
   publicHref?: (item: CmsItem) => string | null;
-  drawer?: 'md' | 'lg';
+  drawer?: 'md' | 'lg' | 'center';
   defaults: () => Values;
   /** Hook to adjust a record right before saving (e.g. derive read time). */
-  beforeSave?: (values: Values, all: CmsItem[]) => Values;
+  beforeSave?: (values: Values, all: CmsItem[], ctx: FieldContext) => Values;
+  /** Checks that need the other records (e.g. a cap on picks); errors are keyed by field key. */
+  validateRecord?: (values: Values, others: CmsItem[]) => Record<string, string>;
   /** Side effects on other records when one is saved (e.g. single featured). */
   afterSave?: (saved: CmsItem, all: CmsItem[]) => CmsItem[];
 };
@@ -150,7 +161,8 @@ export type SectionTab = {
    */
   manager?: 'heroSlides';
   /** Live schematic of the public section beside the form; clicking a part opens its group. */
-  preview?: 'why' | 'program' | 'aboutHero' | 'aboutIntro' | 'aboutVision' | 'aboutJourney' | 'teamOrg' | 'join';
+  preview?: 'why' | 'program' | 'aboutHero' | 'aboutIntro' | 'aboutVision' | 'aboutJourney' | 'teamOrg' | 'join'
+    | 'blogHero' | 'blogPicks' | 'blogArchive' | 'blogWrite' | 'blogDetail';
 };
 
 export type PageConfig = {

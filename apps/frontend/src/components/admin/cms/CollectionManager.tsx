@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowDown, ArrowUp, Copy, ExternalLink, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
+import * as Menu from '@radix-ui/react-dropdown-menu';
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Copy, ExternalLink, MoreVertical, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { CmsSelect } from './CmsSelect';
 import { findUsages, useCms } from '@/lib/cms/store';
 import { SECTION_LABELS } from '@/lib/cms/config/pages';
-import type { CmsItem, CollectionConfig, FieldContext } from '@/lib/cms/types';
+import type { CmsItem, CollectionConfig, FieldContext, Values } from '@/lib/cms/types';
 import { RecordEditor, capitalize, editingFor, type Editing } from './RecordEditor';
 import { ConfirmDialog, PageHeader, StagingNote, StatusBadge, formatDate } from './ui';
 
@@ -21,12 +22,19 @@ type Props = {
   headerActions?: React.ReactNode;
   /** Content between the toolbar and the table (e.g. a hint card). */
   intro?: React.ReactNode;
+  /** Live preview in the record drawer, opened with its Pratinjau button. */
+  preview?: (values: Values, ctx: FieldContext) => React.ReactNode;
+  /** Shown instead of the toolbar and table, e.g. another tab of the same page. */
+  replaceTable?: React.ReactNode;
 };
 
+const PAGE = 10;
 
-export function CollectionManager({ config, crumb, title, accent, description, publicHref, headerActions, intro }: Props) {
+
+export function CollectionManager({ config, crumb, title, accent, description, publicHref, headerActions, intro, preview, replaceTable }: Props) {
   const cms = useCms();
-  const items = cms.collections[config.key];
+  const all = cms.collections[config.key];
+  const items = config.listFilter ? all.filter(config.listFilter) : all;
   const ctx: FieldContext = { sections: cms.sections, collections: cms.collections };
 
   const [q, setQ] = useState('');
@@ -52,11 +60,18 @@ export function CollectionManager({ config, crumb, title, accent, description, p
     return true;
   });
   const canReorder = !!config.sortable && status === 'all' && extra === 'all' && !q;
+  // Sortable lists stay on one page so rows can be moved anywhere.
+  const [page, setPage] = useState(1);
+  const paged = !config.sortable;
+  const pages = paged ? Math.max(1, Math.ceil(visible.length / PAGE)) : 1;
+  const current = Math.min(page, pages);
+  const rows = paged ? visible.slice((current - 1) * PAGE, current * PAGE) : visible;
+  const first = visible.length ? (current - 1) * PAGE + 1 : 0;
 
   const open = (item?: CmsItem, duplicate = false) => setEditing({ ...editingFor(config, item, duplicate), nonce: Date.now() });
 
   const remove = (item: CmsItem) => {
-    const before = items;
+    const before = all;
     cms.removeItem(config.key, item.id);
     cms.toast(`${capitalize(config.singular)} dihapus.`, 'ok', { label: 'Urungkan', run: () => cms.setCollection(config.key, before) });
     setConfirmDelete(null);
@@ -95,13 +110,15 @@ export function CollectionManager({ config, crumb, title, accent, description, p
       <StagingNote />
       {intro}
 
+      {replaceTable ?? (
+      <div className="cms-list">
       <div className="cms-toolbar">
         <div className="cms-chips" role="tablist" aria-label="Filter status">
-          <button type="button" role="tab" aria-selected={status === 'all'} onClick={() => setStatus('all')}>
+          <button type="button" role="tab" aria-selected={status === 'all'} onClick={() => { setStatus('all'); setPage(1); }}>
             Semua <b>{items.length}</b>
           </button>
           {config.statuses.map((s) => (
-            <button type="button" role="tab" key={s.value} aria-selected={status === s.value} onClick={() => setStatus(s.value)}>
+            <button type="button" role="tab" key={s.value} aria-selected={status === s.value} onClick={() => { setStatus(s.value); setPage(1); }}>
               {s.label} <b>{counts[s.value]}</b>
             </button>
           ))}
@@ -113,13 +130,13 @@ export function CollectionManager({ config, crumb, title, accent, description, p
               className="cms-toolbar-select"
               prefix={config.filter.label}
               value={extra}
-              onChange={setExtra}
+              onChange={(v) => { setExtra(v); setPage(1); }}
               options={[{ value: 'all', label: `Semua ${config.filter.label.toLowerCase()}` }, ...config.filter.options(ctx)]}
             />
           )}
           <div className="cms-search">
             <Search size={14} aria-hidden="true" />
-            <input aria-label="Cari" placeholder={`Cari ${config.singular}…`} value={q} onChange={(e) => setQ(e.target.value)} />
+            <input aria-label="Cari" placeholder={`Cari ${config.singular}…`} value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
             {q && (
               <button type="button" aria-label="Hapus pencarian" onClick={() => setQ('')}><X size={13} /></button>
             )}
@@ -138,11 +155,11 @@ export function CollectionManager({ config, crumb, title, accent, description, p
               ))}
               <th style={{ width: 120 }}>Status</th>
               <th className="cms-col-updated" style={{ width: 120 }}>Diubah</th>
-              <th className="cms-col-actions" aria-label="Aksi" />
+              <th className="cms-col-actions">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {visible.map((item, i) => {
+            {rows.map((item, i) => {
               const href = config.publicHref?.(item);
               return (
                 <tr key={item.id} onClick={() => open(item)} className="cms-row">
@@ -159,9 +176,17 @@ export function CollectionManager({ config, crumb, title, accent, description, p
                     </td>
                   )}
                   <td className="cms-col-title">
-                    <div className="cms-cell-title">
-                      <strong>{config.titleOf(item) || <em className="cms-muted">Tanpa judul</em>}</strong>
-                      {config.subtitleOf && <small>{config.subtitleOf(item, ctx)}</small>}
+                    <div className={`cms-cell-title ${config.thumbOf ? 'has-thumb' : ''}`}>
+                      {config.thumbOf && (
+                        <span className="cms-thumb" aria-hidden="true">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          {config.thumbOf(item) ? <img src={config.thumbOf(item)} alt="" loading="lazy" /> : null}
+                        </span>
+                      )}
+                      <span>
+                        <strong>{config.titleOf(item) || <em className="cms-muted">Tanpa judul</em>}</strong>
+                        {config.subtitleOf && <small>{config.subtitleOf(item, ctx)}</small>}
+                      </span>
                     </div>
                   </td>
                   {config.columns.map((c) => (
@@ -170,14 +195,24 @@ export function CollectionManager({ config, crumb, title, accent, description, p
                   <td className="cms-col-meta" data-label="Status"><StatusBadge status={item.status} options={config.statuses} /></td>
                   <td className="cms-col-meta cms-col-updated cms-muted cms-nowrap" data-label="Diubah">{formatDate(item.updatedAt)}</td>
                   <td className="cms-col-actions" onClick={(e) => e.stopPropagation()}>
-                    <div className="cms-row-actions">
-                      <button type="button" aria-label="Edit" title="Edit" onClick={() => open(item)}><Pencil size={14} /></button>
-                      <button type="button" aria-label="Duplikat" title="Duplikat" onClick={() => open(item, true)}><Copy size={14} /></button>
-                      {href && item.status === 'published' ? (
-                        <Link href={href} target="_blank" aria-label="Lihat di web" title="Lihat di web"><ExternalLink size={14} /></Link>
-                      ) : null}
-                      <button type="button" aria-label="Hapus" title="Hapus" className="is-danger" onClick={() => setConfirmDelete(item)}><Trash2 size={14} /></button>
-                    </div>
+                    <Menu.Root modal={false}>
+                      <Menu.Trigger className="cms-kebab" aria-label={`Aksi untuk ${config.titleOf(item) || config.singular}`}>
+                        <MoreVertical size={16} />
+                      </Menu.Trigger>
+                      <Menu.Portal>
+                        <Menu.Content className="cms-menu" align="end" sideOffset={6} collisionPadding={12}>
+                          <Menu.Item className="cms-menu-item" onSelect={() => open(item)}><Pencil size={14} /> Edit</Menu.Item>
+                          <Menu.Item className="cms-menu-item" onSelect={() => open(item, true)}><Copy size={14} /> Duplikat</Menu.Item>
+                          {href && item.status === 'published' && (
+                            <Menu.Item className="cms-menu-item" asChild>
+                              <Link href={href} target="_blank"><ExternalLink size={14} /> Lihat di web</Link>
+                            </Menu.Item>
+                          )}
+                          <Menu.Separator className="cms-menu-sep" />
+                          <Menu.Item className="cms-menu-item is-danger" onSelect={() => setConfirmDelete(item)}><Trash2 size={14} /> Hapus</Menu.Item>
+                        </Menu.Content>
+                      </Menu.Portal>
+                    </Menu.Root>
                   </td>
                 </tr>
               );
@@ -197,14 +232,28 @@ export function CollectionManager({ config, crumb, title, accent, description, p
           </div>
         )}
         {visible.length > 0 && (
-          <p className="cms-table-hint">
-            <span>Menampilkan {visible.length} dari {items.length} {config.singular}</span>
+          <div className="cms-table-hint">
+            <span>
+              Menampilkan {paged ? `${first}–${first + rows.length - 1}` : visible.length} dari {visible.length}
+              {visible.length !== items.length ? ` (total ${items.length})` : ''} {config.singular}
+            </span>
             {config.sortable && !canReorder && visible.length > 1 && <span>Hapus filter dan pencarian untuk mengubah urutan.</span>}
-          </p>
+            {pages > 1 && (
+              <nav className="cms-pager" aria-label="Halaman tabel">
+                <button type="button" aria-label="Halaman sebelumnya" disabled={current === 1} onClick={() => setPage(current - 1)}><ChevronLeft size={15} /></button>
+                {Array.from({ length: pages }, (_, n) => (
+                  <button type="button" key={n} aria-current={current === n + 1 ? 'page' : undefined} onClick={() => setPage(n + 1)}>{n + 1}</button>
+                ))}
+                <button type="button" aria-label="Halaman berikutnya" disabled={current === pages} onClick={() => setPage(current + 1)}><ChevronRight size={15} /></button>
+              </nav>
+            )}
+          </div>
         )}
       </div>
+      </div>
+      )}
 
-      {editing && <RecordEditor key={editing.nonce} config={config} editing={editing} onClose={() => setEditing(null)} />}
+      {editing && <RecordEditor key={editing.nonce} config={config} editing={editing} onClose={() => setEditing(null)} preview={preview} />}
 
       <ConfirmDialog
         open={!!confirmDelete}

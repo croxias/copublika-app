@@ -69,15 +69,22 @@ export function Drawer({
   open: boolean;
   title: string;
   subtitle?: React.ReactNode;
-  size?: 'md' | 'lg';
+  /** md / lg slide in from the right; center is a large dialog in the middle of the screen. */
+  size?: 'md' | 'lg' | 'center';
   onClose: () => void;
   footer: React.ReactNode;
   children: React.ReactNode;
 }) {
   const panel = useRef<HTMLDivElement>(null);
+  // Callers often pass a fresh onClose each render; read it from a ref so typing (which
+  // re-renders) never re-runs this effect and pulls focus back to the panel.
+  const closeRef = useRef(onClose);
+  useEffect(() => {
+    closeRef.current = onClose;
+  });
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeRef.current();
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -86,7 +93,7 @@ export function Drawer({
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prev;
     };
-  }, [open, onClose]);
+  }, [open]);
   if (!open) return null;
   return (
     <div className="cms-drawer-root">
@@ -123,9 +130,15 @@ export function Modal({
   children: React.ReactNode;
 }) {
   const panel = useRef<HTMLDivElement>(null);
+  // Callers often pass a fresh onClose each render; read it from a ref so typing (which
+  // re-renders) never re-runs this effect and pulls focus back to the panel.
+  const closeRef = useRef(onClose);
+  useEffect(() => {
+    closeRef.current = onClose;
+  });
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeRef.current();
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -134,7 +147,7 @@ export function Modal({
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prev;
     };
-  }, [open, onClose]);
+  }, [open]);
   if (!open) return null;
   // Portaled so it also works from inside a drawer (which may be transformed mid-animation).
   return createPortal(

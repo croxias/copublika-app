@@ -119,7 +119,7 @@ export function HeroSlidesPanel() {
         </div>
       )}
 
-      {editing && <RecordEditor key={editing.nonce} config={config} editing={editing} onClose={() => setEditing(null)} preview={(v) => <HeroPreview values={v} />} />}
+      {editing && <RecordEditor key={editing.nonce} config={config} editing={editing} onClose={() => setEditing(null)} preview={(v) => <HeroPreview values={v} />} previewOpen />}
 
       <ConfirmDialog
         open={!!confirm}

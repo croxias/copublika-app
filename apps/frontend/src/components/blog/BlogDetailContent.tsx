@@ -6,6 +6,7 @@ import { motion, useScroll } from "framer-motion";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Calendar, Check, Clock, Copy, ThumbsDown, ThumbsUp } from "lucide-react";
 import { CopublikaMark, MARK_DOT, MARK_RING_PATH, MARK_VIEWBOX } from "@/components/brand/CopublikaMark";
 import { PEOPLE } from "@/lib/cms/seed/people";
+import { BLOG_COPY } from "@/lib/content/blog";
 import { initials, personPhoto } from "@/lib/content/research";
 import { BLOG_ARTICLES } from "@/lib/data/blog-articles";
 import type { BlogPost } from "@/types";
@@ -61,8 +62,17 @@ export function BlogDetailContent({ post, relatedPosts }: BlogDetailContentProps
   // Inline markdown
   const parseInlineStyle = (text: string) => {
     if (!text) return null;
-    const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/);
+    const parts = text.split(/(\[[^\]]+\]\([^)\s]+\)|\*\*.*?\*\*|\*.*?\*|`.*?`)/);
     return parts.map((part, i) => {
+      const link = part.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/);
+      if (link) {
+        const external = /^https?:/.test(link[2]);
+        return (
+          <a key={i} href={link[2]} className="cp-bd-link" {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+            {parseInlineStyle(link[1])}
+          </a>
+        );
+      }
       if (part.startsWith("**") && part.endsWith("**"))
         return (
           <strong key={i} className="font-bold text-[var(--ink)]">
@@ -231,6 +241,26 @@ export function BlogDetailContent({ post, relatedPosts }: BlogDetailContentProps
       }
 
       if (!line) continue;
+
+      // Image on its own line: ![caption](src "title"), as the admin editor writes it.
+      const img = line.match(/^!\[([^\]]*)\]\((\S+?)(?:\s+"([^"]*)")?\)$/);
+      if (img) {
+        flushList(i);
+        const caption = img[3] || img[1];
+        elements.push(
+          <figure key={i} className="cp-bd-figure">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={img[2]} alt={img[1]} loading="lazy" />
+            {caption && <figcaption>{caption}</figcaption>}
+          </figure>
+        );
+        continue;
+      }
+      if (/^(-{3,}|\*{3,})$/.test(line)) {
+        flushList(i);
+        elements.push(<hr key={i} className="cp-bd-hr" />);
+        continue;
+      }
 
       if (line.startsWith("## ")) {
         const text = line.replace("## ", "");
@@ -410,10 +440,10 @@ export function BlogDetailContent({ post, relatedPosts }: BlogDetailContentProps
           <div className="cp-bd-author__cta">
             <span className="cp-bd-author__mark" aria-hidden="true"><CopublikaMark /></span>
             <div>
-              <strong>Ingin naskah Anda dibaca mentor seperti {post.author.split(",")[0]}?</strong>
-              <span>Siap Tembus Scopus 1-on-1: sesi 90 menit + 4 putaran review sampai siap submit.</span>
+              <strong>{BLOG_COPY.detail.ctaTitle.replace("{penulis}", post.author.split(",")[0])}</strong>
+              <span>{BLOG_COPY.detail.ctaText}</span>
             </div>
-            <Link href="/siap-tembus-scopus">Lihat program <ArrowUpRight size={15} aria-hidden="true" /></Link>
+            <Link href="/siap-tembus-scopus">{BLOG_COPY.detail.ctaButton} <ArrowUpRight size={15} aria-hidden="true" /></Link>
           </div>
         </section>
 
@@ -423,8 +453,8 @@ export function BlogDetailContent({ post, relatedPosts }: BlogDetailContentProps
       <section className="cp-bd-more" aria-labelledby="cp-bd-more-title">
         <div className="cp-bd-wrap">
           <div className="cp-bd-list__head">
-            <span className="cp-bd-list__k">Bacaan lanjutan</span>
-            <h2 id="cp-bd-more-title">Masih ingin belajar? <span>Teruskan dengan ini.</span></h2>
+            <span className="cp-bd-list__k">{BLOG_COPY.detail.moreTag}</span>
+            <h2 id="cp-bd-more-title">{BLOG_COPY.detail.moreTitle} <span>{BLOG_COPY.detail.moreAccent}</span></h2>
             <Link href="/blog#semua" className="cp-bd-list__all">Semua tulisan <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
 
@@ -498,8 +528,8 @@ function PnCard({ post, dir }: { post: PnPost | null; dir: "prev" | "next" }) {
         <CopublikaMark className="cp-bd-pn__logo" />
         <span className="cp-bd-pn__body">
           <small>{label}</small>
-          <strong>{dir === "next" ? "Ini tulisan terbaru kami." : "Ini tulisan pertama kami."}</strong>
-          <em>Tulisan baru dari mentor dan alumni CoPublika terus ditambahkan.</em>
+          <strong>{dir === "next" ? BLOG_COPY.detail.newestTitle : BLOG_COPY.detail.oldestTitle}</strong>
+          <em>{BLOG_COPY.detail.edgeText}</em>
           <Link href="/blog#semua" className="cp-bd-pn__all">Lihat semua tulisan <ArrowRight size={14} aria-hidden="true" /></Link>
         </span>
       </div>

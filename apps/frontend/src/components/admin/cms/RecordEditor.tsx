@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Trash2 } from 'lucide-react';
+import { Check, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { CmsSelect } from './CmsSelect';
 import { findUsages, newId, nowIso, useCms } from '@/lib/cms/store';
 import { SECTION_LABELS } from '@/lib/cms/config/pages';
 import type { CmsItem, CollectionConfig, Field, FieldContext, Values } from '@/lib/cms/types';
-import { Fields } from './Fields';
+import { Fields, fieldSections, type FieldSection } from './Fields';
+import { GroupIconView } from './SectionGroups';
 import { ConfirmDialog, Drawer, formatDate, useUnsavedGuard } from './ui';
 import { validate, type Errors } from './validate';
 
@@ -37,12 +38,15 @@ export function RecordEditor({
   editing,
   onClose,
   preview,
+  previewOpen = false,
 }: {
   config: CollectionConfig;
   editing: Editing;
   onClose: () => void;
   /** Optional live preview shown beside the form (wide drawers only). */
-  preview?: (values: Values) => React.ReactNode;
+  preview?: (values: Values, ctx: FieldContext) => React.ReactNode;
+  /** Show the preview from the start instead of behind the Pratinjau button. */
+  previewOpen?: boolean;
 }) {
   const cms = useCms();
   const items = cms.collections[config.key];
@@ -51,6 +55,26 @@ export function RecordEditor({
   const [values, setValues] = useState<Values>(editing.values);
   const [errors, setErrors] = useState<Errors>({});
   const [confirm, setConfirm] = useState<null | 'save' | 'delete' | 'discard'>(null);
+  const [showPreview, setShowPreview] = useState(previewOpen);
+  // Centered dialogs with several headings get a section rail on the left.
+  const sections = config.drawer === 'center' ? fieldSections(config.fields).filter((x) => x.label) : [];
+  const railed = sections.length >= 3;
+  const [activeSec, setActiveSec] = useState(sections[0]?.key ?? '');
+  const bodyRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!railed) return;
+    const root = bodyRef.current?.closest('.cms-drawer-body') ?? null;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const top = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        const key = top?.target.getAttribute('data-section');
+        if (key) setActiveSec(key);
+      },
+      { root, rootMargin: '0px 0px -65% 0px' },
+    );
+    root?.querySelectorAll('.cms-fsec').forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [railed, showPreview]);
 
   const dirty = JSON.stringify(values) !== initial;
   useUnsavedGuard(dirty);
@@ -63,8 +87,10 @@ export function RecordEditor({
 
   const close = () => (dirty ? setConfirm('discard') : onClose());
 
+  const check = (v: Values) => ({ ...validate(config.fields, v), ...(config.validateRecord?.(v, items.filter((x) => x.id !== editing.id)) ?? {}) });
+
   const requestSave = () => {
-    const errs = validate(config.fields, values);
+    const errs = check(values);
     setErrors(errs);
     if (Object.keys(errs).length) {
       cms.toast('Periksa kembali isian yang ditandai merah.', 'error');
@@ -76,7 +102,7 @@ export function RecordEditor({
 
   const save = () => {
     let next = values;
-    if (config.beforeSave) next = config.beforeSave(next, items);
+    if (config.beforeSave) next = config.beforeSave(next, items, ctx);
     const saved: CmsItem = {
       ...next,
       id: editing.id ?? newId(config.key),
@@ -129,6 +155,11 @@ export function RecordEditor({
               </button>
             )}
             <div className="cms-drawer-foot-right">
+              {preview && (
+                <button type="button" className="cms-btn cms-btn--ghost" aria-pressed={showPreview} onClick={() => setShowPreview((v) => !v)}>
+                  {showPreview ? <EyeOff size={14} /> : <Eye size={14} />} <span className="cms-hide-sm">Pratinjau</span>
+                </button>
+              )}
               {dirty && <span className="cms-unsaved cms-hide-sm">Belum disimpan</span>}
               <label className="cms-status-select">
                 <span className="cms-hide-sm">Status</span>
@@ -146,18 +177,22 @@ export function RecordEditor({
           </>
         }
       >
-        <div className={preview ? 'cms-drawer-split' : undefined}>
-          <Fields
-            fields={config.fields}
-            values={values}
-            onChange={(next) => {
-              setValues(next);
-              if (Object.keys(errors).length) setErrors(validate(config.fields, next));
-            }}
-            errors={errors}
-            ctx={ctx}
-          />
-          {preview && <aside className="cms-drawer-preview" aria-label="Pratinjau">{preview(values)}</aside>}
+        <div ref={bodyRef} className={railed ? 'cms-editor' : undefined}>
+          {railed && <SectionRail sections={sections} values={values} errors={errors} active={activeSec} onPick={setActiveSec} />}
+          <div className={preview && showPreview ? 'cms-drawer-split' : undefined}>
+            <Fields
+              fields={config.fields}
+              values={values}
+              onChange={(next) => {
+                setValues(next);
+                if (Object.keys(errors).length) setErrors(check(next));
+              }}
+              errors={errors}
+              ctx={ctx}
+              sectioned={config.drawer === 'center'}
+            />
+            {preview && showPreview && <aside className="cms-drawer-preview" aria-label="Pratinjau">{preview(values, ctx)}</aside>}
+          </div>
         </div>
       </Drawer>
 
@@ -223,4 +258,41 @@ export function editingFor(config: CollectionConfig, item?: CmsItem, duplicate =
   if (item.title !== undefined) copy.title = `${String(item.title)} (salinan)`;
   if (item.slug !== undefined) copy.slug = `${String(item.slug)}-salinan`;
   return { id: null, values: copy };
+}
+
+const isBlank = (v: unknown) => v === undefined || v === null || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && !v.length);
+
+/** Jump list of the form's sections: icon, name, and how many required fields are filled. */
+function SectionRail({ sections, values, errors, active, onPick }: { sections: FieldSection[]; values: Values; errors: Errors; active: string; onPick: (key: string) => void }) {
+  const go = (key: string) => {
+    onPick(key);
+    document.getElementById(`fsec-${key}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  return (
+    <nav className="cms-rail" aria-label="Bagian formulir">
+      <p className="cms-rail-k">Bagian</p>
+      <ol>
+        {sections.map((sec, i) => {
+          const shown = sec.fields.filter((f) => f.type !== 'heading' && (!f.visibleIf || f.visibleIf(values)));
+          if (!shown.length) return null;
+          const required = shown.filter((f) => 'required' in f && f.required);
+          const filled = required.filter((f) => !isBlank(values[f.key])).length;
+          const bad = shown.some((f) => Object.keys(errors).some((e) => e.split('.')[0] === f.key));
+          const done = required.length > 0 && filled === required.length;
+          return (
+            <li key={sec.key}>
+              <button type="button" className={`${active === sec.key ? 'is-active' : ''} ${bad ? 'is-bad' : ''}`} aria-current={active === sec.key ? 'step' : undefined} onClick={() => go(sec.key)}>
+                <span className="cms-rail-ico" aria-hidden="true"><GroupIconView icon={sec.icon} size={15} /></span>
+                <span className="cms-rail-name">
+                  <b>{sec.label}</b>
+                  <small>{bad ? 'Perlu diperbaiki' : required.length ? `${filled}/${required.length} wajib terisi` : 'Opsional'}</small>
+                </span>
+                <span className={`cms-rail-state ${done ? 'is-done' : ''}`} aria-hidden="true">{done ? <Check size={11} strokeWidth={3} /> : String(i + 1).padStart(2, '0')}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
 }

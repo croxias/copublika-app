@@ -11,7 +11,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 const num = (v: unknown) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
 /** Number that counts up when it changes. */
-function Count({ value, format = (n: number) => String(n) }: { value: number; format?: (n: number) => string }) {
+export function Count({ value, format = (n: number) => String(n) }: { value: number; format?: (n: number) => string }) {
   const reduce = useReducedMotion();
   const [shown, setShown] = useState(value);
   useEffect(() => {
@@ -46,19 +46,6 @@ function SeatRing({ left, total, label }: { left: number; total: number; label: 
   );
 }
 
-function Bar({ value, total, label }: { value: number; total: number; label: string }) {
-  const left = Math.max(0, total - value);
-  return (
-    <div className={`pov-bar ${left === 0 ? 'is-full' : ''}`}>
-      <span className="pov-bar__label">{label}</span>
-      <span className="pov-bar__track" aria-hidden="true">
-        <motion.i initial={{ width: 0 }} animate={{ width: `${total > 0 ? Math.min(100, (value / total) * 100) : 0}%` }} transition={{ duration: 0.7, ease: EASE }} />
-      </span>
-      <span className="pov-bar__text">{left === 0 ? 'Penuh' : `${left} sisa`}</span>
-    </div>
-  );
-}
-
 /**
  * Summary above a program editor: price, open seats and per-mentor / per-batch bars,
  * read from the saved CMS values so it reflects what the public page will show.
@@ -68,7 +55,6 @@ export function ProgramOverview({ kind }: { kind: 'sts' | 'btm' }) {
   const reduce = useReducedMotion();
   const [open, setOpen] = useState(true);
   const offer: Values = cms.sections[`program.${kind}.offer`] ?? {};
-  const people = cms.collections.people ?? [];
 
   return (
     <section className="pov" aria-label="Ringkasan program">
@@ -91,7 +77,7 @@ export function ProgramOverview({ kind }: { kind: 'sts' | 'btm' }) {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.32, ease: EASE }}
           >
-            {kind === 'sts' ? <StsSummary offer={offer} people={people} /> : <BtmSummary offer={offer} />}
+            {kind === 'sts' ? <StsSummary offer={offer} /> : <BtmSummary offer={offer} />}
           </motion.div>
         )}
       </AnimatePresence>
@@ -99,7 +85,7 @@ export function ProgramOverview({ kind }: { kind: 'sts' | 'btm' }) {
   );
 }
 
-function Kpi({ icon, label, children, delay = 0 }: { icon: React.ReactNode; label: string; children: React.ReactNode; delay?: number }) {
+export function Kpi({ icon, label, children, delay = 0 }: { icon: React.ReactNode; label: string; children: React.ReactNode; delay?: number }) {
   const reduce = useReducedMotion();
   return (
     <motion.div className="pov-kpi" initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay, ease: EASE }}>
@@ -110,7 +96,7 @@ function Kpi({ icon, label, children, delay = 0 }: { icon: React.ReactNode; labe
   );
 }
 
-function StsSummary({ offer, people }: { offer: Values; people: Values[] }) {
+function StsSummary({ offer }: { offer: Values }) {
   const quota = Math.max(1, num(offer.seatsPerMentor) || 4);
   const mentors = (Array.isArray(offer.mentors) ? offer.mentors : []) as Values[];
   const months = seatMonths();
@@ -136,40 +122,22 @@ function StsSummary({ offer, people }: { offer: Values; people: Values[] }) {
           </div>
         </Kpi>
       </div>
-      <div className="pov-list">
-        <div className="pov-list__head"><span>Mentor</span><span>{months[0].label}</span><span>{months[1].label}</span></div>
-        {mentors.map((m, i) => {
-          const person = people.find((p) => p.id === m.mentor);
-          return (
-            <motion.div key={`${String(m.mentor)}-${i}`} className="pov-row" initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.04 * i }}>
-              <span className="pov-row__who">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {person?.photo ? <img src={String(person.photo)} alt="" /> : <i />}
-                {String(person?.name ?? m.mentor ?? 'Mentor')}
-              </span>
-              <Bar value={num(m.bookedThis)} total={quota} label="bulan ini" />
-              <Bar value={num(m.bookedNext)} total={quota} label="bulan depan" />
-            </motion.div>
-          );
-        })}
-      </div>
     </>
   );
 }
 
 function BtmSummary({ offer }: { offer: Values }) {
+  const reduce = useReducedMotion();
   const batches = (Array.isArray(offer.batches) ? offer.batches : []) as Values[];
-  // Read the clock once per mount so render stays pure.
+  // Read the clock once per mount so render stays pure. Dates are compared in WIB.
   const [now] = useState(() => Date.now());
-  const today = new Date(now).toISOString().slice(0, 10);
-  const next = batches.find((b) => String(b.closes ?? '') >= today) ?? batches[0];
-  const daysToClose = next?.closes ? Math.ceil((new Date(`${String(next.closes)}T23:59:00+07:00`).getTime() - now) / 86_400_000) : null;
-  const status = (b: Values) => {
-    const left = Math.max(0, num(b.seats) - num(b.booked));
-    if (left === 0) return { text: 'Penuh', tone: 'is-full' };
-    if (String(b.closes ?? '') < today) return { text: 'Ditutup', tone: 'is-closed' };
-    return { text: 'Dibuka', tone: 'is-open' };
-  };
+  const closesAt = (b: Values) => new Date(`${String(b.closes ?? '')}T23:59:00+07:00`).getTime();
+  const daysTo = (b: Values) => Math.ceil((closesAt(b) - now) / 86_400_000);
+  // Registration closed (closing date passed) means the batch leaves the summary on its own.
+  const open = batches.filter((b) => b.closes && closesAt(b) >= now).sort((x, y) => closesAt(x) - closesAt(y));
+  const hidden = batches.length - open.length;
+  const next = open[0];
+  const left = (b: Values) => Math.max(0, num(b.seats) - num(b.booked));
 
   return (
     <>
@@ -179,31 +147,61 @@ function BtmSummary({ offer }: { offer: Values }) {
           <small>{String(offer.unit ?? '')}</small>
         </Kpi>
         <Kpi icon={<Layers size={16} />} label="Angkatan berikutnya" delay={0.05}>
-          <strong>{String(next?.name ?? '—')}</strong>
+          <strong>{String(next?.name ?? 'Belum ada')}</strong>
           <small>
-            {next?.start ? `${formatDate(String(next.start))} – ${formatDate(String(next.end))}` : 'Belum ada angkatan'}
-            {daysToClose !== null && daysToClose >= 0 ? ` · tutup ${daysToClose} hari lagi` : ''}
+            {next ? `${formatDate(String(next.start))} – ${formatDate(String(next.end))} · tutup ${daysTo(next)} hari lagi` : 'Tambahkan angkatan di tab Harga & angkatan'}
           </small>
         </Kpi>
         <Kpi icon={<CalendarClock size={16} />} label="Sisa kursi" delay={0.1}>
-          {next ? <SeatRing left={Math.max(0, num(next.seats) - num(next.booked))} total={num(next.seats)} label={String(next.name ?? '')} /> : <small>—</small>}
+          {next ? <SeatRing left={left(next)} total={num(next.seats)} label={String(next.name ?? '')} /> : <small>—</small>}
         </Kpi>
       </div>
-      <div className="pov-list">
-        <div className="pov-list__head"><span>Angkatan</span><span>Kursi terisi</span><span>Status</span></div>
-        {batches.map((b, i) => {
-          const st = status(b);
-          return (
-            <motion.div key={`${String(b.id ?? b.name)}-${i}`} className="pov-row" initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.04 * i }}>
-              <span className="pov-row__who">
-                <strong>{String(b.name ?? '')}</strong>
-                <small>{b.start ? `${formatDate(String(b.start), false)} – ${formatDate(String(b.end))}` : ''}</small>
-              </span>
-              <Bar value={num(b.booked)} total={num(b.seats)} label={`${num(b.booked)}/${num(b.seats)}`} />
-              <span className={`pov-status ${st.tone}`}>{st.text}</span>
-            </motion.div>
-          );
-        })}
+
+      <div className="pov-batches">
+        <div className="pov-batches__head">
+          <span className="pov-list__head">Angkatan yang dibuka</span>
+          {hidden > 0 && <small>{hidden} angkatan sudah ditutup dan disembunyikan</small>}
+        </div>
+        {open.length ? (
+          <div className="pov-batches__grid">
+            {open.map((b, i) => {
+              const total = num(b.seats);
+              const taken = num(b.booked);
+              const share = total ? Math.min(1, taken / total) : 0;
+              const full = left(b) === 0;
+              const d = daysTo(b);
+              const tone = full ? 'is-full' : d <= 7 ? 'is-soon' : 'is-open';
+              return (
+                <motion.article
+                  key={`${String(b.id ?? b.name)}-${i}`}
+                  className={`pov-batch ${tone}`}
+                  initial={reduce ? false : { opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.05 * i, ease: EASE }}
+                >
+                  <header>
+                    <strong>{String(b.name ?? '')}</strong>
+                    <span className={`pov-status ${full ? 'is-full' : 'is-open'}`}>{full ? 'Penuh' : 'Dibuka'}</span>
+                  </header>
+                  <p className="pov-batch__dates">{b.start ? `${formatDate(String(b.start), false)} – ${formatDate(String(b.end))}` : ''}</p>
+                  <div className="pov-batch__seats">
+                    <span><b><Count value={taken} /></b>/{total} kursi terisi</span>
+                    <span>{full ? 'Tidak ada sisa' : `${left(b)} sisa`}</span>
+                  </div>
+                  <span className="pov-batch__track" aria-hidden="true">
+                    <motion.i initial={{ width: 0 }} animate={{ width: `${share * 100}%` }} transition={{ duration: 0.8, delay: 0.1 + 0.05 * i, ease: EASE }} />
+                  </span>
+                  <footer>
+                    <CalendarClock size={13} aria-hidden="true" />
+                    {d <= 0 ? 'Pendaftaran tutup hari ini' : `Pendaftaran tutup ${d} hari lagi`} · {formatDate(String(b.closes))}
+                  </footer>
+                </motion.article>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="pov-batches__empty">Tidak ada angkatan yang sedang dibuka. Tambahkan angkatan baru di tab Harga & angkatan.</p>
+        )}
       </div>
     </>
   );

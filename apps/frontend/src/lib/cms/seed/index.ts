@@ -11,12 +11,14 @@ import { seed as about } from './about';
 import { seed as settings } from './settings';
 import { seed as testimonials } from './testimonials';
 import { seed as people } from './people';
+import { seed as blog } from './blog';
+import { seed as review } from './review';
 
 const EMPTY: Record<CollectionKey, []> = {
   blog: [], events: [], projects: [], publications: [], heroSlides: [], people: [], testimonials: [], faqs: [],
 };
 
-const parts: SeedPart[] = [content, research, programs, library, home, pages, about, settings, testimonials, people];
+const parts: SeedPart[] = [content, research, programs, library, home, pages, about, settings, testimonials, people, blog, review];
 
 /** Initial CMS content: what the public site shows today, before any admin edit. */
 export const CMS_SEED: CmsState = {

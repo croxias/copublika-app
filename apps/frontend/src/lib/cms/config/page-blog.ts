@@ -1,0 +1,108 @@
+import type { Field, PageConfig } from '../types';
+import { EDITORS_PICK_MAX } from '@/lib/content/blog';
+
+const sectionHead = (help: string): Field[] => [
+  { type: 'heading', key: 'h-head', label: 'Judul section', icon: 'heading', help },
+  { key: 'tag', label: 'Label section', type: 'text', max: 30, help: 'Teks kecil oranye di atas judul.' },
+  { key: 'title', label: 'Judul', type: 'text', required: true, max: 40 },
+  { key: 'accent', label: 'Judul (bagian oranye)', type: 'text', max: 40 },
+  { key: 'lead', label: 'Deskripsi', type: 'textarea', max: 220, wide: true },
+];
+
+/** /blog and /blog/[slug] — sections in the order the public pages render them. */
+export const page: PageConfig = {
+  title: 'Halaman',
+  titleAccent: 'Blog',
+  description: 'Teks di halaman /blog dan halaman tiap artikel. Isi artikel, Pilihan editor, dan profil penulis diatur di Konten → Artikel Blog.',
+  publicHref: '/blog',
+  groupSections: true,
+  tabs: [
+    {
+      key: 'blog.hero',
+      label: 'Hero',
+      description: 'Bagian paling atas /blog. Buku di kanan dan tiga angka (tulisan, kategori, penulis) dihitung otomatis dari artikel yang terbit.',
+      source: { label: 'Artikel Blog', href: '/admin/blog' },
+      preview: 'blogHero',
+      fields: [
+        { type: 'heading', key: 'h-text', label: 'Teks pembuka', short: 'Teks', icon: 'text' },
+        { key: 'pill', label: 'Label kecil di atas judul', type: 'text', max: 60, wide: true },
+        { key: 'title', label: 'Judul baris 1', type: 'text', required: true, max: 40 },
+        { key: 'accent', label: 'Judul baris 2 (oranye)', type: 'text', max: 40 },
+        { key: 'lead', label: 'Paragraf pembuka', type: 'textarea', required: true, max: 260, wide: true },
+        { type: 'heading', key: 'h-search', label: 'Pencarian & topik populer', short: 'Pencarian', icon: 'cursor', help: 'Hasil pencarian tampil di Arsip; klik topik langsung mencari kata itu.' },
+        { key: 'searchPlaceholder', label: 'Teks contoh di kotak pencarian', type: 'text', max: 60, wide: true },
+        { key: 'topics', label: 'Topik populer', type: 'tags', max: 6, placeholder: 'Ketik topik lalu Enter', help: 'Paling pas 4–5 topik pendek yang memang muncul di judul atau ringkasan artikel.' },
+      ],
+    },
+    {
+      key: 'blog.picks',
+      label: 'Pilihan editor',
+      hideable: true,
+      description: `Section krem dengan judul bergulir dan tumpukan kartu. Isinya artikel yang ditandai Pilihan editor di Artikel Blog (maksimal ${EDITORS_PICK_MAX}).`,
+      source: { label: 'Artikel Blog', href: '/admin/blog' },
+      preview: 'blogPicks',
+      fields: sectionHead('Jika judul menyebut jumlah ("enam bacaan wajib"), sesuaikan dengan jumlah Pilihan editor yang aktif.'),
+    },
+    {
+      key: 'blog.archive',
+      label: 'Arsip',
+      description: 'Section hitam berisi semua artikel terbit: filter kategori, pencarian, urutan, dan 6 artikel per halaman. Artikel terbaru tampil besar di halaman pertama.',
+      source: { label: 'Artikel Blog', href: '/admin/blog' },
+      preview: 'blogArchive',
+      fields: sectionHead('Kategori dan jumlah artikel di tiap filter mengikuti Artikel Blog.'),
+    },
+    {
+      key: 'blog.write',
+      label: 'Ajakan menulis',
+      hideable: true,
+      description: 'Section terakhir di /blog untuk penulis tamu. Kedua tombol mengarah ke halaman Kontak.',
+      preview: 'blogWrite',
+      fields: [
+        { type: 'heading', key: 'h-copy', label: 'Teks', icon: 'text' },
+        { key: 'tag', label: 'Label section', type: 'text', max: 40 },
+        { key: 'title', label: 'Judul', type: 'text', required: true, max: 40 },
+        { key: 'accent', label: 'Judul (bagian oranye)', type: 'text', max: 40 },
+        { key: 'lead', label: 'Deskripsi', type: 'textarea', max: 200, wide: true },
+        { key: 'wanted', label: 'Tulisan yang dicari', type: 'tags', max: 6, help: 'Tampil sebagai daftar bertanda centang.' },
+        { type: 'heading', key: 'h-steps', label: 'Tahapan', icon: 'steps', help: 'Tiga langkah dari outline sampai terbit. Ikon tiap tahap tetap.' },
+        {
+          key: 'steps',
+          label: 'Tahapan menulis',
+          type: 'repeater',
+          fixed: true,
+          layout: 'cards',
+          itemKicker: () => 'Tahap',
+          itemTitle: (s) => String(s.title ?? ''),
+          itemText: (s) => String(s.text ?? ''),
+          fields: [
+            { key: 'title', label: 'Judul tahap', type: 'text', required: true, max: 30 },
+            { key: 'text', label: 'Keterangan', type: 'textarea', required: true, max: 90, wide: true },
+          ],
+        },
+        { type: 'heading', key: 'h-cta', label: 'Tombol', icon: 'cursor' },
+        { key: 'ctaPrimary', label: 'Tombol utama', type: 'text', required: true, max: 24 },
+        { key: 'ctaSecondary', label: 'Tombol kedua', type: 'text', max: 24 },
+      ],
+    },
+    {
+      key: 'blog.detail',
+      label: 'Halaman artikel',
+      description: 'Teks yang sama di setiap halaman artikel (/blog/slug). Judul, sampul, isi, dan profil penulis diambil dari artikelnya.',
+      preview: 'blogDetail',
+      fields: [
+        { type: 'heading', key: 'h-author', label: 'Ajakan di kartu penulis', short: 'Ajakan', icon: 'mentor', help: 'Strip hitam di bawah profil penulis, mengarah ke Siap Tembus Scopus.' },
+        { key: 'ctaTitle', label: 'Judul ajakan', type: 'text', required: true, max: 80, wide: true, help: 'Tulis {penulis} untuk memasukkan nama penulis artikel.' },
+        { key: 'ctaText', label: 'Keterangan', type: 'textarea', max: 140, rows: 2, wide: true },
+        { key: 'ctaButton', label: 'Tombol', type: 'text', required: true, max: 24 },
+        { type: 'heading', key: 'h-more', label: 'Bacaan lanjutan', short: 'Bacaan lanjutan', icon: 'heading', help: 'Judul di atas kartu Sebelumnya / Berikutnya dan daftar artikel terkait.' },
+        { key: 'moreTag', label: 'Label section', type: 'text', max: 30 },
+        { key: 'moreTitle', label: 'Judul', type: 'text', required: true, max: 40 },
+        { key: 'moreAccent', label: 'Judul (bagian oranye)', type: 'text', max: 40 },
+        { type: 'heading', key: 'h-edge', label: 'Artikel pertama & terbaru', short: 'Ujung arsip', icon: 'display', help: 'Kartu hitam berlogo CoPublika yang muncul jika tidak ada artikel sebelumnya atau berikutnya.' },
+        { key: 'newestTitle', label: 'Judul di artikel terbaru', type: 'text', required: true, max: 40 },
+        { key: 'oldestTitle', label: 'Judul di artikel pertama', type: 'text', required: true, max: 40 },
+        { key: 'edgeText', label: 'Keterangan', type: 'textarea', max: 120, rows: 2, wide: true },
+      ],
+    },
+  ],
+};

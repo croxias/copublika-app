@@ -4,22 +4,19 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, FileText, MessageSquareText, Send } from "lucide-react";
 import { CopublikaMark } from "@/components/brand/CopublikaMark";
+import { BLOG_COPY } from "@/lib/content/blog";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const STEPS = [
-  { Icon: FileText, title: "Kirim outline", text: "Judul, tiga poin utama, dan untuk siapa tulisan Anda." },
-  { Icon: MessageSquareText, title: "Catatan editor", text: "Tim editor membaca dan memberi catatan dalam 7 hari kerja." },
-  { Icon: Send, title: "Terbit di blog", text: "Tulisan tayang dengan nama dan profil Anda sebagai penulis." },
-];
-
-const WANTED = ["Pengalaman submit & revisi", "Kiat metodologi", "Wawancara editor/reviewer", "Esai kehidupan akademik"];
+const COPY = BLOG_COPY.write;
+const ICONS = [FileText, MessageSquareText, Send];
+const STEPS = COPY.steps.map((s, i) => ({ ...s, Icon: ICONS[i % ICONS.length] }));
 
 /** Guest-writer call: three steps from outline to published, on a black section with the brand mark. */
 export function BlogWriteCTA() {
   const reduce = useReducedMotion();
   return (
-    <section className="cp-bw" aria-labelledby="cp-bw-title">
+    <section className="cp-bw" id="tulis" aria-labelledby="cp-bw-title">
       <motion.span
         className="cp-bw__mark"
         aria-hidden="true"
@@ -32,16 +29,17 @@ export function BlogWriteCTA() {
       </motion.span>
       <div className="cp-ab-wrap cp-bw__wrap">
         <motion.div className="cp-bw__copy" initial={reduce ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7, ease: EASE }}>
-          <span className="cp-bw__k"><i aria-hidden="true" /> Terbuka untuk penulis tamu</span>
-          <h2 id="cp-bw-title">Pengalaman Anda bisa jadi <span>peta bagi penulis lain.</span></h2>
-          <p>Kami mencari tulisan dari peneliti, dosen, editor, dan reviewer. Tidak perlu naskah jadi, cukup outline.</p>
+          <span className="cp-bw__k"><i aria-hidden="true" /> {COPY.tag}</span>
+          <h2 id="cp-bw-title">{COPY.title} <span>{COPY.accent}</span></h2>
+          <p>{COPY.lead}</p>
           <ul className="cp-bw__wanted" aria-label="Tulisan yang kami cari">
-            {WANTED.map((w) => <li key={w}>{w}</li>)}
+            {COPY.wanted.map((w) => <li key={w}>{w}</li>)}
           </ul>
           <div className="cp-bw__ctas">
-            <Link href="/contact" className="cp-ab-btn cp-ab-btn--primary">Kirim outline <ArrowRight size={16} aria-hidden="true" /></Link>
-            <Link href="/contact" className="cp-ab-btn cp-ab-btn--line">Tanya tim editor</Link>
+            <Link href="/contact" className="cp-ab-btn cp-ab-btn--primary">{COPY.ctaPrimary} <ArrowRight size={16} aria-hidden="true" /></Link>
+            <Link href="/contact" className="cp-ab-btn cp-ab-btn--line">{COPY.ctaSecondary}</Link>
           </div>
+          <Link href="/akun/tulisan" className="cp-bw__desk">Sudah punya akses penulis? Buka Ruang Penulis <ArrowRight size={14} aria-hidden="true" /></Link>
         </motion.div>
 
         <ol className="cp-bw__steps">

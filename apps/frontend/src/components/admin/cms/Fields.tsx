@@ -10,8 +10,10 @@ import { IconBadge, type IconName } from '@/components/about/IconBadge';
 import { ConfirmDialog, Modal } from './ui';
 import { slugify } from '@/lib/cms/slug';
 import { statusLabel } from '@/lib/cms/config/status';
-import type { CmsItem, Field, FieldContext, Values } from '@/lib/cms/types';
+import type { CmsItem, Field, FieldContext, GroupIcon, Values } from '@/lib/cms/types';
+import { GroupIconView } from './SectionGroups';
 import { renderMarkdown, validate, wordCount, type Errors } from './validate';
+import { RichTextInput } from './RichText';
 
 type FieldsProps = {
   fields: Field[];
@@ -21,23 +23,68 @@ type FieldsProps = {
   ctx: FieldContext;
   /** Error path prefix for repeater rows. */
   prefix?: string;
+  /** One card per heading (record dialogs) instead of a single grid. */
+  sectioned?: boolean;
 };
 
-/** Renders a list of field configs as a two-column form grid. */
-export function Fields({ fields, values, onChange, errors, ctx, prefix = '' }: FieldsProps) {
+/** One heading and the fields under it, for the sectioned (card) layout. */
+export type FieldSection = { key: string; label: string; help?: string; icon?: GroupIcon; fields: Field[] };
+
+/** Splits fields at their headings. Fields before the first heading form an untitled section. */
+export function fieldSections(fields: Field[]): FieldSection[] {
+  const out: FieldSection[] = [];
+  for (const f of fields) {
+    if (f.type === 'heading') out.push({ key: f.key, label: f.label, help: f.help, icon: f.icon, fields: [] });
+    else {
+      if (!out.length) out.push({ key: '_main', label: '', fields: [] });
+      out[out.length - 1].fields.push(f);
+    }
+  }
+  return out;
+}
+
+/** Renders a list of field configs as a two-column form grid, or as one card per heading. */
+export function Fields({ fields, values, onChange, errors, ctx, prefix = '', sectioned = false }: FieldsProps) {
+  if (sectioned) {
+    return (
+      <div className="cms-fsecs">
+        {fieldSections(fields).map((sec) => {
+          const shown = sec.fields.filter((f) => !f.visibleIf || f.visibleIf(values));
+          if (!shown.length) return null;
+          return (
+            <section key={sec.key} id={`fsec-${sec.key}`} className="cms-fsec" data-section={sec.key}>
+              {sec.label && (
+                <header className="cms-fsec-head">
+                  <span className="cms-fsec-ico" aria-hidden="true"><GroupIconView icon={sec.icon} size={17} /></span>
+                  <div>
+                    <h4>{sec.label}</h4>
+                    {sec.help && <p>{sec.help}</p>}
+                  </div>
+                </header>
+              )}
+              <Fields fields={sec.fields} values={values} onChange={onChange} errors={errors} ctx={ctx} prefix={prefix} />
+            </section>
+          );
+        })}
+      </div>
+    );
+  }
   return (
     <div className="cms-grid">
       {fields.map((f) => {
         if (f.visibleIf && !f.visibleIf(values)) return null;
         if (f.type === 'heading') {
           return (
-            <div key={f.key} className="cms-grid-heading">
-              <h4>{f.label}</h4>
-              {f.help && <p>{f.help}</p>}
+            <div key={f.key} className={`cms-grid-heading ${f.icon ? 'has-icon' : ''}`}>
+              {f.icon && <span className="cms-fsec-ico" aria-hidden="true"><GroupIconView icon={f.icon} size={16} /></span>}
+              <div>
+                <h4>{f.label}</h4>
+                {f.help && <p>{f.help}</p>}
+              </div>
             </div>
           );
         }
-        const wide = f.wide || ['textarea', 'markdown', 'repeater', 'ref', 'tags'].includes(f.type);
+        const wide = f.wide || ['textarea', 'markdown', 'richtext', 'repeater', 'ref', 'tags'].includes(f.type);
         return (
           <FieldInput
             key={f.key}
@@ -73,14 +120,17 @@ function FieldInput({ field: f, value, values, onChange, error, errors, path, ct
   const id = useId();
   const str = value === undefined || value === null ? '' : String(value);
   const max = 'max' in f && f.type !== 'number' ? f.max : undefined;
+  // Tags count items; text fields count characters.
+  const used = f.type === 'tags' ? (Array.isArray(value) ? value.length : 0) : str.length;
   // Toggles carry their label inline; everything else gets a label row above.
   const labelRow = f.type !== 'toggle' && f.type !== 'repeater' && (
     <div className="cms-label-row">
       <label htmlFor={id}>
+        {f.icon && <span className="cms-label-ico" aria-hidden="true"><GroupIconView icon={f.icon} size={13} /></span>}
         {f.label}
         {f.required && <span className="cms-req" aria-hidden="true"> *</span>}
       </label>
-      {max ? <span className={`cms-count ${str.length > max ? 'is-over' : ''}`}>{str.length}/{max}</span> : null}
+      {max ? <span className={`cms-count ${used > max ? 'is-over' : ''}`}>{used}/{max}</span> : null}
     </div>
   );
 
@@ -106,6 +156,9 @@ function FieldInput({ field: f, value, values, onChange, error, errors, path, ct
       break;
     case 'markdown':
       control = <MarkdownInput id={id} value={str} onChange={onChange} invalid={!!error} />;
+      break;
+    case 'richtext':
+      control = <RichTextInput id={id} value={str} onChange={onChange} invalid={!!error} placeholder={f.placeholder} />;
       break;
     case 'number':
       control = (
@@ -139,7 +192,7 @@ function FieldInput({ field: f, value, values, onChange, error, errors, path, ct
       );
       break;
     case 'tags':
-      control = <TagsInput id={id} value={Array.isArray(value) ? (value as string[]) : []} onChange={onChange} placeholder={f.placeholder} />;
+      control = <TagsInput id={id} value={Array.isArray(value) ? (value as string[]) : []} onChange={onChange} placeholder={f.placeholder} max={f.max} />;
       break;
     case 'slug':
       control = (
@@ -189,11 +242,12 @@ function MarkdownInput({ id, value, onChange, invalid }: { id: string; value: st
   );
 }
 
-function TagsInput({ id, value, onChange, placeholder }: { id: string; value: string[]; onChange: (v: string[]) => void; placeholder?: string }) {
+function TagsInput({ id, value, onChange, placeholder, max }: { id: string; value: string[]; onChange: (v: string[]) => void; placeholder?: string; max?: number }) {
   const [draft, setDraft] = useState('');
+  const full = max !== undefined && value.length >= max;
   const add = () => {
     const t = draft.trim();
-    if (t && !value.includes(t)) onChange([...value, t]);
+    if (t && !full && !value.includes(t)) onChange([...value, t]);
     setDraft('');
   };
   return (
@@ -207,7 +261,8 @@ function TagsInput({ id, value, onChange, placeholder }: { id: string; value: st
       <input
         id={id}
         value={draft}
-        placeholder={placeholder ?? 'Ketik lalu Enter'}
+        placeholder={full ? `Maksimal ${max}` : placeholder ?? 'Ketik lalu Enter'}
+        disabled={full && !draft}
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ',') {

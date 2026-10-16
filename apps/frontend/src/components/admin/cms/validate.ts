@@ -26,6 +26,9 @@ export function validate(fields: Field[], values: Values, prefix = ''): Errors {
     if ((f.type === 'text' || f.type === 'textarea' || f.type === 'url') && f.max && String(v).length > f.max) {
       errors[path] = `Maksimal ${f.max} karakter (sekarang ${String(v).length}).`;
     }
+    if (f.type === 'tags' && f.max && Array.isArray(v) && v.length > f.max) {
+      errors[path] = `Maksimal ${f.max} item (sekarang ${v.length}).`;
+    }
     if (f.type === 'url' && !/^(\/|https?:\/\/|mailto:|tel:|#)/.test(String(v).trim())) {
       errors[path] = 'Harus diawali / (halaman internal) atau https://';
     }

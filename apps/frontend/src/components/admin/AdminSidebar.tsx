@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { ChevronDown, ChevronLeft, ChevronRight, UserRound } from 'lucide-react';
+import { useCms } from '@/lib/cms/store';
+import { inQueue } from '@/lib/cms/review';
 
 interface NavItem {
   id: string;
@@ -27,7 +29,7 @@ interface NavSection {
 
 // Structure: docs/superpowers/specs/2026-10-14-admin-cms-public-pages-design.md \u00a73.
 // Menus that only exist as a staging preview stay reachable in demo mode.
-const getNav = (demoEnabled = false): NavSection[] => [
+const getNav = (demoEnabled = false, reviewCount = 0): NavSection[] => [
   {
     section: 'Ringkasan',
     items: [
@@ -38,7 +40,7 @@ const getNav = (demoEnabled = false): NavSection[] => [
   {
     section: 'Konten',
     items: [
-      { id: 'blog', name: 'Artikel Blog', href: '/admin/blog', icon: 'edit' },
+      { id: 'blog', name: 'Artikel Blog', href: '/admin/blog', icon: 'edit', ...(reviewCount ? { badge: String(reviewCount) } : {}) },
       { id: 'events', name: 'Agenda Event', href: '/admin/events', icon: 'calendar' }
     ]
   },
@@ -55,6 +57,7 @@ const getNav = (demoEnabled = false): NavSection[] => [
       { id: 'page-home', name: 'Beranda', href: '/admin/website/home', icon: 'home' },
       { id: 'page-about', name: 'About', href: '/admin/website/about', icon: 'info', also: ['/admin/website/about-team', '/admin/website/about-mentors'] },
       { id: 'page-research', name: 'Halaman Riset', href: '/admin/website/research', icon: 'layout' },
+      { id: 'page-blog', name: 'Halaman Blog', href: '/admin/website/blog', icon: 'book' },
       {
         id: 'program',
         name: 'Program',
@@ -294,7 +297,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = f
   };
 
   const reduceMotion = useReducedMotion();
-  const nav = getNav(demoEnabled);
+  // Writer submissions waiting for an editor show as a count on Artikel Blog.
+  const cms = useCms();
+  const nav = getNav(demoEnabled, (cms.collections.blog ?? []).filter(inQueue).length);
   const activePage = activeId(nav, pathname);
   const showTooltip = (event: React.MouseEvent<HTMLAnchorElement> | React.FocusEvent<HTMLAnchorElement>, label: string) => {
     if (!collapsed) return;
@@ -354,8 +359,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ pathname, isOpen = f
                       >
                         {renderIcon(item.icon)}
                         <span>{item.name}</span>
-                        <span className="cp-shell-sidebar-count">{item.children.length}</span>
-                        <ChevronDown size={15} strokeWidth={2.2} className="cp-shell-sidebar-caret" aria-hidden="true" />
+                        <span className="cp-shell-sidebar-caret" aria-hidden="true"><ChevronDown size={14} strokeWidth={2.4} /></span>
                       </button>
                     )}
                     <AnimatePresence initial={false}>

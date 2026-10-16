@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { SectionHead } from "@/components/program/shared";
 import { MARK_DOT, MARK_RING_PATH, MARK_VIEWBOX } from "@/components/brand/CopublikaMark";
+import { BLOG_COPY } from "@/lib/content/blog";
 import type { BlogCategory } from "@/lib/data/blog-articles";
 import { BlogEditorsPick } from "./BlogEditorsPick";
 import { BlogGrid } from "./BlogGrid";
@@ -28,7 +29,7 @@ export function BlogPageClient() {
       <section className="cp-ab-sec cp-sts-sec cp-sts-sec--warm">
         <div className="cp-sts-sec__glow" aria-hidden="true" />
         <div className="cp-ab-wrap">
-          <SectionHead tag="Pilihan editor" title="Mulai dari sini," accent="enam bacaan wajib." lead="Dipilih tim editor untuk Anda yang sedang menyiapkan naskah pertama atau baru saja ditolak jurnal." />
+          <SectionHead {...BLOG_COPY.picks} />
           <BlogEditorsPick />
         </div>
       </section>
@@ -41,7 +42,7 @@ export function BlogPageClient() {
           <span className="cp-sts-hero__grain" />
         </div>
         <div className="cp-ab-wrap">
-          <SectionHead ink tag="Semua tulisan" title="Arsip lengkap," accent="cari yang Anda butuhkan." lead="Filter per kategori, cari topik tertentu, atau mulai dari bacaan singkat." />
+          <SectionHead ink {...BLOG_COPY.archive} />
           <BlogGrid category={category} setCategory={setCategory} query={query} setQuery={setQuery} />
         </div>
       </section>

@@ -52,6 +52,9 @@ export function SectionEditor({ page, crumb, children, switcher }: { page: PageC
     requestAnimationFrame(() => document.querySelector('.cms-groups')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
   };
 
+  // Ungrouped sections: a click on the schematic jumps to the form.
+  const focusForm = () => document.querySelector<HTMLElement>('.cms-section-body .cms-field input, .cms-section-body .cms-field textarea')?.focus();
+
   const change = (next: Values) => {
     setDrafts((d) => ({ ...d, [tab.key]: next }));
     if (Object.keys(errors).length) setErrors(validate(tab.fields, next));
@@ -215,7 +218,10 @@ export function SectionEditor({ page, crumb, children, switcher }: { page: PageC
                     </motion.div>
                   </>
                 ) : (
-                  <Fields fields={tab.fields} values={values} onChange={change} errors={errors} ctx={ctx} />
+                  <>
+                    {tab.preview && <SectionPreview kind={tab.preview} values={values} active="" onPick={focusForm} ctx={ctx} />}
+                    <Fields fields={tab.fields} values={values} onChange={change} errors={errors} ctx={ctx} />
+                  </>
                 )}
               </div>
             </motion.div>

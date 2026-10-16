@@ -4,14 +4,14 @@ import { useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Search } from "lucide-react";
 import { BLOG_ARTICLES, BLOG_CATEGORIES } from "@/lib/data/blog-articles";
+import { BLOG_COPY } from "@/lib/content/blog";
 import { BlogBook } from "./BlogBook";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const line = { hidden: { opacity: 0, y: "100%" }, show: { opacity: 1, y: "0%", transition: { duration: 0.9, ease: EASE } } };
 const fade = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE } } };
 
-/** Topics readers search for most; each one fills the search box. */
-const TOPICS = ["Memilih jurnal", "Abstract", "Cover letter", "Revisi", "Reviewer"];
+const COPY = BLOG_COPY.hero;
 
 export function BlogHero({ onSearch }: { onSearch: (q: string) => void }) {
   const reduce = useReducedMotion();
@@ -39,27 +39,25 @@ export function BlogHero({ onSearch }: { onSearch: (q: string) => void }) {
       <div className="cp-sts-hero__wrap">
         <motion.div className="cp-sts-hero__copy" initial={reduce ? false : "hidden"} animate="show" variants={{ show: { transition: { staggerChildren: 0.09 } } }}>
           <motion.span className="cp-sts-pill" variants={fade}>
-            <i aria-hidden="true" /> Jurnal CoPublika · ditulis mentor & alumni
+            <i aria-hidden="true" /> {COPY.pill}
           </motion.span>
 
           <h1 id="cp-bl-title" className="cp-sts-hero__title cp-bl-hero__title">
-            <span className="cp-sts-mask"><motion.span variants={line}>Menembus jurnal,</motion.span></span>
-            <span className="cp-sts-mask"><motion.span variants={line} className="is-accent">dari yang sudah sampai.</motion.span></span>
+            <span className="cp-sts-mask"><motion.span variants={line}>{COPY.title}</motion.span></span>
+            <span className="cp-sts-mask"><motion.span variants={line} className="is-accent">{COPY.accent}</motion.span></span>
           </h1>
 
-          <motion.p className="cp-sts-hero__lead" variants={fade}>
-            Panduan praktis, wawancara reviewer, dan bedah naskah anggota, ditulis mentor dan alumni yang sudah melewati proses review jurnal Scopus. Gratis, tanpa basa-basi.
-          </motion.p>
+          <motion.p className="cp-sts-hero__lead" variants={fade}>{COPY.lead}</motion.p>
 
           <motion.form className="cp-bl-search" onSubmit={submit} variants={fade} role="search">
             <Search size={18} aria-hidden="true" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari topik: abstract, cover letter, revisi…" aria-label="Cari tulisan" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={COPY.searchPlaceholder} aria-label="Cari tulisan" />
             <button type="submit">Cari <ArrowRight size={15} aria-hidden="true" /></button>
           </motion.form>
 
           <motion.div className="cp-bl-topics" variants={fade}>
             <span>Populer:</span>
-            {TOPICS.map((t) => (
+            {COPY.topics.map((t) => (
               <button key={t} type="button" onClick={() => { setQ(t); onSearch(t); }}>{t}</button>
             ))}
           </motion.div>

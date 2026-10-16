@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  CalendarRange, ChartColumn, ChevronLeft, ChevronRight, CircleHelp, Footprints, GraduationCap, Heading,
-  LayoutGrid, Link2, MousePointerClick, Orbit, Quote, ShieldCheck, Ticket, TrendingUp, Type, Users,
+  Building2, CalendarRange, ChartColumn, ChevronLeft, ChevronRight, CircleHelp, Eye, FileText, Footprints, GraduationCap, Heading,
+  ImageIcon, LayoutGrid, Link2, MousePointerClick, Orbit, PenLine, Quote, Search, ShieldCheck, Star, Tag, Ticket, TrendingUp, Type, UserRound, Users,
 } from 'lucide-react';
 import type { Field, GroupIcon, Values } from '@/lib/cms/types';
 import type { Errors } from './validate';
@@ -11,6 +11,7 @@ const ICONS: Record<GroupIcon, typeof Heading> = {
   heading: Heading, link: Link2, display: LayoutGrid, users: Users, orbit: Orbit, mentor: GraduationCap,
   shield: ShieldCheck, progress: TrendingUp, steps: Footprints, calendar: CalendarRange, ticket: Ticket,
   cursor: MousePointerClick, quote: Quote, help: CircleHelp, chart: ChartColumn, text: Type,
+  file: FileText, user: UserRound, image: ImageIcon, star: Star, pen: PenLine, search: Search, tag: Tag, building: Building2, eye: Eye,
 };
 
 export function GroupIconView({ icon, size = 15 }: { icon?: GroupIcon; size?: number }) {
