@@ -140,7 +140,7 @@ export const fallbackEvents: Event[] = [
     title: "Klinik Manuskrip: Membedah Reviewer Comments",
     description:
       "Bersama Dr. Aulia Rahmawati, Editor Asia Pacific Journal of Education. Kami akan membedah 4 reviewer reports asli — kerangka berpikir, pilihan bahasa, dan strategi merespons.",
-    date: "2026-06-12T19:30:00.000Z",
+    date: "2026-10-24T19:30:00+07:00",
     time: "19.30 — 21.00",
     duration: "90 menit",
     location: "Daring · Zoom",
@@ -220,7 +220,7 @@ export const fallbackEvents: Event[] = [
     title: "Editor Roundtable: Strategi Memilih Jurnal Q1–Q2",
     description:
       "Diskusi panel dengan 3 editor jurnal Scopus dari Asia Tenggara. Membahas kriteria selection, desk-reject patterns, dan strategi positioning.",
-    date: "2026-06-24T19:30:00.000Z",
+    date: "2026-11-06T19:30:00+07:00",
     time: "19.30 — 21.30",
     duration: "2 jam",
     location: "Daring · Webinar",
@@ -292,7 +292,7 @@ export const fallbackEvents: Event[] = [
     title: "Workshop Luring: Academic Writing dengan Anchor Sentences",
     description:
       "2 hari intensif di Yogyakarta. Menggunakan anchor sentence technique untuk membangun koherensi argumentasi dalam manuskrip akademik.",
-    date: "2026-07-08T09:00:00.000Z",
+    date: "2026-11-15T09:00:00+07:00",
     time: "09.00 — 17.00",
     duration: "2 hari",
     location: "Yogyakarta",
@@ -371,7 +371,7 @@ export const fallbackEvents: Event[] = [
     title: "Doctoral Forum: Membangun Jejaring Internasional Sejak S3",
     description:
       "Sharing dari 4 alumni S3 ITB, UI, UGM, dan Universitas Indonesia tentang strategi membangun jejaring akademik internasional sejak masa studi.",
-    date: "2026-07-22T19:30:00.000Z",
+    date: "2026-11-27T19:30:00+07:00",
     time: "19.30 — 21.00",
     duration: "90 menit",
     location: "Hybrid · Jakarta",
@@ -448,7 +448,7 @@ export const fallbackEvents: Event[] = [
     title: "Riset Kualitatif untuk Pemula: Dari Wawancara hingga Coding",
     description:
       "Bersama Dr. Dewi Nirmala, spesialis grounded theory. Hands-on session tentang desain interview guide, coding techniques, dan thematic analysis.",
-    date: "2026-08-07T19:30:00.000Z",
+    date: "2026-12-05T19:30:00+07:00",
     time: "19.30 — 21.00",
     duration: "90 menit",
     location: "Daring · Zoom",
@@ -520,7 +520,7 @@ export const fallbackEvents: Event[] = [
     title: "Workshop Bandung: Submission Portal & Cover Letter",
     description:
       "1 hari intensif di ITB. Simulasi submission di portal Elsevier dan Springer — termasuk cover letter, response to reviewers, dan resubmission strategy.",
-    date: "2026-08-16T09:00:00.000Z",
+    date: "2026-12-13T09:00:00+07:00",
     time: "09.00 — 17.00",
     duration: "1 hari",
     location: "Bandung",

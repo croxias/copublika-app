@@ -31,8 +31,21 @@ export function BlogHero({ onSearch }: { onSearch: (q: string) => void }) {
   return (
     <section className="cp-sts-hero cp-bl-hero" aria-labelledby="cp-bl-title">
       <div className="cp-sts-hero__bg" aria-hidden="true">
-        <span className="cp-sts-hero__cols"><i /><i /><i /><i /><i /></span>
+        {/* Ruled manuscript paper with an editor's proofreading marks scattered on it. */}
+        <span className="cp-bl-hero__ruled" />
         <span className="cp-bl-hero__quote">“</span>
+        {["¶", "∧", "§", "✓", "//", "?"].map((m, i) => (
+          <motion.span
+            key={m}
+            className={`cp-bl-hero__proof is-${i}`}
+            initial={reduce ? false : { opacity: 0, scale: 0.6 }}
+            animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: [0, -8, 0] }}
+            transition={reduce ? undefined : { opacity: { duration: 0.6, delay: 0.5 + i * 0.12 }, scale: { duration: 0.6, delay: 0.5 + i * 0.12 }, y: { duration: 6 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 } }}
+          >
+            {m}
+          </motion.span>
+        ))}
+        <svg className="cp-bl-hero__ink" viewBox="0 0 600 60" preserveAspectRatio="none"><path d="M4 40 C 120 10, 220 58, 330 30 S 520 12, 596 34" /></svg>
         <span className="cp-sts-hero__grain" />
       </div>
 

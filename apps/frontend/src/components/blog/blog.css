@@ -526,3 +526,19 @@
 .cp-bd-link { color: var(--scopus-ink, #c2540f); font-weight: 600; text-decoration: underline; text-decoration-color: rgba(233,113,28,.4); text-underline-offset: 4px; transition: text-decoration-color .2s; }
 .cp-bd-link:hover { text-decoration-color: currentColor; }
 .cp-bd-hr { margin: clamp(32px, 4vw, 48px) auto; width: 80px; border: 0; border-top: 3px solid var(--scopus); }
+
+/* Blog hero background: ruled manuscript paper and proofreading marks (no column lines) */
+.cp-bl-hero .cp-sts-hero__cols { display: none; }
+.cp-bl-hero__ruled { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, transparent 0 43px, rgba(255,255,255,.06) 43px 44px); mask-image: radial-gradient(ellipse 70% 80% at 30% 45%, #000 20%, transparent 75%); }
+.cp-bl-hero__ruled::before { content: ''; position: absolute; top: 0; bottom: 0; left: calc(var(--pad) - 18px); width: 1px; background: linear-gradient(180deg, transparent, rgba(233,113,28,.45) 30%, rgba(233,113,28,.45) 70%, transparent); }
+.cp-bl-hero__proof { position: absolute; display: grid; place-items: center; width: 54px; height: 54px; border: 1.5px solid rgba(233,113,28,.55); border-radius: 50%; color: #ffb27a; font: 700 22px var(--display); }
+.cp-bl-hero__proof.is-0 { top: 14%; left: 50%; }
+.cp-bl-hero__proof.is-1 { top: 44%; left: 51%; width: 42px; height: 42px; font-size: 18px; }
+.cp-bl-hero__proof.is-2 { top: 10%; right: 6%; border-radius: 12px; }
+.cp-bl-hero__proof.is-3 { bottom: 16%; left: 50%; width: 46px; height: 46px; border-color: rgba(74,222,128,.45); color: #86efac; }
+.cp-bl-hero__proof.is-4 { top: 6%; right: 30%; border-style: dashed; font-size: 18px; }
+.cp-bl-hero__proof.is-5 { top: 40%; right: 2%; width: 40px; height: 40px; font-size: 18px; }
+.cp-bl-hero__ink { position: absolute; left: 4%; bottom: 10%; width: min(46vw, 620px); height: 60px; fill: none; stroke: var(--scopus); stroke-width: 3; stroke-linecap: round; opacity: .55; stroke-dasharray: 760; stroke-dashoffset: 760; animation: cp-bl-ink 2.4s .6s cubic-bezier(.22,1,.36,1) forwards; }
+@keyframes cp-bl-ink { to { stroke-dashoffset: 0; } }
+@media (max-width: 1100px) { .cp-bl-hero__proof { display: none; } }
+@media (prefers-reduced-motion: reduce) { .cp-bl-hero__ink { animation: none; stroke-dashoffset: 0; } }

@@ -29,7 +29,7 @@ const LANGS = [
   { code: "EN", label: "English", Flag: FlagEN },
 ];
 
-type NavChild = { href: string; title: string; sub: string; badge?: string; icon: "star" | "info" | "team" | "mentor" | "pen" };
+type NavChild = { href: string; title: string; icon: "star" | "info" | "team" | "mentor" | "pen" };
 type NavItem = { id: string; label: string; href: string; children?: NavChild[] };
 
 const NAV: NavItem[] = [
@@ -39,9 +39,9 @@ const NAV: NavItem[] = [
     label: "About",
     href: "/about",
     children: [
-      { href: "/about", title: "About Us", sub: "Siapa kami, nilai, visi-misi, dan perjalanan CoPublika.", icon: "info" },
-      { href: "/about/team", title: "Our Team", sub: "Sambutan pendiri dan pengurus organisasi.", icon: "team" },
-      { href: "/about/mentors", title: "Our Mentors", sub: "Peneliti aktif yang mendampingi anggota.", icon: "mentor" },
+      { href: "/about", title: "About Us", icon: "info" },
+      { href: "/about/team", title: "Our Team", icon: "team" },
+      { href: "/about/mentors", title: "Our Mentors", icon: "mentor" },
     ],
   },
   { id: "research", label: "Research Project", href: "/research" },
@@ -50,8 +50,8 @@ const NAV: NavItem[] = [
     label: "Program",
     href: "/siap-tembus-scopus",
     children: [
-      { href: "/siap-tembus-scopus", title: "Siap Tembus Scopus 1-on-1", sub: "1 sesi online 90 menit + 4 review artikel bersama mentor pilihan.", badge: "Rp. 600rb", icon: "star" },
-      { href: "/bootcamp-menulis", title: "Bootcamp 30 Hari Menulis", sub: "Webinar mingguan, tools, pelacak menulis, dan review gratis mentor.", badge: "Rp. 450rb", icon: "pen" },
+      { href: "/siap-tembus-scopus", title: "Siap Tembus Scopus 1-on-1", icon: "star" },
+      { href: "/bootcamp-menulis", title: "Bootcamp 30 Hari Menulis", icon: "pen" },
     ],
   },
   { id: "blog", label: "Blog", href: "/blog" },
@@ -182,11 +182,7 @@ export function Navbar() {
                           </svg>
                         </span>
                         <span className="cp-navx__dd-content">
-                          <span className="cp-navx__dd-title">
-                            {c.title}
-                            {c.badge && <span className="cp-navx__dd-badge">{c.badge}</span>}
-                          </span>
-                          <span className="cp-navx__dd-sub">{c.sub}</span>
+                          <span className="cp-navx__dd-title">{c.title}</span>
                         </span>
                         <span className="cp-navx__dd-arr" aria-hidden="true">
                           →
@@ -307,7 +303,6 @@ export function Navbar() {
                   className={`cp-navx__sheet-link ${itemActive(item) ? "is-active" : ""}`}
                 >
                   {item.label}
-                  {item.children?.[0].badge ? <span className="cp-navx__sheet-tag">{item.children[0].badge}</span> : null}
                 </Link>
               )
             )}
