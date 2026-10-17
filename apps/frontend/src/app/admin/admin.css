@@ -470,7 +470,7 @@ body.cp-admin-mode {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 14px;
 }
 
@@ -564,7 +564,7 @@ body.cp-admin-mode {
 }
 
 .cp-pg-head .cp-greet h1 em {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-style: italic;
   font-weight: 400;
   color: var(--accent);
@@ -7478,7 +7478,7 @@ body.cp-admin-mode {
 }
 
 .cp-pg-head .cp-greet h1 em {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-style: italic;
   font-weight: 400;
   color: var(--accent);
@@ -10512,7 +10512,7 @@ body.cp-admin-mode {
 .cp-login-aside-top { display: flex; align-items: center; gap: 12px; font: 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.7); }
 .cp-aside-mark { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(255,255,255,.25); border-radius: 50%; color: var(--scopus); }
 .cp-login-quote { margin: auto 0; max-width: 30rem; }
-.cp-quote-mark { display: block; color: var(--scopus); font: 64px/0.8 'Fraunces', serif; }
+.cp-quote-mark { display: block; color: var(--scopus); font: 64px/0.8 var(--font-fraunces), Georgia, serif; }
 .cp-login-quote blockquote { margin: 20px 0; font-size: clamp(24px, 3vw, 38px); line-height: 1.15; letter-spacing: -.03em; }
 .cp-login-quote p, .cp-login-aside-foot { color: rgba(255,255,255,.58); font-size: 12px; }
 .cp-login-aside-foot { font: 10px/1.6 var(--mono); letter-spacing: .1em; }

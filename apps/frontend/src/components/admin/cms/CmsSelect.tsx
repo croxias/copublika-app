@@ -24,6 +24,7 @@ type Props = {
   emptyLabel?: string;
   placeholder?: string;
   invalid?: boolean;
+  disabled?: boolean;
   'aria-label'?: string;
   size?: 'md' | 'sm' | 'lg';
   /** Small caption inside the trigger, before the value (toolbar filters). */
@@ -32,13 +33,13 @@ type Props = {
 };
 
 /** The admin's dropdown: Radix Select styled for the CMS (see .cms-select in cms.css). */
-export function CmsSelect({ id, value, onChange, options, allowEmpty, emptyLabel = '—', placeholder = 'Pilih…', invalid, size = 'md', prefix, className, ...rest }: Props) {
+export function CmsSelect({ id, value, onChange, options, allowEmpty, emptyLabel = '—', placeholder = 'Pilih…', invalid, disabled, size = 'md', prefix, className, ...rest }: Props) {
   // Keep a value whose option was removed visible instead of silently showing another one.
   const missing = value && !options.some((o) => o.value === value) ? [{ value, label: `${value} (tidak tersedia lagi)` }] : [];
   const items: CmsSelectOption[] = [...(allowEmpty ? [{ value: EMPTY, label: emptyLabel }] : []), ...missing, ...options];
 
   return (
-    <SelectPrimitive.Root value={value === '' ? (allowEmpty ? EMPTY : undefined) : value} onValueChange={(v) => onChange(v === EMPTY ? '' : v)}>
+    <SelectPrimitive.Root disabled={disabled} value={value === '' ? (allowEmpty ? EMPTY : undefined) : value} onValueChange={(v) => onChange(v === EMPTY ? '' : v)}>
       <SelectPrimitive.Trigger id={id} className={`cms-select cms-select--${size} ${className ?? ''}`} aria-invalid={invalid || undefined} aria-label={rest['aria-label']}>
         {prefix && <span className="cms-select-prefix">{prefix}</span>}
         <span className="cms-select-value">

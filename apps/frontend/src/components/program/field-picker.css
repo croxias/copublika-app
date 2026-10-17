@@ -1,0 +1,25 @@
+/* Searchable field picker (FieldPicker.tsx). Its own file so the admin, which does not load program.css, gets it too. */
+.cp-fp-placeholder { color: #8a847b; font-weight: 500; }
+.cp-fp-trigger:disabled { opacity: .55; cursor: not-allowed; }
+@keyframes cp-fp-in { from { opacity: 0; transform: translateY(-4px); } }
+.cp-fp { z-index: 1100; width: max(var(--radix-popover-trigger-width), 320px); max-width: calc(100vw - 24px); overflow: hidden; border: 2px solid #0a0a0a; border-radius: 16px; background: #fff; color: #0a0a0a; box-shadow: 6px 6px 0 #0a0a0a; animation: cp-fp-in .18s cubic-bezier(.22,1,.36,1); }
+.cp-fp.is-admin { border: 1px solid var(--cms-line, #e6e0d6); border-radius: 14px; box-shadow: 0 1px 2px rgba(22,21,19,.06), 0 18px 48px -16px rgba(22,21,19,.28); }
+.cp-fp__search { display: flex; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid #ece5da; color: #8a847b; }
+.cp-fp__search:focus-within { color: var(--scopus, #e9711c); }
+.cp-fp .cp-fp__search input, .cp-fp .cp-fp__search input:focus, .cp-fp .cp-fp__search input:focus-visible { outline: 0; box-shadow: none; }
+.cp-fp__search input { flex: 1; min-width: 0; height: 48px; border: 0; background: transparent; color: #0a0a0a; font: 500 15px var(--sans, system-ui); outline: 0; }
+.cp-fp.is-admin .cp-fp__search input { height: 44px; font-size: 13.5px; }
+.cp-fp__list { max-height: min(340px, calc(var(--radix-popover-content-available-height, 400px) - 60px)); padding: 6px; overflow-y: auto; overscroll-behavior: contain; }
+.cp-fp__group [cmdk-group-heading] { position: sticky; top: -6px; z-index: 1; padding: 10px 10px 6px; background: #fff; color: #8a847b; font: 700 10.5px var(--mono, ui-monospace), ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.cp-fp__group.is-elsewhere [cmdk-group-heading] { color: var(--scopus-ink, #b4520e); }
+.cp-fp__group.is-other { margin-top: 4px; padding-top: 4px; border-top: 1px solid #ece5da; }
+.cp-fp__item { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 40px; padding: 8px 10px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; user-select: none; }
+.cp-fp.is-admin .cp-fp__item { min-height: 36px; font-size: 13.5px; font-weight: 500; }
+.cp-fp__item[data-selected='true'] { background: #fbf4ec; }
+.cp-fp__item > svg { flex: none; color: var(--scopus, #e9711c); }
+.cp-fp__item > small { max-width: 45%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cp-fp__item small { display: inline-flex; flex: none; align-items: center; gap: 4px; color: #6b665e; font-size: 11.5px; font-weight: 600; }
+.cp-fp__item.is-other { justify-content: flex-start; }
+.cp-fp__item.is-other > span { display: grid; flex: 1; gap: 1px; }
+.cp-fp__item.is-other > span small { font-weight: 500; }
+.cp-fp__empty { padding: 14px 12px 8px; color: #6b665e; font-size: 13px; }

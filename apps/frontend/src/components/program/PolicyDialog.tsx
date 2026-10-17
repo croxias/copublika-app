@@ -17,8 +17,8 @@ const PRIVACY: { title: string; body: React.ReactNode }[] = [
     body: (
       <ul>
         <li>Identitas akun: nama lengkap, email, nomor WhatsApp, dan alamat.</li>
-        <li>Profil akademik: kategori (dosen, peneliti, mahasiswa S2, umum), institusi atau afiliasi, dan tautan Google Scholar bila Anda isi.</li>
-        <li>Nomor identitas sesuai kategori: NIDN, NIK (KTP), atau NIM.</li>
+        <li>Profil akademik: profesi (dosen, peneliti, mahasiswa S2, umum), institusi atau afiliasi, rumpun dan bidang ilmu, serta tautan Google Scholar bila Anda isi.</li>
+        <li>Nomor identitas sesuai profesi: NIDN, NIK (KTP), atau NIM.</li>
         <li>Data penggunaan dasar, seperti waktu masuk dan halaman yang dibuka, untuk menjaga keamanan akun.</li>
       </ul>
     ),

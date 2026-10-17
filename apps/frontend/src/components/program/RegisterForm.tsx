@@ -24,6 +24,7 @@ import { passwordProblem } from "@/lib/password";
 import { addSignup } from "@/lib/cms/signups";
 import { PasswordFields } from "./PasswordFields";
 import { PolicyDialog, type PolicyTab } from "./PolicyDialog";
+import { disciplineLabel, fieldLabel } from "@/lib/data/disciplines";
 import { EMPTY_PROFILE, MEMBER_ROLES, MemberProfileFields, maskId, scholarId, validateProfile, type MemberProfile } from "./MemberProfileFields";
 
 /** What can be registered: member activation alone, or a program. */
@@ -38,7 +39,7 @@ export type Order = {
   detail: string;
   items: OrderItem[];
   /** Member registration only; the identity number is kept masked. */
-  profile?: { role: string; institution: string; id: string; scholar: string | null };
+  profile?: { role: string; institution: string; id: string; discipline?: string; scholar: string | null };
   name: string;
   email: string;
   whatsapp: string;
@@ -142,7 +143,7 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
       detail: program ? programDetail : plan.price ? `Aktif ${plan.months} bulan sejak pembayaran dikonfirmasi` : "Masa aktif bulan pertama, gratis",
       items,
       ...(showProfile && profile.role
-        ? { profile: { role: MEMBER_ROLES[profile.role].label, institution: profile.institution.trim(), id: `${MEMBER_ROLES[profile.role].id.name} ${maskId(profile.idNumber)}`, scholar: scholarId(profile.scholar) } }
+        ? { profile: { role: MEMBER_ROLES[profile.role].label, institution: profile.institution.trim(), id: `${MEMBER_ROLES[profile.role].id.name} ${maskId(profile.idNumber)}`, discipline: disciplineLabel(profile.stream, fieldLabel(profile.field, profile.fieldOther)), scholar: scholarId(profile.scholar) } }
         : {}),
       name: user?.name ?? form.name.trim(),
       email: user?.email ?? form.email.trim(),
@@ -162,6 +163,8 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
       role: showProfile ? profile.role : "",
       institution: showProfile ? profile.institution.trim() : form.institution.trim(),
       idNumber: showProfile ? profile.idNumber.trim() : "",
+      stream: showProfile ? profile.stream : "",
+      field: showProfile ? fieldLabel(profile.field, profile.fieldOther) : "",
       scholar: showProfile ? scholarId(profile.scholar) ?? "" : "",
       detail: order.detail,
       total,
@@ -367,8 +370,9 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
             <>
               {showProfile && (
                 <>
-                  <div><dt>Kategori</dt><dd>{profile.role ? MEMBER_ROLES[profile.role].label : "Belum dipilih"}</dd></div>
+                  <div><dt>Profesi</dt><dd>{profile.role ? MEMBER_ROLES[profile.role].label : "Belum dipilih"}</dd></div>
                   <div><dt>Afiliasi</dt><dd>{profile.institution.trim() || "—"}</dd></div>
+                  <div><dt>Bidang ilmu</dt><dd>{profile.stream ? disciplineLabel(profile.stream, fieldLabel(profile.field, profile.fieldOther)) : "Belum dipilih"}</dd></div>
                   <div><dt>Google Scholar</dt><dd>{scholarId(profile.scholar) ? "Terhubung" : "Belum ditambahkan"}</dd></div>
                 </>
               )}

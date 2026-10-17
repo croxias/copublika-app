@@ -43,11 +43,12 @@ export const ID_TYPES: Record<string, { label: string; digits: number | null }> 
   umum: { label: "NIK", digits: 16 },
   s2: { label: "NIM", digits: null },
 };
+/** Profession labels (the "Profesi" field). */
 export const ROLE_LABEL: Record<string, string> = { dosen: "Dosen", peneliti: "Peneliti", s2: "Mahasiswa S2", umum: "Umum" };
 
 export const REVIEW_HOURS = 24;
 
-export type SignupEvent = { at: string; by: string; action: "created" | "opened" | "approved" | "rejected" | "paid" | "activated" | "cancelled" | "note" | "reopened"; detail?: string };
+export type SignupEvent = { at: string; by: string; action: "created" | "opened" | "approved" | "rejected" | "paid" | "activated" | "cancelled" | "note" | "reopened" | "field"; detail?: string };
 
 export const signupEvents = (s: CmsItem): SignupEvent[] =>
   Array.isArray(s.events) ? (s.events as SignupEvent[]) : [{ at: String(s.createdAt ?? s.updatedAt), by: String(s.name ?? "Pendaftar"), action: "created" }];
@@ -95,6 +96,9 @@ export type SignupInput = {
   role: string;
   institution: string;
   idNumber: string;
+  /** "stem" | "nonstem" and the field label (typed text when "Lainnya"). */
+  stream: string;
+  field: string;
   scholar: string;
   detail: string;
   total: number;
@@ -144,6 +148,8 @@ const sg = (i: number, kind: SignupKind, name: string, role: string, institution
   role,
   institution,
   idNumber,
+  stream: "",
+  field: "",
   scholar: "",
   detail: kind === "siap-tembus-scopus" ? "Dr. Bayu Setiawan · Oktober 2026" : kind === "bootcamp-menulis" ? "Angkatan 1 · 2 Nov 2026 – 1 Des 2026" : kind === "tahunan" ? "Perpanjangan 12 bulan" : "Masa aktif bulan pertama",
   total: kind === "gratis" ? 0 : kind === "tahunan" ? 75_000 : kind === "siap-tembus-scopus" ? 600_000 : 450_000,
@@ -159,12 +165,30 @@ const sg = (i: number, kind: SignupKind, name: string, role: string, institution
 });
 
 export const SIGNUP_SEED: CmsItem[] = [
-  sg(1, "gratis", "Dr. Rina Kusumawati", "dosen", "Universitas Negeri Malang", "rina.kusumawati@um.ac.id", "0015048203", 3, { scholar: "Xk3pQ9AAAAAJ" }),
-  sg(2, "gratis", "Hendra Wijaya", "s2", "Magister Manajemen, Universitas Gadjah Mada", "hendra.wijaya@mail.ugm.ac.id", "23/519874/PEK/2", 9),
-  sg(3, "gratis", "Sari Puspitasari", "peneliti", "BRIN — Pusat Riset Kesehatan", "sari.puspita@gmail.com", "3273014506900002", 30),
-  sg(4, "gratis", "Agus Santoso", "umum", "", "agus.santoso88@gmail.com", "3273011205880006", 52),
-  sg(5, "siap-tembus-scopus", "Dr. Fitri Handayani", "dosen", "Universitas Andalas", "fitri.handayani@unand.ac.id", "0021118705", 20),
-  sg(6, "bootcamp-menulis", "Rudi Hartono", "s2", "Magister Pendidikan, Universitas Pendidikan Indonesia", "rudi.hartono@upi.edu", "2210457", 6),
-  sg(7, "tahunan", "Dewi Lestari", "peneliti", "LIPI Bandung", "dewi.lestari@gmail.com", "3273015208910004", 70, { status: "activated", paidAt: ago(60), paymentRef: "BCA 16/10 a.n. Dewi Lestari", events: [{ at: ago(70), by: "Dewi Lestari", action: "created" }, { at: ago(60), by: "Tim Admin CoPublika", action: "paid", detail: "BCA 16/10 a.n. Dewi Lestari" }, { at: ago(60), by: "Tim Admin CoPublika", action: "activated", detail: "Member aktif 12 bulan" }] }),
-  sg(8, "gratis", "Bambang Prasetyo", "dosen", "Politeknik Negeri Semarang", "bambang.p@polines.ac.id", "0610078102", 96, { status: "approved", events: [{ at: ago(96), by: "Bambang Prasetyo", action: "created" }, { at: ago(80), by: "Tim Admin CoPublika", action: "approved", detail: "Link aktivasi dikirim" }] }),
+  sg(1, "gratis", "Dr. Rina Kusumawati", "dosen", "Universitas Negeri Malang", "rina.kusumawati@um.ac.id", "0015048203", 3, { stream: "nonstem", field: "Teknologi Pendidikan", scholar: "Xk3pQ9AAAAAJ" }),
+  sg(2, "gratis", "Hendra Wijaya", "s2", "Magister Manajemen, Universitas Gadjah Mada", "hendra.wijaya@mail.ugm.ac.id", "23/519874/PEK/2", 9, { stream: "nonstem", field: "Manajemen" }),
+  sg(3, "gratis", "Sari Puspitasari", "peneliti", "BRIN — Pusat Riset Kesehatan", "sari.puspita@gmail.com", "3273014506900002", 30, { stream: "stem", field: "Kesehatan Masyarakat" }),
+  sg(4, "gratis", "Agus Santoso", "umum", "", "agus.santoso88@gmail.com", "3273011205880006", 52, { stream: "nonstem", field: "Bahasa & Sastra Indonesia" }),
+  sg(5, "siap-tembus-scopus", "Dr. Fitri Handayani", "dosen", "Universitas Andalas", "fitri.handayani@unand.ac.id", "0021118705", 20, { stream: "stem", field: "Kimia" }),
+  sg(6, "bootcamp-menulis", "Rudi Hartono", "s2", "Magister Pendidikan, Universitas Pendidikan Indonesia", "rudi.hartono@upi.edu", "2210457", 6, { stream: "nonstem", field: "Manajemen Pendidikan" }),
+  sg(7, "tahunan", "Dewi Lestari", "peneliti", "LIPI Bandung", "dewi.lestari@gmail.com", "3273015208910004", 70, { stream: "stem", field: "Bioteknologi", status: "activated", paidAt: ago(60), paymentRef: "BCA 16/10 a.n. Dewi Lestari", events: [{ at: ago(70), by: "Dewi Lestari", action: "created" }, { at: ago(60), by: "Tim Admin CoPublika", action: "paid", detail: "BCA 16/10 a.n. Dewi Lestari" }, { at: ago(60), by: "Tim Admin CoPublika", action: "activated", detail: "Member aktif 12 bulan" }] }),
+  sg(8, "gratis", "Bambang Prasetyo", "dosen", "Politeknik Negeri Semarang", "bambang.p@polines.ac.id", "0610078102", 96, { stream: "stem", field: "Teknik Mesin", status: "approved", events: [{ at: ago(96), by: "Bambang Prasetyo", action: "created" }, { at: ago(80), by: "Tim Admin CoPublika", action: "approved", detail: "Link aktivasi dikirim" }] }),
 ];
+
+const HOUR = 3_600_000;
+
+/** Review clock for a registration: 1×24 jam for new ones, waiting time for payment or activation. */
+export function signupTiming(s: CmsItem, now: number): { tone: 'ok' | 'soon' | 'late' | 'done'; label: string; share: number; bar: boolean } {
+  const age = (now - new Date(String(s.createdAt)).getTime()) / HOUR;
+  if (s.status === 'new') {
+    const left = REVIEW_HOURS - age;
+    const share = Math.min(1, Math.max(0, age / REVIEW_HOURS));
+    if (left <= 0) return { tone: 'late', label: `Lewat ${Math.max(1, Math.round(-left))} jam`, share: 1, bar: true };
+    return { tone: share >= 0.6 ? 'soon' : 'ok', label: `${Math.max(1, Math.round(left))} jam lagi`, share, bar: true };
+  }
+  if (s.status === 'awaiting_payment' || s.status === 'approved') {
+    const since = (now - new Date(String(s.updatedAt)).getTime()) / HOUR;
+    return { tone: 'soon', label: since < 24 ? `Menunggu ${Math.max(1, Math.round(since))} jam` : `Menunggu ${Math.round(since / 24)} hari`, share: Math.min(1, since / 72), bar: true };
+  }
+  return { tone: 'done', label: signupStatusOf(s.status).label, share: 1, bar: false };
+}

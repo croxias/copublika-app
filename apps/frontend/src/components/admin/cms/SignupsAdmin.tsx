@@ -20,6 +20,7 @@ import {
   normalizeSignup,
   signupEvents,
   signupStatusOf,
+  signupTiming,
   withSignupEvent,
   type SignupEvent,
   type SignupKind,
@@ -27,7 +28,10 @@ import {
 } from '@/lib/cms/signups';
 import type { CmsItem, Values } from '@/lib/cms/types';
 import { formatRupiah } from '@/lib/data/programs';
+import { disciplineLabel, streamLabel } from '@/lib/data/disciplines';
+import { DisciplineEditor, STREAM_FILTER, StreamBadge, matchStream } from './Discipline';
 import { CmsSelect } from './CmsSelect';
+import { DateField } from './DateField';
 import { KpiTile, PAGE_SIZE, Pager } from './TableKit';
 import { ConfirmDialog, Drawer, PageHeader, StagingNote, formatDate } from './ui';
 
@@ -45,20 +49,6 @@ function ago(iso: string, now: number) {
 }
 
 /** Against the 1×24 jam review target, or how long it has waited for payment or activation. */
-function timing(s: CmsItem, now: number): { tone: 'ok' | 'soon' | 'late' | 'done'; label: string; share: number; bar: boolean } {
-  const age = (now - new Date(String(s.createdAt)).getTime()) / H;
-  if (s.status === 'new') {
-    const left = REVIEW_HOURS - age;
-    const share = Math.min(1, Math.max(0, age / REVIEW_HOURS));
-    if (left <= 0) return { tone: 'late', label: `Lewat ${Math.max(1, Math.round(-left))} jam`, share: 1, bar: true };
-    return { tone: share >= 0.6 ? 'soon' : 'ok', label: `${Math.max(1, Math.round(left))} jam lagi`, share, bar: true };
-  }
-  if (s.status === 'awaiting_payment' || s.status === 'approved') {
-    const since = (now - new Date(String(s.updatedAt)).getTime()) / H;
-    return { tone: 'soon', label: since < 24 ? `Menunggu ${Math.max(1, Math.round(since))} jam` : `Menunggu ${Math.round(since / 24)} hari`, share: Math.min(1, since / 72), bar: true };
-  }
-  return { tone: 'done', label: signupStatusOf(s.status).label, share: 1, bar: false };
-}
 
 const EVENT_LABEL: Record<SignupEvent['action'], string> = {
   created: 'Pendaftaran masuk',
@@ -69,15 +59,16 @@ const EVENT_LABEL: Record<SignupEvent['action'], string> = {
   activated: 'Member aktif',
   cancelled: 'Dibatalkan',
   note: 'Catatan diperbarui',
+  field: 'Bidang ilmu diubah',
   reopened: 'Dibuka kembali',
 };
 
 const REJECT_REASONS = ['Data identitas tidak valid', 'Afiliasi tidak dapat diverifikasi', 'Pendaftaran ganda', 'Tidak sesuai kategori yang dipilih'];
 
 function downloadCsv(rows: CmsItem[]) {
-  const head = ['ID', 'Masuk', 'Jenis', 'Nama', 'Kategori', 'Instansi', 'Identitas', 'Email', 'WhatsApp', 'Google Scholar', 'Harga', 'Status', 'Ref. pembayaran'];
+  const head = ['ID', 'Masuk', 'Jenis', 'Nama', 'Profesi', 'Rumpun', 'Bidang ilmu', 'Instansi', 'Identitas', 'Email', 'WhatsApp', 'Google Scholar', 'Harga', 'Status', 'Ref. pembayaran'];
   const cell = (v: unknown) => `"${String(v ?? '').replaceAll('"', '""')}"`;
-  const lines = rows.map((x) => [x.code, x.createdAt, kindOf(x.kind).label, x.name, ROLE_LABEL[String(x.role)] ?? '', x.institution, x.idNumber, x.email, x.whatsapp, x.scholar, x.total, signupStatusOf(x.status).label, x.paymentRef].map(cell).join(','));
+  const lines = rows.map((x) => [x.code, x.createdAt, kindOf(x.kind).label, x.name, ROLE_LABEL[String(x.role)] ?? '', streamLabel(x.stream), String(x.field ?? ''), x.institution, x.idNumber, x.email, x.whatsapp, x.scholar, x.total, signupStatusOf(x.status).label, x.paymentRef].map(cell).join(','));
   const blob = new Blob(['﻿' + [head.join(','), ...lines].join('\r\n')], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -106,6 +97,7 @@ export function SignupsAdmin() {
   const [tab, setTab] = useState<Tab>('open');
   const [kind, setKind] = useState('all');
   const [role, setRole] = useState('all');
+  const [stream, setStream] = useState('all');
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -116,7 +108,8 @@ export function SignupsAdmin() {
     .filter((x) => (tab === 'all' ? true : tab === 'open' ? OPEN_STATUSES.includes(x.status as SignupStatus) : x.status === tab))
     .filter((x) => kind === 'all' || x.kind === kind)
     .filter((x) => role === 'all' || x.role === role)
-    .filter((x) => !q || `${String(x.name)} ${String(x.email)} ${String(x.institution)} ${String(x.code)} ${String(x.idNumber)}`.toLowerCase().includes(q.toLowerCase()));
+    .filter((x) => matchStream(x.stream, stream))
+    .filter((x) => !q || `${String(x.name)} ${String(x.email)} ${String(x.institution)} ${String(x.code)} ${String(x.idNumber)} ${String(x.field ?? '')}`.toLowerCase().includes(q.toLowerCase()));
   const pages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE));
   const current = Math.min(page, pages);
   const rows = shown.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
@@ -126,7 +119,7 @@ export function SignupsAdmin() {
   };
 
   const fresh = all.filter((x) => x.status === 'new');
-  const late = fresh.filter((x) => timing(x, now).tone === 'late');
+  const late = fresh.filter((x) => signupTiming(x, now).tone === 'late');
   const waiting = all.filter((x) => x.status === 'awaiting_payment');
   const pending = all.filter((x) => x.status === 'approved');
   const total = Math.max(1, all.length);
@@ -215,10 +208,11 @@ export function SignupsAdmin() {
           </div>
           <div className="cms-toolbar-right">
             <CmsSelect size="sm" prefix="Jenis" aria-label="Filter jenis" value={kind} onChange={resetTo(setKind)} options={[{ value: 'all', label: 'Semua' }, ...SIGNUP_KINDS.map((k) => ({ value: k.value, label: k.label }))]} className="msg-filter" />
-            <CmsSelect size="sm" prefix="Kategori" aria-label="Filter kategori" value={role} onChange={resetTo(setRole)} options={[{ value: 'all', label: 'Semua' }, ...Object.entries(ROLE_LABEL).map(([value, label]) => ({ value, label }))]} className="msg-filter" />
+            <CmsSelect size="sm" prefix="Profesi" aria-label="Filter profesi" value={role} onChange={resetTo(setRole)} options={[{ value: 'all', label: 'Semua' }, ...Object.entries(ROLE_LABEL).map(([value, label]) => ({ value, label }))]} className="msg-filter" />
+            <CmsSelect size="sm" prefix="Rumpun" aria-label="Filter rumpun ilmu" value={stream} onChange={resetTo(setStream)} options={STREAM_FILTER} className="msg-filter" />
             <div className="cms-search">
               <Search size={14} aria-hidden="true" />
-              <input aria-label="Cari pendaftaran" placeholder="Cari nama, email, ID, NIK…" value={q} onChange={(e) => resetTo(setQ)(e.target.value)} />
+              <input aria-label="Cari pendaftaran" placeholder="Cari nama, email, NIK, bidang…" value={q} onChange={(e) => resetTo(setQ)(e.target.value)} />
               {q && <button type="button" aria-label="Hapus pencarian" onClick={() => resetTo(setQ)('')}><X size={13} /></button>}
             </div>
             <button type="button" className="cms-btn cms-btn--ghost cms-btn--sm" onClick={() => downloadCsv(shown)} disabled={!shown.length}>
@@ -234,10 +228,11 @@ export function SignupsAdmin() {
                 <th style={{ width: 112 }}>ID</th>
                 <th>Pendaftar</th>
                 <th>Instansi</th>
-                <th>Email</th>
-                <th style={{ width: 112 }}>Jenis</th>
-                <th style={{ width: 104 }}>Harga</th>
-                <th style={{ width: 124 }}>Kategori</th>
+                <th style={{ width: 96 }}>Jenis</th>
+                <th style={{ width: 92 }}>Harga</th>
+                <th style={{ width: 104 }}>Profesi</th>
+                <th style={{ width: 84 }}>Rumpun</th>
+                <th>Bidang ilmu</th>
                 <th style={{ width: 132 }}>Status</th>
                 <th style={{ width: 126 }}>Waktu</th>
                 <th className="cms-col-actions">Aksi</th>
@@ -247,21 +242,22 @@ export function SignupsAdmin() {
               {rows.map((x, i) => {
                 const st = signupStatusOf(x.status);
                 const k = kindOf(x.kind);
-                const t = timing(x, now);
+                const t = signupTiming(x, now);
                 return (
                   <motion.tr key={x.id} className={`cms-row msg-row ${x.status === 'new' ? 'is-unread' : ''}`} onClick={() => openRow(x)} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25, delay: Math.min(i, 10) * 0.025 }}>
                     <td className="cms-col-meta" data-label="ID"><span className="msg-code">{String(x.code)}</span></td>
                     <td className="cms-col-title">
                       <div className="msg-cell sgn-cell">
                         <span className="msg-av" aria-hidden="true">{initials(String(x.name))}</span>
-                        <strong>{String(x.name)}</strong>
+                        <span className="sgn-who"><strong>{String(x.name)}</strong><small title={String(x.email)}>{String(x.email)}</small></span>
                       </div>
                     </td>
                     <td className="cms-col-meta" data-label="Instansi"><span className="sgn-text">{x.institution ? String(x.institution) : <span className="cms-muted">—</span>}</span></td>
-                    <td className="cms-col-meta" data-label="Email"><span className="sgn-email" title={String(x.email)}>{String(x.email).split('@')[0]}<wbr />@{String(x.email).split('@')[1] ?? ''}</span></td>
                     <td className="cms-col-meta" data-label="Jenis"><span className={`sgn-kind is-${k.paid ? 'paid' : 'free'}`}>{k.short}</span></td>
                     <td className="cms-col-meta" data-label="Harga"><span className={`sgn-price ${k.paid ? '' : 'is-free'}`}>{Number(x.total || 0) ? formatRupiah(Number(x.total)) : 'Gratis'}</span></td>
-                    <td className="cms-col-meta" data-label="Kategori">{ROLE_LABEL[String(x.role)] ?? <span className="cms-muted">—</span>}</td>
+                    <td className="cms-col-meta" data-label="Profesi">{ROLE_LABEL[String(x.role)] ?? <span className="cms-muted">—</span>}</td>
+                    <td className="cms-col-meta" data-label="Rumpun"><StreamBadge stream={x.stream} /></td>
+                    <td className="cms-col-meta" data-label="Bidang ilmu"><span className="sgn-text">{String(x.field ?? '').trim() || <span className="cms-muted">—</span>}</span></td>
                     <td className="cms-col-meta" data-label="Status"><span className={`cms-badge cms-badge--${st.tone}`}>{st.label}</span></td>
                     <td className="cms-col-meta" data-label="Waktu">
                       <span className={`msg-sla is-${t.tone}`}>
@@ -342,7 +338,7 @@ function SignupDialog({ item, all, now, onClose, onPatch, onApprove, onPaid, onD
   const cms = useCms();
   const k = kindOf(item.kind as SignupKind);
   const st = signupStatusOf(item.status);
-  const t = timing(item, now);
+  const t = signupTiming(item, now);
   const checks = autoChecks(item, all);
   const idRule = ID_TYPES[String(item.role)];
   const [note, setNote] = useState(String(item.note ?? ''));
@@ -413,6 +409,7 @@ function SignupDialog({ item, all, now, onClose, onPatch, onApprove, onPaid, onD
                 </div>
               ) : null}
               <div><dt>Email</dt><dd className="sgn-id"><span>{String(item.email)}</span><button type="button" className="sgn-copy" onClick={() => copy(String(item.email), 'Email')} aria-label="Salin email"><Copy size={13} /></button></dd></div>
+              <div><dt>Bidang ilmu</dt><dd><DisciplineEditor key={item.id} stream={item.stream} field={item.field} onSave={(stream, field) => { onPatch({ by: RESPONDER, action: 'field', detail: disciplineLabel(stream, field) }, { stream, field }); cms.toast('Bidang ilmu diperbarui.'); }} /></dd></div>
               <div><dt>WhatsApp</dt><dd>{String(item.whatsapp || '—')}</dd></div>
               <div><dt>Alamat</dt><dd>{String(item.address || '—')}</dd></div>
               <div>
@@ -480,7 +477,7 @@ function SignupDialog({ item, all, now, onClose, onPatch, onApprove, onPaid, onD
               <header><span className="rvd-k"><Wallet size={13} aria-hidden="true" /> Konfirmasi transfer manual</span><span className="sgn-due">{formatRupiah(Number(item.total || 0))}</span></header>
               <p className="cms-muted sgn-note">Cocokkan mutasi rekening dengan nama dan nominal di atas. Setelah lunas, member langsung aktif 12 bulan dan tercatat di Anggota.</p>
               <div className="sgn-pay">
-                <label><span>Tanggal transfer</span><input type="date" value={payDate} onChange={(e) => setPayDate(e.target.value)} /></label>
+                <div className="sgn-pay__date"><label htmlFor="sgn-pay-date"><span>Tanggal transfer</span></label><DateField id="sgn-pay-date" value={payDate} onChange={setPayDate} max={new Date(now).toISOString().slice(0, 10)} /></div>
                 <label><span>Referensi</span><input value={payRef} onChange={(e) => setPayRef(e.target.value)} placeholder="BCA · a.n. pengirim · 4 digit akhir" /></label>
               </div>
               <footer className="sgn-actions">

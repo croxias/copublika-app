@@ -3,10 +3,13 @@
 import { useId } from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { BookOpen, Building2, Check, ChevronDown, ExternalLink, FlaskConical, GraduationCap, IdCard, Lock, UserRound } from "lucide-react";
+import { Atom, BookOpen, Building2, Check, ChevronDown, ExternalLink, FlaskConical, GraduationCap, IdCard, Library, Lock, PenLine, UserRound } from "lucide-react";
+import { OTHER_FIELD, STREAMS, type Stream } from "@/lib/data/disciplines";
+import { FieldPicker } from "./FieldPicker";
 
-// Academic profile for member registration: who the member is, where they work, an identity
-// number that fits the category, and an optional Google Scholar profile.
+// Academic profile for member registration: profession, where they work, an identity number
+// that fits the profession, their field of study (STEM / Non-STEM), and an optional Google
+// Scholar profile.
 
 export type MemberRole = "dosen" | "peneliti" | "s2" | "umum";
 
@@ -33,9 +36,9 @@ export const MEMBER_ROLES: Record<MemberRole, { label: string; hint: string; ico
   umum: { label: "Umum", hint: "Diisi dengan NIK KTP", icon: <UserRound size={18} />, institution: "Tempat bekerja atau komunitas", institutionOptional: true, id: NIK },
 };
 
-export type MemberProfile = { role: MemberRole | ""; institution: string; idNumber: string; scholar: string };
+export type MemberProfile = { role: MemberRole | ""; institution: string; idNumber: string; stream: Stream | ""; field: string; fieldOther: string; scholar: string };
 
-export const EMPTY_PROFILE: MemberProfile = { role: "", institution: "", idNumber: "", scholar: "" };
+export const EMPTY_PROFILE: MemberProfile = { role: "", institution: "", idNumber: "", stream: "", field: "", fieldOther: "", scholar: "" };
 
 /** Google Scholar profile id from a profile link (…citations?user=ID) or the bare id. */
 export function scholarId(input: string): string | null {
@@ -54,7 +57,7 @@ export const maskId = (v: string) => (v.length <= 6 ? v : `${v.slice(0, 4)}…${
 export function validateProfile(p: MemberProfile): Record<string, string> {
   const e: Record<string, string> = {};
   if (!p.role) {
-    e.role = "Pilih kategori yang paling sesuai.";
+    e.role = "Pilih profesi yang paling sesuai.";
     return e;
   }
   const r = MEMBER_ROLES[p.role];
@@ -63,6 +66,9 @@ export function validateProfile(p: MemberProfile): Record<string, string> {
   if (r.id.digits ? !new RegExp(`^\\d{${r.id.min}}$`).test(id) : !/^[A-Za-z0-9./-]{5,20}$/.test(id)) {
     e.idNumber = r.id.digits ? `${r.id.name} harus ${r.id.min} digit angka.` : `Masukkan ${r.id.name} yang valid (5–20 karakter).`;
   }
+  if (!p.stream) e.stream = "Pilih rumpun ilmu Anda.";
+  else if (!p.field) e.field = "Pilih bidang ilmu.";
+  else if (p.field === OTHER_FIELD && p.fieldOther.trim().length < 3) e.fieldOther = "Tulis nama bidang ilmu Anda.";
   if (p.scholar.trim() && !scholarId(p.scholar)) e.scholar = "Tempel link profil Google Scholar, mis. scholar.google.com/citations?user=…";
   return e;
 }
@@ -79,12 +85,12 @@ export function MemberProfileFields({ value: p, onChange, errors }: Props) {
   return (
     <div className="cp-mpf">
       <div className={`cp-reg__field ${errors.role ? "has-error" : ""}`}>
-        <label className="cp-reg__label" htmlFor={`${uid}-role`}>Kategori <span className="cp-reg__req" title="Wajib diisi">*<span className="sr-only"> (wajib)</span></span></label>
+        <label className="cp-reg__label" htmlFor={`${uid}-role`}>Profesi <span className="cp-reg__req" title="Wajib diisi">*<span className="sr-only"> (wajib)</span></span></label>
         <SelectPrimitive.Root value={p.role || undefined} onValueChange={(v) => set({ role: v as MemberRole, idNumber: "" })}>
           <SelectPrimitive.Trigger id={`${uid}-role`} className="cp-mpf-select" aria-invalid={!!errors.role}>
             <span className="cp-mpf-select__ico" aria-hidden="true">{role?.icon ?? <UserRound size={18} />}</span>
             <span className="cp-mpf-select__value">
-              <SelectPrimitive.Value placeholder="Pilih kategori Anda" />
+              <SelectPrimitive.Value placeholder="Pilih profesi Anda" />
             </span>
             <SelectPrimitive.Icon className="cp-mpf-select__chev"><ChevronDown size={16} /></SelectPrimitive.Icon>
           </SelectPrimitive.Trigger>
@@ -146,6 +152,68 @@ export function MemberProfileFields({ value: p, onChange, errors }: Props) {
               </span>
               {errors.idNumber ? <span className="cp-reg__err">{errors.idNumber}</span> : <span className="cp-reg__fhint">{role.id.help}</span>}
             </label>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className={`cp-reg__field ${errors.stream ? "has-error" : ""}`}>
+        <span className="cp-reg__label" id={`${uid}-stream`}>Rumpun ilmu <span className="cp-reg__req" title="Wajib diisi">*<span className="sr-only"> (wajib)</span></span></span>
+        <div className="cp-mpf-stream" role="radiogroup" aria-labelledby={`${uid}-stream`} aria-invalid={!!errors.stream || undefined}>
+          {(Object.keys(STREAMS) as Stream[]).map((k) => (
+            <button
+              type="button"
+              role="radio"
+              key={k}
+              aria-checked={p.stream === k}
+              className={p.stream === k ? "is-on" : ""}
+              onClick={() => p.stream !== k && set({ stream: k, field: "", fieldOther: "" })}
+            >
+              <span className="cp-mpf-stream__ico" aria-hidden="true">{k === "stem" ? <Atom size={18} /> : <Library size={18} />}</span>
+              <span className="cp-mpf-stream__text">
+                <strong>{STREAMS[k].label}</strong>
+                <small>{STREAMS[k].hint}</small>
+              </span>
+              <span className="cp-mpf-stream__dot" aria-hidden="true">{p.stream === k && <Check size={13} strokeWidth={3} />}</span>
+            </button>
+          ))}
+        </div>
+        {errors.stream && <span className="cp-reg__err">{errors.stream}</span>}
+      </div>
+
+      <AnimatePresence initial={false} mode="popLayout">
+        {p.stream && (
+          <motion.div
+            key={p.stream}
+            className={`cp-mpf__more is-field ${p.field === OTHER_FIELD ? "" : "is-single"}`}
+            initial={reduce ? false : { opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className={`cp-reg__field ${errors.field ? "has-error" : ""}`}>
+              <label className="cp-reg__label" htmlFor={`${uid}-field`}>Bidang ilmu <span className="cp-reg__req" title="Wajib diisi">*<span className="sr-only"> (wajib)</span></span></label>
+              <FieldPicker
+                id={`${uid}-field`}
+                stream={p.stream}
+                value={p.field}
+                invalid={!!errors.field}
+                placeholder={`Cari atau pilih bidang ${STREAMS[p.stream].label}`}
+                icon={p.stream === "stem" ? <FlaskConical size={17} /> : <BookOpen size={17} />}
+                onChange={(field, stream, typed) => set({ stream, field, fieldOther: field === OTHER_FIELD ? (typed ?? p.fieldOther) : "" })}
+              />
+              {errors.field && <span className="cp-reg__err">{errors.field}</span>}
+            </div>
+
+            {p.field === OTHER_FIELD && (
+              <label className={`cp-reg__field ${errors.fieldOther ? "has-error" : ""}`}>
+                <span className="cp-reg__label">Nama bidang <span className="cp-reg__req" title="Wajib diisi">*<span className="sr-only"> (wajib)</span></span></span>
+                <span className="cp-mpf-input">
+                  <PenLine size={17} aria-hidden="true" />
+                  <input value={p.fieldOther} onChange={(e) => set({ fieldOther: e.target.value })} maxLength={60} placeholder="Mis. Ilmu Perpustakaan" aria-invalid={!!errors.fieldOther} autoFocus />
+                </span>
+                {errors.fieldOther ? <span className="cp-reg__err">{errors.fieldOther}</span> : <span className="cp-reg__fhint">Tulis nama bidang secara lengkap.</span>}
+              </label>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

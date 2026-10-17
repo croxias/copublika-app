@@ -4,10 +4,11 @@
 import type { CmsItem, StatusTone } from './types';
 
 export type MemberSource = 'gratis' | 'tahunan' | 'program' | 'manual';
-export type MemberState = 'pending' | 'active' | 'expiring' | 'expired' | 'inactive';
+export type MemberState = 'pending' | 'scheduled' | 'active' | 'expiring' | 'expired' | 'inactive';
 
 export const MEMBER_STATES: { value: MemberState; label: string; tone: StatusTone }[] = [
   { value: 'pending', label: 'Menunggu aktivasi', tone: 'pending' },
+  { value: 'scheduled', label: 'Terjadwal', tone: 'info' },
   { value: 'active', label: 'Aktif', tone: 'ok' },
   { value: 'expiring', label: 'Akan habis', tone: 'live' },
   { value: 'expired', label: 'Kedaluwarsa', tone: 'muted' },
@@ -30,20 +31,28 @@ export const addMonths = (iso: string, months: number) => {
   return d.toISOString();
 };
 
-/** Where a member stands today: stored status plus the expiry date. */
-export function memberState(m: CmsItem, now: number): { state: MemberState; label: string; tone: StatusTone; daysLeft: number | null; share: number } {
+/**
+ * Where a member stands today: stored status plus the active period. A period that starts later
+ * (set by the admin) is "scheduled": not counted as active until its start date; startsIn is the
+ * number of days until then.
+ */
+export function memberState(m: CmsItem, now: number): { state: MemberState; label: string; tone: StatusTone; daysLeft: number | null; share: number; startsIn: number | null } {
   const pick = (state: MemberState) => MEMBER_STATES.find((s) => s.value === state)!;
-  if (m.status === 'inactive') return { ...pick('inactive'), state: 'inactive', daysLeft: null, share: 0 };
-  if (m.status === 'pending' || !m.expiresAt) return { ...pick('pending'), state: 'pending', daysLeft: null, share: 0 };
+  if (m.status === 'inactive') return { ...pick('inactive'), state: 'inactive', daysLeft: null, share: 0, startsIn: null };
+  if (m.status === 'pending' || !m.expiresAt) return { ...pick('pending'), state: 'pending', daysLeft: null, share: 0, startsIn: null };
   const end = new Date(String(m.expiresAt)).getTime();
   const start = new Date(String(m.activatedAt || m.joinedAt)).getTime();
   const daysLeft = Math.ceil((end - now) / DAY);
+  // Compared by calendar day, so activating "now" a little after the page loaded is never scheduled.
+  const today = new Date(now).setHours(0, 0, 0, 0);
+  const startDay = new Date(start).setHours(0, 0, 0, 0);
+  if (startDay > today) return { ...pick('scheduled'), state: 'scheduled', daysLeft, share: 1, startsIn: Math.round((startDay - today) / DAY) };
   const share = Math.min(1, Math.max(0, (end - now) / Math.max(DAY, end - start)));
   const state: MemberState = daysLeft <= 0 ? 'expired' : daysLeft <= EXPIRING_DAYS ? 'expiring' : 'active';
-  return { ...pick(state), state, daysLeft, share };
+  return { ...pick(state), state, daysLeft, share, startsIn: null };
 }
 
-export type MemberEvent = { at: string; by: string; action: 'joined' | 'activated' | 'extended' | 'deactivated' | 'reactivated' | 'reminded' | 'note'; detail?: string };
+export type MemberEvent = { at: string; by: string; action: 'joined' | 'activated' | 'extended' | 'deactivated' | 'reactivated' | 'reminded' | 'note' | 'field' | 'card'; detail?: string };
 
 export const memberEvents = (m: CmsItem): MemberEvent[] => (Array.isArray(m.events) ? (m.events as MemberEvent[]) : []);
 
@@ -67,6 +76,8 @@ export function memberFromSignup(s: CmsItem, active: boolean, by: string): CmsIt
     role: s.role ?? '',
     institution: s.institution ?? '',
     idNumber: s.idNumber ?? '',
+    stream: s.stream ?? '',
+    field: s.field ?? '',
     scholar: s.scholar ?? '',
     source,
     program: source === 'program' ? s.kind : '',
@@ -102,6 +113,8 @@ const mb = (i: number, name: string, role: string, institution: string, email: s
   role,
   institution,
   idNumber,
+  stream: '',
+  field: '',
   scholar: '',
   source,
   program: source === 'program' ? (i % 2 ? 'siap-tembus-scopus' : 'bootcamp-menulis') : '',
@@ -121,13 +134,13 @@ const mb = (i: number, name: string, role: string, institution: string, email: s
 
 export const MEMBER_SEED: CmsItem[] = [
   // Linked to the sample registrations in signups.ts.
-  mb(1, 'Bambang Prasetyo', 'dosen', 'Politeknik Negeri Semarang', 'bambang.p@polines.ac.id', '0610078102', 'gratis', null, 1, { signupId: 'sgn-8', signupCode: 'CP-MBR-3I8', joinedAt: iso(-3.3) }),
-  mb(2, 'Dewi Lestari', 'peneliti', 'LIPI Bandung', 'dewi.lestari@gmail.com', '3273015208910004', 'tahunan', -2.5, 12, { signupId: 'sgn-7', signupCode: 'CP-MBR-3GR' }),
+  mb(1, 'Bambang Prasetyo', 'dosen', 'Politeknik Negeri Semarang', 'bambang.p@polines.ac.id', '0610078102', 'gratis', null, 1, { stream: 'stem', field: 'Teknik Mesin', signupId: 'sgn-8', signupCode: 'CP-MBR-3I8', joinedAt: iso(-3.3) }),
+  mb(2, 'Dewi Lestari', 'peneliti', 'LIPI Bandung', 'dewi.lestari@gmail.com', '3273015208910004', 'tahunan', -2.5, 12, { stream: 'stem', field: 'Bioteknologi', signupId: 'sgn-7', signupCode: 'CP-MBR-3GR' }),
   // Earlier members.
-  mb(3, 'Dr. Ahmad Fauzi', 'dosen', 'Universitas Diponegoro', 'ahmad.fauzi@undip.ac.id', '0012037901', 'program', -120, 12, { scholar: 'Aa1Bb2Cc3DdA' }),
-  mb(4, 'Nurul Aini', 's2', 'Magister Ilmu Komunikasi, Universitas Indonesia', 'nurul.aini@ui.ac.id', '2306219874', 'gratis', -22, 1),
-  mb(5, 'Yusuf Maulana', 'peneliti', 'BRIN — Pusat Riset Sosial', 'yusuf.maulana@brin.go.id', '3171041103880007', 'tahunan', -300, 12),
-  mb(6, 'Dr. Ratna Sari', 'dosen', 'Universitas Hasanuddin', 'ratna.sari@unhas.ac.id', '0009128406', 'program', -380, 12),
-  mb(7, 'Teguh Wibowo', 'umum', 'Komunitas Literasi Semarang', 'teguh.wibowo@gmail.com', '3374020507900003', 'gratis', -40, 1),
-  mb(8, 'Lina Marlina', 's2', 'Magister Pendidikan, Universitas Negeri Jakarta', 'lina.marlina@unj.ac.id', '9912345', 'program', -60, 12, { status: 'inactive', note: 'Dinonaktifkan atas permintaan member.' }),
+  mb(3, 'Dr. Ahmad Fauzi', 'dosen', 'Universitas Diponegoro', 'ahmad.fauzi@undip.ac.id', '0012037901', 'program', -120, 12, { stream: 'stem', field: 'Ilmu Komputer / Informatika', scholar: 'Aa1Bb2Cc3DdA' }),
+  mb(4, 'Nurul Aini', 's2', 'Magister Ilmu Komunikasi, Universitas Indonesia', 'nurul.aini@ui.ac.id', '2306219874', 'gratis', -22, 1, { stream: 'nonstem', field: 'Ilmu Komunikasi' }),
+  mb(5, 'Yusuf Maulana', 'peneliti', 'BRIN — Pusat Riset Sosial', 'yusuf.maulana@brin.go.id', '3171041103880007', 'tahunan', -300, 12, { stream: 'nonstem', field: 'Sosiologi' }),
+  mb(6, 'Dr. Ratna Sari', 'dosen', 'Universitas Hasanuddin', 'ratna.sari@unhas.ac.id', '0009128406', 'program', -380, 12, { stream: 'stem', field: 'Farmasi' }),
+  mb(7, 'Teguh Wibowo', 'umum', 'Komunitas Literasi Semarang', 'teguh.wibowo@gmail.com', '3374020507900003', 'gratis', -40, 1, { stream: 'nonstem', field: 'Bahasa & Sastra Indonesia' }),
+  mb(8, 'Lina Marlina', 's2', 'Magister Pendidikan, Universitas Negeri Jakarta', 'lina.marlina@unj.ac.id', '9912345', 'program', -60, 12, { stream: 'nonstem', field: 'Pendidikan Bahasa Indonesia', status: 'inactive', note: 'Dinonaktifkan atas permintaan member.' }),
 ];

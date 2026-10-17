@@ -1027,3 +1027,23 @@
 .cp-reg__submit:disabled { border-color: #d8d2c8; background: #e9e4dc; color: #8a847b; box-shadow: none; cursor: not-allowed; opacity: 1; }
 .cp-reg__lock { display: flex; align-items: center; justify-content: center; gap: 6px; margin: -6px 0 0; color: #6b665e; font-size: 12.5px; text-align: center; }
 .cp-reg__lock svg { flex: none; color: var(--scopus); }
+
+/* Field of study: STEM / Non-STEM cards, then a field list with "Lainnya". */
+.cp-mpf-stream { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cp-mpf-stream button { display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 12px 14px; border: 1.5px solid #ddd6cb; border-radius: 14px; background: #fff; color: var(--ink); text-align: left; cursor: pointer; transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease; }
+.cp-mpf-stream button:hover { border-color: #c4bdb1; }
+.cp-mpf-stream button:focus-visible { outline: 0; border-color: var(--scopus); box-shadow: 0 0 0 4px rgba(233,113,28,.15); }
+.cp-mpf-stream button.is-on { border-color: var(--scopus); background: #fff8f1; box-shadow: 3px 3px 0 #0a0a0a; }
+.cp-reg__field.has-error .cp-mpf-stream button { border-color: #dc2626; }
+.cp-mpf-stream__ico { display: grid; flex: none; place-items: center; width: 40px; height: 40px; border-radius: 11px; background: #fbf4ec; color: var(--scopus); transition: background-color .2s ease, color .2s ease; }
+.cp-mpf-stream button.is-on .cp-mpf-stream__ico { background: var(--scopus); color: #fff; }
+.cp-mpf-stream__text { display: grid; flex: 1; min-width: 0; gap: 2px; }
+.cp-mpf-stream__text strong { font-size: 15px; font-weight: 800; }
+.cp-mpf-stream__text small { color: #6b665e; font-size: 12px; line-height: 1.4; }
+.cp-mpf-stream__dot { display: grid; flex: none; place-items: center; width: 22px; height: 22px; border: 1.5px solid #c4bdb1; border-radius: 50%; color: #fff; transition: background-color .2s ease, border-color .2s ease; }
+.cp-mpf-stream button.is-on .cp-mpf-stream__dot { border-color: var(--scopus); background: var(--scopus); }
+.cp-mpf-select.is-compact { height: 48px; padding-left: 6px; border-radius: 12px; }
+.cp-mpf-select.is-compact .cp-mpf-select__ico { width: 34px; height: 34px; border-radius: 9px; }
+.cp-mpf__more.is-single { grid-template-columns: minmax(0, 1fr); }
+.cp-mpf__more.is-field .cp-reg__field:nth-child(2) input { font-family: inherit; letter-spacing: 0; }
+@media (max-width: 640px) { .cp-mpf-stream { grid-template-columns: minmax(0, 1fr); } .cp-mpf-stream button { min-height: 64px; } }

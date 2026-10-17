@@ -90,9 +90,10 @@ export function OrderDone() {
         ...items.slice(1).map((x) => ({ label: x.label, value: x.amount ? formatRupiah(x.amount) : x.was ? `Gratis (normal ${formatRupiah(x.was)})` : "Gratis" })),
         ...(order.profile
           ? [
-              { label: "Kategori", value: order.profile.role },
+              { label: "Profesi", value: order.profile.role },
               ...(order.profile.institution ? [{ label: "Afiliasi", value: order.profile.institution }] : []),
               { label: "Identitas", value: order.profile.id },
+              ...(order.profile.discipline && order.profile.discipline !== "—" ? [{ label: "Bidang ilmu", value: order.profile.discipline }] : []),
               ...(order.profile.scholar ? [{ label: "Google Scholar", value: order.profile.scholar }] : []),
             ]
           : []),

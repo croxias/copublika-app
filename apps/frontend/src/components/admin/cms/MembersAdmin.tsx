@@ -4,14 +4,18 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import * as Menu from '@radix-ui/react-dropdown-menu';
-import { ArrowUpRight, BadgeCheck, UserRoundPlus, CalendarClock, Check, ChevronDown, Clock3, Copy, Download, ExternalLink, History, Mail, MailCheck, MessageCircle, MoreVertical, Power, RefreshCw, Search, Trash2, UserRoundCheck, UserRoundX, X } from 'lucide-react';
+import { ArrowUpRight, BadgeCheck, UserRoundPlus, CalendarClock, Check, ChevronDown, Clock3, Copy, Download, ExternalLink, History, IdCard, Mail, MailCheck, MessageCircle, MoreVertical, Power, RefreshCw, Search, Trash2, UserRoundCheck, UserRoundX, X } from 'lucide-react';
 import { useCms } from '@/lib/cms/store';
 import { RESPONDER } from '@/lib/cms/messages';
 import { EXPIRING_DAYS, SOURCE_LABEL, addMonths, memberEvents, memberState, withMemberEvent, type MemberEvent, type MemberSource, type MemberState } from '@/lib/cms/members';
 import { ID_TYPES, ROLE_LABEL, withSignupEvent } from '@/lib/cms/signups';
 import type { CmsItem, Values } from '@/lib/cms/types';
+import { disciplineLabel, streamLabel } from '@/lib/data/disciplines';
+import { DisciplineEditor, STREAM_FILTER, StreamBadge, matchStream } from './Discipline';
 import { CmsSelect } from './CmsSelect';
 import { MemberCreateDialog } from './MemberCreateDialog';
+import { MemberCardDialog } from './MemberCardDialog';
+import { cardEligibility, cardNumber, nextCardNo } from '@/lib/member-card';
 import { KpiTile, PAGE_SIZE, Pager } from './TableKit';
 import { ConfirmDialog, Drawer, PageHeader, StagingNote, formatDate } from './ui';
 
@@ -28,11 +32,14 @@ const EVENT_LABEL: Record<MemberEvent['action'], string> = {
   reactivated: 'Diaktifkan kembali',
   reminded: 'Pengingat dikirim',
   note: 'Catatan diperbarui',
+  field: 'Bidang ilmu diubah',
+  card: 'Kartu member',
 };
 
 type Tab = MemberState | 'current' | 'all';
 const TABS: { value: Tab; label: string }[] = [
   { value: 'current', label: 'Aktif' },
+  { value: 'scheduled', label: 'Terjadwal' },
   { value: 'pending', label: 'Menunggu aktivasi' },
   { value: 'expiring', label: 'Akan habis' },
   { value: 'expired', label: 'Kedaluwarsa' },
@@ -41,9 +48,9 @@ const TABS: { value: Tab; label: string }[] = [
 ];
 
 function downloadCsv(rows: CmsItem[], now: number) {
-  const head = ['ID member', 'Nama', 'Kategori', 'Instansi', 'Identitas', 'Email', 'WhatsApp', 'Keanggotaan', 'Status', 'Aktif sejak', 'Berlaku s.d.'];
+  const head = ['ID member', 'Nama', 'Profesi', 'Rumpun', 'Bidang ilmu', 'Instansi', 'Identitas', 'Email', 'WhatsApp', 'Keanggotaan', 'Status', 'Aktif sejak', 'Berlaku s.d.'];
   const cell = (v: unknown) => `"${String(v ?? '').replaceAll('"', '""')}"`;
-  const lines = rows.map((m) => [m.code, m.name, ROLE_LABEL[String(m.role)] ?? '', m.institution, m.idNumber, m.email, m.whatsapp, SOURCE_LABEL[m.source as MemberSource] ?? '', memberState(m, now).label, m.activatedAt, m.expiresAt].map(cell).join(','));
+  const lines = rows.map((m) => [m.code, m.name, ROLE_LABEL[String(m.role)] ?? '', streamLabel(m.stream), String(m.field ?? ''), m.institution, m.idNumber, m.email, m.whatsapp, SOURCE_LABEL[m.source as MemberSource] ?? '', memberState(m, now).label, m.activatedAt, m.expiresAt].map(cell).join(','));
   const blob = new Blob(['﻿' + [head.join(','), ...lines].join('\r\n')], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -60,6 +67,7 @@ export function MembersAdmin() {
   const all = [...(cms.collections.members ?? [])].sort((a, b) => String(b.joinedAt).localeCompare(String(a.joinedAt)));
   const [tab, setTab] = useState<Tab>('current');
   const [role, setRole] = useState('all');
+  const [stream, setStream] = useState('all');
   const [source, setSource] = useState('all');
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
@@ -67,6 +75,7 @@ export function MembersAdmin() {
   const [confirmDelete, setConfirmDelete] = useState<CmsItem | null>(null);
   const [kpiOpen, setKpiOpen] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [cardId, setCardId] = useState<string | null>(null);
 
   const stateOf = (m: CmsItem) => memberState(m, now).state;
   const shown = all
@@ -75,8 +84,9 @@ export function MembersAdmin() {
       return tab === 'all' ? true : tab === 'current' ? s === 'active' || s === 'expiring' : s === tab;
     })
     .filter((m) => role === 'all' || m.role === role)
+    .filter((m) => matchStream(m.stream, stream))
     .filter((m) => source === 'all' || m.source === source)
-    .filter((m) => !q || `${String(m.name)} ${String(m.email)} ${String(m.institution)} ${String(m.code)} ${String(m.idNumber)}`.toLowerCase().includes(q.toLowerCase()));
+    .filter((m) => !q || `${String(m.name)} ${String(m.email)} ${String(m.institution)} ${String(m.code)} ${String(m.idNumber)} ${String(m.field ?? '')}`.toLowerCase().includes(q.toLowerCase()));
   const pages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE));
   const current = Math.min(page, pages);
   const rows = shown.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
@@ -107,6 +117,16 @@ export function MembersAdmin() {
     const base = m.expiresAt && new Date(String(m.expiresAt)).getTime() > Date.now() ? String(m.expiresAt) : new Date().toISOString();
     patchOne(m, { by: RESPONDER, action: 'extended', detail: ref ? `12 bulan · ${ref}` : '12 bulan' }, { status: 'active', activatedAt: m.activatedAt || new Date().toISOString(), expiresAt: addMonths(base, 12), source: m.source === 'gratis' ? 'tahunan' : m.source });
     cms.toast('Masa aktif diperpanjang 12 bulan.');
+  };
+  /** Opens the ID card; the first time an eligible member's card is opened it gets the next number. */
+  const openCard = (m: CmsItem) => {
+    if (!cardEligibility(m, now).ok) return;
+    if (!m.cardNo) {
+      const n = nextCardNo(all);
+      patchOne(m, { by: RESPONDER, action: 'card', detail: `Diterbitkan · ${cardNumber(n)}` }, { cardNo: n, cardIssuedAt: new Date().toISOString() });
+    }
+    setOpenId(null);
+    setCardId(m.id);
   };
   const setInactive = (m: CmsItem, off: boolean) => {
     patchOne(m, { by: RESPONDER, action: off ? 'deactivated' : 'reactivated' }, { status: off ? 'inactive' : m.activatedAt ? 'active' : 'pending' });
@@ -165,11 +185,12 @@ export function MembersAdmin() {
             ))}
           </div>
           <div className="cms-toolbar-right">
-            <CmsSelect size="sm" prefix="Kategori" aria-label="Filter kategori" value={role} onChange={resetTo(setRole)} options={[{ value: 'all', label: 'Semua' }, ...Object.entries(ROLE_LABEL).map(([value, label]) => ({ value, label }))]} className="msg-filter" />
+            <CmsSelect size="sm" prefix="Profesi" aria-label="Filter profesi" value={role} onChange={resetTo(setRole)} options={[{ value: 'all', label: 'Semua' }, ...Object.entries(ROLE_LABEL).map(([value, label]) => ({ value, label }))]} className="msg-filter" />
+            <CmsSelect size="sm" prefix="Rumpun" aria-label="Filter rumpun ilmu" value={stream} onChange={resetTo(setStream)} options={STREAM_FILTER} className="msg-filter" />
             <CmsSelect size="sm" prefix="Sumber" aria-label="Filter sumber keanggotaan" value={source} onChange={resetTo(setSource)} options={[{ value: 'all', label: 'Semua' }, ...Object.entries(SOURCE_LABEL).map(([value, label]) => ({ value, label }))]} className="msg-filter" />
             <div className="cms-search">
               <Search size={14} aria-hidden="true" />
-              <input aria-label="Cari anggota" placeholder="Cari nama, email, ID, NIK…" value={q} onChange={(e) => resetTo(setQ)(e.target.value)} />
+              <input aria-label="Cari anggota" placeholder="Cari nama, email, NIK, bidang…" value={q} onChange={(e) => resetTo(setQ)(e.target.value)} />
               {q && <button type="button" aria-label="Hapus pencarian" onClick={() => resetTo(setQ)('')}><X size={13} /></button>}
             </div>
             <button type="button" className="cms-btn cms-btn--ghost cms-btn--sm" onClick={() => downloadCsv(shown, now)} disabled={!shown.length}><Download size={14} /> CSV</button>
@@ -183,8 +204,9 @@ export function MembersAdmin() {
                 <th style={{ width: 100 }}>ID</th>
                 <th>Member</th>
                 <th>Instansi</th>
-                <th>Email</th>
-                <th style={{ width: 124 }}>Kategori</th>
+                <th style={{ width: 112 }}>Profesi</th>
+                <th style={{ width: 96 }}>Rumpun</th>
+                <th>Bidang ilmu</th>
                 <th style={{ width: 140 }}>Keanggotaan</th>
                 <th style={{ width: 132 }}>Status</th>
                 <th style={{ width: 140 }}>Masa aktif</th>
@@ -200,16 +222,22 @@ export function MembersAdmin() {
                     <td className="cms-col-title">
                       <div className="msg-cell sgn-cell">
                         <span className="msg-av" aria-hidden="true">{initials(String(m.name))}</span>
-                        <strong>{String(m.name)}</strong>
+                        <span className="sgn-who"><strong>{String(m.name)}</strong><small title={String(m.email)}>{String(m.email)}</small></span>
                       </div>
                     </td>
                     <td className="cms-col-meta" data-label="Instansi"><span className="sgn-text">{m.institution ? String(m.institution) : <span className="cms-muted">—</span>}</span></td>
-                    <td className="cms-col-meta" data-label="Email"><span className="sgn-email" title={String(m.email)}>{String(m.email).split('@')[0]}<wbr />@{String(m.email).split('@')[1] ?? ''}</span></td>
-                    <td className="cms-col-meta" data-label="Kategori">{ROLE_LABEL[String(m.role)] ?? <span className="cms-muted">—</span>}</td>
+                    <td className="cms-col-meta" data-label="Profesi">{ROLE_LABEL[String(m.role)] ?? <span className="cms-muted">—</span>}</td>
+                    <td className="cms-col-meta" data-label="Rumpun"><StreamBadge stream={m.stream} /></td>
+                    <td className="cms-col-meta" data-label="Bidang ilmu"><span className="sgn-text">{String(m.field ?? '').trim() || <span className="cms-muted">—</span>}</span></td>
                     <td className="cms-col-meta" data-label="Keanggotaan"><span className={`sgn-kind is-${m.source === 'gratis' ? 'free' : 'paid'}`}>{SOURCE_LABEL[m.source as MemberSource] ?? '—'}</span></td>
                     <td className="cms-col-meta" data-label="Status"><span className={`cms-badge cms-badge--${s.tone}`}>{s.label}</span></td>
                     <td className="cms-col-meta" data-label="Masa aktif">
-                      {m.expiresAt && s.state !== 'inactive' ? (
+                      {s.state === 'scheduled' ? (
+                        <span className="msg-sla is-info">
+                          <span className="msg-sla__label">Mulai {s.startsIn} hari lagi</span>
+                          <small>mulai {formatDate(String(m.activatedAt))}</small>
+                        </span>
+                      ) : m.expiresAt && s.state !== 'inactive' ? (
                         <span className={`msg-sla is-${s.state === 'expired' ? 'late' : s.state === 'expiring' ? 'soon' : 'ok'}`}>
                           <span className="msg-sla__label">{s.state === 'expired' ? 'Habis' : `${s.daysLeft} hari lagi`}</span>
                           <span className="msg-sla__bar" aria-hidden="true"><i style={{ transform: `scaleX(${s.share})` }} /></span>
@@ -225,7 +253,17 @@ export function MembersAdmin() {
                         <Menu.Portal>
                           <Menu.Content className="cms-menu" align="end" sideOffset={6} collisionPadding={12}>
                             <Menu.Item className="cms-menu-item" onSelect={() => setOpenId(m.id)}><BadgeCheck size={14} /> Buka detail</Menu.Item>
+                            {(() => {
+                              const c = cardEligibility(m, now);
+                              return (
+                                <Menu.Item className="cms-menu-item mcd-menu" disabled={!c.ok} onSelect={() => openCard(m)}>
+                                  <IdCard size={14} />
+                                  <span>ID Card Detail{!c.ok && <small>{c.reason}</small>}</span>
+                                </Menu.Item>
+                              );
+                            })()}
                             {s.state === 'pending' && <Menu.Item className="cms-menu-item" onSelect={() => activate(m)}><Power size={14} /> Aktifkan</Menu.Item>}
+                            {s.state === 'scheduled' && <Menu.Item className="cms-menu-item" onSelect={() => activate(m)}><Power size={14} /> Aktifkan sekarang</Menu.Item>}
                             {(s.state === 'active' || s.state === 'expiring' || s.state === 'expired') && <Menu.Item className="cms-menu-item" onSelect={() => extend(m, '')}><RefreshCw size={14} /> Perpanjang 12 bulan</Menu.Item>}
                             {s.state !== 'inactive' ? (
                               <Menu.Item className="cms-menu-item" onSelect={() => setInactive(m, true)}><UserRoundX size={14} /> Nonaktifkan</Menu.Item>
@@ -264,6 +302,16 @@ export function MembersAdmin() {
           onExtend={(ref) => extend(open, ref)}
           onInactive={(off) => setInactive(open, off)}
           onDelete={() => setConfirmDelete(open)}
+          onCard={() => openCard(open)}
+        />
+      )}
+
+      {cardId && all.find((m) => m.id === cardId) && (
+        <MemberCardDialog
+          item={all.find((m) => m.id === cardId)!}
+          now={now}
+          onClose={() => setCardId(null)}
+          onDownloaded={(which) => { const m = all.find((x) => x.id === cardId); if (m) patchOne(m, { by: RESPONDER, action: 'card', detail: `Diunduh · ${which}` }, {}); }}
         />
       )}
 
@@ -273,7 +321,7 @@ export function MembersAdmin() {
           onClose={() => setCreating(false)}
           onCreate={(m) => {
             cms.setCollection('members', [m, ...(cms.collections.members ?? [])]);
-            cms.toast(`${String(m.name)} terdaftar dan langsung aktif.`);
+            cms.toast(memberState(m, Date.now()).state === 'scheduled' ? `${String(m.name)} terdaftar, aktif mulai ${formatDate(String(m.activatedAt))}.` : `${String(m.name)} terdaftar dan langsung aktif.`);
             setCreating(false);
             setTab('current');
             setPage(1);
@@ -299,13 +347,14 @@ type DialogProps = {
   now: number;
   onClose: () => void;
   onPatch: (e: Omit<MemberEvent, 'at'> | null, p: Values) => void;
+  onCard: () => void;
   onActivate: () => void;
   onExtend: (ref: string) => void;
   onInactive: (off: boolean) => void;
   onDelete: () => void;
 };
 
-function MemberDialog({ item, now, onClose, onPatch, onActivate, onExtend, onInactive, onDelete }: DialogProps) {
+function MemberDialog({ item, now, onClose, onPatch, onActivate, onExtend, onInactive, onDelete, onCard }: DialogProps) {
   const cms = useCms();
   const s = memberState(item, now);
   const idRule = ID_TYPES[String(item.role)];
@@ -327,6 +376,7 @@ function MemberDialog({ item, now, onClose, onPatch, onActivate, onExtend, onIna
         <>
           <button type="button" className="cms-btn cms-btn--ghost is-danger" onClick={onDelete}><Trash2 size={14} /> <span className="cms-hide-sm">Hapus</span></button>
           <div className="cms-drawer-foot-right">
+            {cardEligibility(item, now).ok && <button type="button" className="cms-btn cms-btn--ghost" onClick={onCard}><IdCard size={14} /> ID Card</button>}
             {s.state !== 'inactive' ? (
               <button type="button" className="cms-btn cms-btn--ghost" onClick={() => { onInactive(true); onClose(); }}><UserRoundX size={14} /> Nonaktifkan</button>
             ) : (
@@ -357,6 +407,7 @@ function MemberDialog({ item, now, onClose, onPatch, onActivate, onExtend, onIna
                 </div>
               ) : null}
               <div><dt>Email</dt><dd className="sgn-id"><span>{String(item.email)}</span><button type="button" className="sgn-copy" onClick={() => copy(String(item.email), 'Email')} aria-label="Salin email"><Copy size={13} /></button></dd></div>
+              <div><dt>Bidang ilmu</dt><dd><DisciplineEditor key={item.id} stream={item.stream} field={item.field} onSave={(stream, field) => { onPatch({ by: RESPONDER, action: 'field', detail: disciplineLabel(stream, field) }, { stream, field }); cms.toast('Bidang ilmu diperbarui.'); }} /></dd></div>
               <div><dt>WhatsApp</dt><dd>{String(item.whatsapp || '—')}</dd></div>
               <div><dt>Google Scholar</dt><dd>{item.scholar ? <a className="sgn-link" href={`https://scholar.google.com/citations?user=${encodeURIComponent(String(item.scholar))}`} target="_blank" rel="noopener noreferrer">{String(item.scholar)} <ExternalLink size={12} /></a> : '—'}</dd></div>
               <div><dt>Tercatat</dt><dd>{formatDate(String(item.joinedAt), true)}</dd></div>
@@ -372,6 +423,19 @@ function MemberDialog({ item, now, onClose, onPatch, onActivate, onExtend, onIna
               <footer className="sgn-actions">
                 <button type="button" className="cms-btn cms-btn--solid" onClick={() => { onActivate(); onClose(); }}><Power size={15} /> Aktifkan sekarang</button>
                 <a className="cms-btn cms-btn--ghost" href={resend}><Mail size={15} /> Kirim ulang link aktivasi</a>
+              </footer>
+            </section>
+          )}
+
+          {s.state === 'scheduled' && (
+            <section className="msg-compose" aria-label="Terjadwal">
+              <header>
+                <span className="rvd-k"><CalendarClock size={13} aria-hidden="true" /> Terjadwal</span>
+                <span className="sgn-due">Mulai {s.startsIn} hari lagi</span>
+              </header>
+              <p className="cms-muted sgn-note">Masa aktif {Number(item.months) || 1} bulan dimulai {formatDate(String(item.activatedAt))} dan berlaku sampai {formatDate(String(item.expiresAt))}. Sampai tanggal itu member belum dihitung aktif. Aktifkan sekarang bila member perlu akses lebih awal; masa aktifnya dihitung ulang dari hari ini.</p>
+              <footer className="sgn-actions">
+                <button type="button" className="cms-btn cms-btn--solid" onClick={() => { onActivate(); onClose(); }}><Power size={15} /> Aktifkan sekarang</button>
               </footer>
             </section>
           )}
