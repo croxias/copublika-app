@@ -3,14 +3,12 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, BadgeCheck, CalendarDays, Check, Lock, MailCheck, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowRight, BadgeCheck, CalendarDays, Check, CircleAlert, Lock, MailCheck, ShieldCheck, UserRound } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import {
   BOOTCAMP_BATCHES,
   batchSeatsLeft,
-  MEMBER_PLANS,
   PROGRAMS,
-  PROGRAM_MEMBER_MONTHS,
   STS_MENTORS,
   formatDate,
   formatRupiah,
@@ -25,6 +23,7 @@ import { addSignup } from "@/lib/cms/signups";
 import { PasswordFields } from "./PasswordFields";
 import { PolicyDialog, type PolicyTab } from "./PolicyDialog";
 import { disciplineLabel, fieldLabel } from "@/lib/data/disciplines";
+import { memberPlans, monthsText, perUnit, usePublicProgramPrices, usePublicSettings } from "@/lib/cms/registration-settings";
 import { EMPTY_PROFILE, MEMBER_ROLES, MemberProfileFields, maskId, scholarId, validateProfile, type MemberProfile } from "./MemberProfileFields";
 
 /** What can be registered: member activation alone, or a program. */
@@ -49,6 +48,8 @@ export type Order = {
 };
 
 export const ORDER_KEY = "cp-last-order";
+/** Last six base-36 digits of the time, for a short order code. */
+const orderStamp = () => Date.now().toString(36).toUpperCase().slice(-6);
 
 type Props = { program: RegKey; plan?: MemberPlanKey; mentor?: string; month?: string; batch?: string };
 
@@ -61,7 +62,10 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
   const program = key === "member" ? null : PROGRAMS[key];
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
-  const plan = MEMBER_PLANS[planKey];
+  const settings = usePublicSettings();
+  const prices = usePublicProgramPrices();
+  const plan = memberPlans(settings)[planKey];
+  const closed = key === "member" && (planKey === "gratis" ? !settings.freeOpen : !settings.yearlyOpen);
   const isFree = key === "member" && plan.price === 0;
   // A new member describes themselves first; a signed-in member renewing already has a profile.
   const showProfile = key === "member" && !user;
@@ -89,10 +93,10 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
   const programDetail = key === "siap-tembus-scopus" ? `${chosenMentor?.name ?? "Mentor belum dipilih"} · ${months[monthIdx].label}` : key === "bootcamp-menulis" ? `${chosenBatch.name} · ${formatDate(chosenBatch.start)} – ${formatDate(chosenBatch.end)}` : "";
   const items: OrderItem[] = program
     ? [
-        { label: program.name, detail: programDetail, amount: program.price },
-        { label: `Member CoPublika ${PROGRAM_MEMBER_MONTHS / 12} tahun`, detail: "Bonus peserta program", amount: 0, was: MEMBER_PLANS.tahunan.price },
+        { label: program.name, detail: programDetail, amount: prices[key as keyof typeof prices]?.price ?? program.price },
+        ...(settings.programBonusMonths ? [{ label: `Member CoPublika ${monthsText(settings.programBonusMonths)}`, detail: "Bonus peserta program", amount: 0, was: settings.yearlyPrice }] : []),
       ]
-    : [{ label: plan.name, detail: plan.price ? "Masa aktif 12 bulan" : "Masa aktif bulan pertama", amount: plan.price }];
+    : [{ label: plan.name, detail: plan.price ? `Masa aktif ${monthsText(plan.months)}` : `Masa aktif ${plan.months === 1 ? "bulan pertama" : `${monthsText(plan.months)} pertama`}`, amount: plan.price }];
   const total = items.reduce((n, x) => n + x.amount, 0);
 
   const validate = () => {
@@ -114,6 +118,7 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
 
   const submit = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    if (closed) return;
     setSubmitError("");
     const e = validate();
     setErrors(e);
@@ -138,9 +143,9 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
     }
     // Front-end phase: the order is kept in this browser until the backend stores it.
     const order: Order = {
-      code: `CP-${key === "siap-tembus-scopus" ? "STS" : key === "bootcamp-menulis" ? "BTM" : "MBR"}-${Date.now().toString(36).toUpperCase().slice(-6)}`,
+      code: `CP-${key === "siap-tembus-scopus" ? "STS" : key === "bootcamp-menulis" ? "BTM" : "MBR"}-${orderStamp()}`,
       program: key,
-      detail: program ? programDetail : plan.price ? `Aktif ${plan.months} bulan sejak pembayaran dikonfirmasi` : "Masa aktif bulan pertama, gratis",
+      detail: program ? programDetail : plan.price ? `Aktif ${plan.months} bulan sejak pembayaran dikonfirmasi` : `Masa aktif ${monthsText(plan.months)} pertama, gratis`,
       items,
       ...(showProfile && profile.role
         ? { profile: { role: MEMBER_ROLES[profile.role].label, institution: profile.institution.trim(), id: `${MEMBER_ROLES[profile.role].id.name} ${maskId(profile.idNumber)}`, discipline: disciplineLabel(profile.stream, fieldLabel(profile.field, profile.fieldOther)), scholar: scholarId(profile.scholar) } }
@@ -183,6 +188,12 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
   return (
     <div className="cp-reg">
       <form className="cp-reg__form" onSubmit={submit} noValidate>
+        {closed && (
+          <p className="cp-reg__closed" role="status">
+            <CircleAlert size={18} aria-hidden="true" />
+            <span><strong>{plan.name} sedang ditutup sementara.</strong> Silakan cek kembali nanti atau hubungi Tim CoPublika via WhatsApp {settings.confirmWhatsapp}.</span>
+          </p>
+        )}
         {/* 1. Program choice */}
         {key !== "member" && (
         <fieldset className="cp-reg__step">
@@ -255,7 +266,7 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
             <div className="cp-reg__member">
               <UserRound size={18} aria-hidden="true" />
               <span>
-                Mendaftar sebagai <strong>{user.name}</strong> ({user.email}). {key === "member" ? (plan.price ? "Keanggotaan Anda diaktifkan satu tahun setelah pembayaran." : "Masa aktif member Anda ditambah satu bulan.") : `Program dan keanggotaan ${PROGRAM_MEMBER_MONTHS / 12} tahun ditambahkan ke akun Anda.`}
+                Mendaftar sebagai <strong>{user.name}</strong> ({user.email}). {key === "member" ? (plan.price ? `Keanggotaan Anda diaktifkan ${monthsText(plan.months)} setelah pembayaran.` : `Masa aktif member Anda ditambah ${monthsText(plan.months)}.`) : (settings.programBonusMonths ? `Program dan keanggotaan ${monthsText(settings.programBonusMonths)} ditambahkan ke akun Anda.` : "Program ditambahkan ke akun Anda.")}
               </span>
             </div>
           ) : (
@@ -330,12 +341,12 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
             <span className="cp-reg__next-ico" aria-hidden="true"><MailCheck size={20} /></span>
             <div>
               <strong>Langkah selanjutnya</strong>
-              <p>Setelah pendaftaran disetujui admin, <b>link aktivasi akun</b> kami kirim ke {form.email.trim() ? <b>{form.email.trim()}</b> : "email Anda"} dalam 1×24 jam.</p>
+              <p>Setelah pendaftaran disetujui admin, <b>link aktivasi akun</b> kami kirim ke {form.email.trim() ? <b>{form.email.trim()}</b> : "email Anda"} dalam {settings.reviewHours} jam.</p>
             </div>
           </aside>
         )}
 
-        <button type="submit" className="cp-ab-btn cp-ab-btn--primary cp-reg__submit" disabled={busy || !form.agree} aria-describedby={form.agree ? undefined : "cp-reg-lock"}>
+        <button type="submit" className="cp-ab-btn cp-ab-btn--primary cp-reg__submit" disabled={busy || !form.agree || closed} aria-describedby={form.agree ? undefined : "cp-reg-lock"}>
           {busy ? "Memproses…" : <>{isFree ? "Daftar member gratis" : "Daftar & lanjut ke pembayaran"} <ArrowRight size={16} aria-hidden="true" /></>}
         </button>
         {!form.agree && <p className="cp-reg__lock" id="cp-reg-lock"><Lock size={13} aria-hidden="true" /> Centang persetujuan Syarat Keanggotaan dan Kebijakan Privasi untuk mengaktifkan tombol.</p>}
@@ -376,8 +387,8 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
                   <div><dt>Google Scholar</dt><dd>{scholarId(profile.scholar) ? "Terhubung" : "Belum ditambahkan"}</dd></div>
                 </>
               )}
-              <div><dt>Masa aktif</dt><dd>{plan.months} bulan</dd></div>
-              <div><dt>Biaya</dt><dd>{plan.price ? `${formatRupiah(plan.price)} per tahun` : "Gratis"}</dd></div>
+              <div><dt>Masa aktif</dt><dd>{monthsText(plan.months)}</dd></div>
+              <div><dt>Biaya</dt><dd>{plan.price ? `${formatRupiah(plan.price)} ${perUnit(plan.months)}` : "Gratis"}</dd></div>
             </>
           )}
         </dl>
@@ -394,7 +405,7 @@ export function RegisterForm({ program: key, plan: planKey = "gratis", mentor: i
           <strong>{total ? formatRupiah(total) : "Gratis"}</strong>
         </div>
         <ul className="cp-reg__perks">
-          <li><BadgeCheck size={15} aria-hidden="true" /> {program ? `Member ${PROGRAM_MEMBER_MONTHS / 12} tahun tanpa biaya aktivasi` : `Member aktif ${plan.months} bulan`}</li>
+          <li><BadgeCheck size={15} aria-hidden="true" /> {program ? (settings.programBonusMonths ? `Member ${monthsText(settings.programBonusMonths)} tanpa biaya aktivasi` : "Akses program sesuai jadwal") : `Member aktif ${monthsText(plan.months)}`}</li>
           <li><ShieldCheck size={15} aria-hidden="true" /> Akun member CoPublika dibuat otomatis</li>
           {total > 0 && <li><Lock size={15} aria-hidden="true" /> Pembayaran dikonfirmasi tim setelah pendaftaran</li>}
         </ul>

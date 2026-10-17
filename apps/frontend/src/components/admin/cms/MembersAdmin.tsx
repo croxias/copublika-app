@@ -7,7 +7,7 @@ import * as Menu from '@radix-ui/react-dropdown-menu';
 import { ArrowUpRight, BadgeCheck, UserRoundPlus, CalendarClock, Check, ChevronDown, Clock3, Copy, Download, ExternalLink, History, IdCard, Mail, MailCheck, MessageCircle, MoreVertical, Power, RefreshCw, Search, Trash2, UserRoundCheck, UserRoundX, X } from 'lucide-react';
 import { useCms } from '@/lib/cms/store';
 import { RESPONDER } from '@/lib/cms/messages';
-import { EXPIRING_DAYS, SOURCE_LABEL, addMonths, memberEvents, memberState, withMemberEvent, type MemberEvent, type MemberSource, type MemberState } from '@/lib/cms/members';
+import { SOURCE_LABEL, addMonths, memberEvents, memberState, withMemberEvent, type MemberEvent, type MemberSource, type MemberState } from '@/lib/cms/members';
 import { ID_TYPES, ROLE_LABEL, withSignupEvent } from '@/lib/cms/signups';
 import type { CmsItem, Values } from '@/lib/cms/types';
 import { disciplineLabel, streamLabel } from '@/lib/data/disciplines';
@@ -15,6 +15,10 @@ import { DisciplineEditor, STREAM_FILTER, StreamBadge, matchStream } from './Dis
 import { CmsSelect } from './CmsSelect';
 import { MemberCreateDialog } from './MemberCreateDialog';
 import { MemberCardDialog } from './MemberCardDialog';
+import { activitiesOf } from '@/lib/cms/participants';
+import { useRegistrationSettings } from './useRegistrationSettings';
+import { fillTemplate, monthsText } from '@/lib/cms/registration-settings';
+import { formatRupiah } from '@/lib/data/programs';
 import { cardEligibility, cardNumber, nextCardNo } from '@/lib/member-card';
 import { KpiTile, PAGE_SIZE, Pager } from './TableKit';
 import { ConfirmDialog, Drawer, PageHeader, StagingNote, formatDate } from './ui';
@@ -76,8 +80,10 @@ export function MembersAdmin() {
   const [kpiOpen, setKpiOpen] = useState(true);
   const [creating, setCreating] = useState(false);
   const [cardId, setCardId] = useState<string | null>(null);
+  const settings = useRegistrationSettings();
+  const ex = settings.expiringDays;
 
-  const stateOf = (m: CmsItem) => memberState(m, now).state;
+  const stateOf = (m: CmsItem) => memberState(m, now, ex).state;
   const shown = all
     .filter((m) => {
       const s = stateOf(m);
@@ -115,12 +121,13 @@ export function MembersAdmin() {
   };
   const extend = (m: CmsItem, ref: string) => {
     const base = m.expiresAt && new Date(String(m.expiresAt)).getTime() > Date.now() ? String(m.expiresAt) : new Date().toISOString();
-    patchOne(m, { by: RESPONDER, action: 'extended', detail: ref ? `12 bulan · ${ref}` : '12 bulan' }, { status: 'active', activatedAt: m.activatedAt || new Date().toISOString(), expiresAt: addMonths(base, 12), source: m.source === 'gratis' ? 'tahunan' : m.source });
-    cms.toast('Masa aktif diperpanjang 12 bulan.');
+    const months = settings.yearlyMonths;
+    patchOne(m, { by: RESPONDER, action: 'extended', detail: ref ? `${months} bulan · ${ref}` : `${months} bulan` }, { status: 'active', activatedAt: m.activatedAt || new Date().toISOString(), expiresAt: addMonths(base, months), source: m.source === 'gratis' ? 'tahunan' : m.source });
+    cms.toast(`Masa aktif diperpanjang ${months} bulan.`);
   };
   /** Opens the ID card; the first time an eligible member's card is opened it gets the next number. */
   const openCard = (m: CmsItem) => {
-    if (!cardEligibility(m, now).ok) return;
+    if (!cardEligibility(m, now, settings.cardMinMonths, ex).ok) return;
     if (!m.cardNo) {
       const n = nextCardNo(all);
       patchOne(m, { by: RESPONDER, action: 'card', detail: `Diterbitkan · ${cardNumber(n)}` }, { cardNo: n, cardIssuedAt: new Date().toISOString() });
@@ -143,9 +150,9 @@ export function MembersAdmin() {
   return (
     <section className="cms-page">
       <PageHeader
-        crumb={['Keanggotaan', 'Anggota']}
-        title="Anggota"
-        accent="Member CoPublika"
+        crumb={['Keanggotaan', 'Data Anggota']}
+        title="Data"
+        accent="Anggota"
         description="Member tercatat otomatis dari Pendaftaran, atau ditambahkan langsung oleh admin. Aktifkan, perpanjang, atau nonaktifkan keanggotaan dari sini."
         actions={
           <>
@@ -169,7 +176,7 @@ export function MembersAdmin() {
               <div className="pov-kpis bov-kpis evt-kpis">
                 <KpiTile icon={<UserRoundCheck size={17} />} label="Member aktif" value={active} share={active / total} tone="ok" />
                 <KpiTile icon={<MailCheck size={17} />} label="Menunggu aktivasi" value={by('pending')} share={by('pending') / total} delay={0.05} />
-                <KpiTile icon={<CalendarClock size={17} />} label={`Habis ≤ ${EXPIRING_DAYS} hari`} value={by('expiring')} share={by('expiring') / Math.max(1, active)} tone="danger" delay={0.1} />
+                <KpiTile icon={<CalendarClock size={17} />} label={`Habis ≤ ${ex} hari`} value={by('expiring')} share={by('expiring') / Math.max(1, active)} tone="danger" delay={0.1} />
                 <KpiTile icon={<UserRoundX size={17} />} label="Kedaluwarsa" value={by('expired')} share={by('expired') / total} tone="ink" delay={0.15} />
               </div>
             </motion.div>
@@ -215,7 +222,7 @@ export function MembersAdmin() {
             </thead>
             <tbody>
               {rows.map((m, i) => {
-                const s = memberState(m, now);
+                const s = memberState(m, now, ex);
                 return (
                   <motion.tr key={m.id} className={`cms-row msg-row ${s.state === 'pending' ? 'is-unread' : ''}`} onClick={() => setOpenId(m.id)} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25, delay: Math.min(i, 10) * 0.025 }}>
                     <td className="cms-col-meta" data-label="ID"><span className="msg-code">{String(m.code)}</span></td>
@@ -254,7 +261,7 @@ export function MembersAdmin() {
                           <Menu.Content className="cms-menu" align="end" sideOffset={6} collisionPadding={12}>
                             <Menu.Item className="cms-menu-item" onSelect={() => setOpenId(m.id)}><BadgeCheck size={14} /> Buka detail</Menu.Item>
                             {(() => {
-                              const c = cardEligibility(m, now);
+                              const c = cardEligibility(m, now, settings.cardMinMonths, ex);
                               return (
                                 <Menu.Item className="cms-menu-item mcd-menu" disabled={!c.ok} onSelect={() => openCard(m)}>
                                   <IdCard size={14} />
@@ -264,7 +271,7 @@ export function MembersAdmin() {
                             })()}
                             {s.state === 'pending' && <Menu.Item className="cms-menu-item" onSelect={() => activate(m)}><Power size={14} /> Aktifkan</Menu.Item>}
                             {s.state === 'scheduled' && <Menu.Item className="cms-menu-item" onSelect={() => activate(m)}><Power size={14} /> Aktifkan sekarang</Menu.Item>}
-                            {(s.state === 'active' || s.state === 'expiring' || s.state === 'expired') && <Menu.Item className="cms-menu-item" onSelect={() => extend(m, '')}><RefreshCw size={14} /> Perpanjang 12 bulan</Menu.Item>}
+                            {(s.state === 'active' || s.state === 'expiring' || s.state === 'expired') && <Menu.Item className="cms-menu-item" onSelect={() => extend(m, '')}><RefreshCw size={14} /> Perpanjang {settings.yearlyMonths} bulan</Menu.Item>}
                             {s.state !== 'inactive' ? (
                               <Menu.Item className="cms-menu-item" onSelect={() => setInactive(m, true)}><UserRoundX size={14} /> Nonaktifkan</Menu.Item>
                             ) : (
@@ -296,6 +303,7 @@ export function MembersAdmin() {
           key={open.id}
           item={open}
           now={now}
+          settings={settings}
           onClose={() => setOpenId(null)}
           onPatch={(e, p) => patchOne(open, e, p)}
           onActivate={() => activate(open)}
@@ -343,6 +351,7 @@ export function MembersAdmin() {
 }
 
 type DialogProps = {
+  settings: ReturnType<typeof useRegistrationSettings>;
   item: CmsItem;
   now: number;
   onClose: () => void;
@@ -354,16 +363,17 @@ type DialogProps = {
   onDelete: () => void;
 };
 
-function MemberDialog({ item, now, onClose, onPatch, onActivate, onExtend, onInactive, onDelete, onCard }: DialogProps) {
+function MemberDialog({ item, now, settings, onClose, onPatch, onActivate, onExtend, onInactive, onDelete, onCard }: DialogProps) {
   const cms = useCms();
-  const s = memberState(item, now);
+  const s = memberState(item, now, settings.expiringDays);
   const idRule = ID_TYPES[String(item.role)];
   const [note, setNote] = useState(String(item.note ?? ''));
   const [ref, setRef] = useState('');
   const events = memberEvents(item);
+  const acts = activitiesOf(String(item.email), cms.collections, now);
   const copy = (text: string, label: string) => navigator.clipboard?.writeText(text).then(() => cms.toast(`${label} disalin.`)).catch(() => {});
-  const remind = `https://wa.me/${waNumber(item.whatsapp)}?text=${encodeURIComponent(`Halo ${firstName(String(item.name))}, keanggotaan CoPublika Anda ${s.state === 'expired' ? 'sudah habis' : `berakhir ${item.expiresAt ? formatDate(String(item.expiresAt)) : ''}`}. Perpanjang Rp. 75.000 untuk satu tahun di copublika.id/daftar. — ${RESPONDER}`)}`;
-  const resend = `mailto:${String(item.email)}?subject=${encodeURIComponent('Link aktivasi akun CoPublika')}&body=${encodeURIComponent(`Halo ${firstName(String(item.name))},\n\nPendaftaran Anda sudah disetujui. Aktifkan akun lewat link yang kami kirim sebelumnya, atau balas email ini bila link tidak ditemukan.\n\nSalam,\n${RESPONDER}`)}`;
+  const remind = `https://wa.me/${waNumber(item.whatsapp)}?text=${encodeURIComponent(fillTemplate(settings.templates.expiryReminder, { nama: firstName(String(item.name)), berlaku: item.expiresAt ? formatDate(String(item.expiresAt)) : '-', harga: formatRupiah(settings.yearlyPrice), masa_aktif: monthsText(settings.yearlyMonths) }))}`;
+  const resend = `mailto:${String(item.email)}?subject=${encodeURIComponent('Link aktivasi akun CoPublika')}&body=${encodeURIComponent(fillTemplate(settings.templates.activation, { nama: firstName(String(item.name)), kode: String(item.signupCode || item.code), link: '(link aktivasi)', masa_aktif: monthsText(Number(item.months) || settings.freeMonths) }))}`;
 
   return (
     <Drawer
@@ -376,7 +386,7 @@ function MemberDialog({ item, now, onClose, onPatch, onActivate, onExtend, onIna
         <>
           <button type="button" className="cms-btn cms-btn--ghost is-danger" onClick={onDelete}><Trash2 size={14} /> <span className="cms-hide-sm">Hapus</span></button>
           <div className="cms-drawer-foot-right">
-            {cardEligibility(item, now).ok && <button type="button" className="cms-btn cms-btn--ghost" onClick={onCard}><IdCard size={14} /> ID Card</button>}
+            {cardEligibility(item, now, settings.cardMinMonths, settings.expiringDays).ok && <button type="button" className="cms-btn cms-btn--ghost" onClick={onCard}><IdCard size={14} /> ID Card</button>}
             {s.state !== 'inactive' ? (
               <button type="button" className="cms-btn cms-btn--ghost" onClick={() => { onInactive(true); onClose(); }}><UserRoundX size={14} /> Nonaktifkan</button>
             ) : (
@@ -427,6 +437,17 @@ function MemberDialog({ item, now, onClose, onPatch, onActivate, onExtend, onIna
             </section>
           )}
 
+          {acts.length > 0 && (
+            <section className="rvd-card prt-mini" aria-label="Riwayat kegiatan">
+              <header><span className="rvd-k"><CalendarClock size={13} aria-hidden="true" /> Riwayat kegiatan</span><Link href="/admin/participants" className="prt-mini__all">Lihat di Data Peserta Event <ArrowUpRight size={12} /></Link></header>
+              <ul>
+                {acts.slice(0, 5).map((a) => (
+                  <li key={a.id}><b>{a.title}</b><small>{a.kind === 'program' ? 'Program' : 'Event'} · {a.date ? formatDate(a.date) : '—'}</small><span className={`cms-badge cms-badge--${a.tone}`}>{a.status}</span></li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {s.state === 'scheduled' && (
             <section className="msg-compose" aria-label="Terjadwal">
               <header>
@@ -450,11 +471,11 @@ function MemberDialog({ item, now, onClose, onPatch, onActivate, onExtend, onIna
                 <span className="msg-sla__bar" aria-hidden="true"><i style={{ transform: `scaleX(${s.share})` }} /></span>
               </span>
               <div className="sgn-pay">
-                <label><span>Perpanjang 12 bulan</span><input value="Rp. 75.000 · transfer manual" readOnly /></label>
+                <label><span>Perpanjang {settings.yearlyMonths} bulan</span><input value={`${formatRupiah(settings.yearlyPrice)} · transfer manual`} readOnly /></label>
                 <label><span>Referensi (opsional)</span><input value={ref} onChange={(e) => setRef(e.target.value)} placeholder="BCA · a.n. pengirim" /></label>
               </div>
               <footer className="sgn-actions">
-                <button type="button" className="cms-btn cms-btn--solid" onClick={() => { onExtend(ref.trim()); onClose(); }}><RefreshCw size={15} /> Perpanjang 12 bulan</button>
+                <button type="button" className="cms-btn cms-btn--solid" onClick={() => { onExtend(ref.trim()); onClose(); }}><RefreshCw size={15} /> Perpanjang {settings.yearlyMonths} bulan</button>
                 <a className="cms-btn cms-btn--ghost" href={remind} target="_blank" rel="noopener noreferrer" onClick={() => onPatch({ by: RESPONDER, action: 'reminded', detail: 'WhatsApp' }, {})}><MessageCircle size={15} /> Kirim pengingat</a>
               </footer>
             </section>

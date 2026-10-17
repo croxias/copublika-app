@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { ArrowLeft, Gift, RefreshCw, UserRoundPlus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { RegisterForm, type RegKey } from "@/components/program/RegisterForm";
 import { RegistrationPlans } from "@/components/program/RegistrationPlans";
+import { PlanFacts, RegLead } from "@/components/program/PlanFacts";
 import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
 import { CopublikaMark } from "@/components/brand/CopublikaMark";
-import { MEMBER_PLANS, PROGRAMS, PROGRAM_MEMBER_MONTHS, formatRupiah, memberPlanKey, type ProgramKey } from "@/lib/data/programs";
+import { MEMBER_PLANS, PROGRAMS, formatRupiah, memberPlanKey, type ProgramKey } from "@/lib/data/programs";
+
+// SEO text uses the default prices; staged Pengaturan pendaftaran only applies in the browser.
 
 export const metadata = {
   title: "Pendaftaran — CoPublika",
@@ -12,12 +15,6 @@ export const metadata = {
 };
 
 type Search = { program?: string; paket?: string; mentor?: string; bulan?: string; angkatan?: string };
-
-const FACTS = [
-  { icon: <UserRoundPlus size={16} aria-hidden="true" />, title: "Registrasi member gratis", text: "Untuk bulan pertama" },
-  { icon: <Gift size={16} aria-hidden="true" />, title: `Bonus member ${PROGRAM_MEMBER_MONTHS / 12} tahun`, text: "Untuk setiap peserta program" },
-  { icon: <RefreshCw size={16} aria-hidden="true" />, title: `Aktivasi ${formatRupiah(MEMBER_PLANS.tahunan.price)}`, text: "Satu tahun penuh" },
-];
 
 export default async function DaftarPage({ searchParams }: { searchParams: Promise<Search> }) {
   const sp = await searchParams;
@@ -36,13 +33,7 @@ export default async function DaftarPage({ searchParams }: { searchParams: Promi
               {isMember ? "Kembali ke pendaftaran" : `Kembali ke ${PROGRAMS[key].name}`}
             </Link>
             <h1>{isMember ? (plan.price ? <>Aktivasi <span>member</span></> : <>Registrasi <span>member</span></>) : <>Daftar <span>{PROGRAMS[key].name}</span></>}</h1>
-            <p>
-              {isMember
-                ? plan.price
-                  ? `Aktifkan keanggotaan satu tahun seharga ${formatRupiah(plan.price)}, untuk member yang masa aktifnya sudah habis.`
-                  : "Gratis untuk bulan pertama. Isi data Anda, akun member CoPublika dibuat sekaligus."
-                : `Dua langkah singkat. Keanggotaan CoPublika ${PROGRAM_MEMBER_MONTHS / 12} tahun ikut aktif tanpa biaya.`}
-            </p>
+            <RegLead member={isMember} plan={plan.key} />
           </div>
         </section>
         <section className="cp-reg-body">
@@ -67,17 +58,7 @@ export default async function DaftarPage({ searchParams }: { searchParams: Promi
             </VerticalCutReveal>
           </h1>
           <p>Mulai sebagai member gratis, atau langsung ikut pendampingan menulis. Semua jalur membawa Anda ke komunitas peneliti CoPublika.</p>
-          <ul className="cp-plans-facts">
-            {FACTS.map((f) => (
-              <li key={f.title}>
-                <span className="cp-plans-facts__ico">{f.icon}</span>
-                <span>
-                  <strong>{f.title}</strong>
-                  <small>{f.text}</small>
-                </span>
-              </li>
-            ))}
-          </ul>
+          <PlanFacts />
         </div>
       </section>
       <RegistrationPlans />

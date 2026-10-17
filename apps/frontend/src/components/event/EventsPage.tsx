@@ -12,13 +12,16 @@ import { Calendar3D } from "./Calendar3D";
 import { EventTable } from "./EventTable";
 import { EventMonth } from "./EventMonth";
 import { CATEGORIES, categoryOf, dayKey, downloadIcs, isUpcoming, seatsLeft, when } from "./eventMeta";
+import { useStagedEvents } from "@/lib/cms/public-staging";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const line = { hidden: { opacity: 0, y: "100%" }, show: { opacity: 1, y: "0%", transition: { duration: 0.9, ease: EASE } } };
 const fade = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE } } };
 
-export function EventsPage({ events }: { events: Event[] }) {
+export function EventsPage({ events: serverEvents }: { events: Event[] }) {
   const reduce = useReducedMotion();
+  // Staging: the admin's published events (Agenda Event) replace the built-in list once saved.
+  const events = useStagedEvents(serverEvents);
   // Read the clock once per mount; "upcoming" and the countdown are computed from it.
   const [now] = useState(() => Date.now());
 
@@ -172,12 +175,12 @@ function FeaturedEvent({ event, now }: { event: Event; now: number }) {
       </div>
       <span className="cp-evp-ticket__perf is-a" aria-hidden="true" />
       <div className="cp-evp-feat__body">
-        <span className="cp-evp-pill" style={{ "--c": c.color } as React.CSSProperties}><c.Icon size={13} aria-hidden="true" /> {c.label}{event.memberOnly ? " · khusus anggota" : ""}</span>
+        <span className="cp-evp-pill" style={{ "--c": c.color } as React.CSSProperties}><c.Icon size={13} aria-hidden="true" /> {c.label}{event.memberOnly ? " · khusus member" : ""}</span>
         <h3 id="cp-evp-next-title">{event.title}</h3>
         <p>{event.description}</p>
         <ul className="cp-evp-feat__facts">
           <li><MapPin size={15} aria-hidden="true" /> {event.location}</li>
-          <li><Ticket size={15} aria-hidden="true" /> {event.isPaid ? "Berbayar" : "Gratis untuk anggota"}</li>
+          <li><Ticket size={15} aria-hidden="true" /> {event.memberOnly ? "Khusus member" : event.isPaid ? "Berbayar" : "Gratis"}</li>
           {event.speaker?.name && <li><Users size={15} aria-hidden="true" /> {event.speaker.name}</li>}
         </ul>
         <div className="cp-evp-feat__ctas">

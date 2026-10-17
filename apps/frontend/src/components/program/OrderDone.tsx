@@ -3,7 +3,8 @@
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, Check, CircleDollarSign, Download, MailCheck, MessageCircle } from "lucide-react";
+import { ArrowLeft, Check, CircleDollarSign, Copy, Download, Landmark, MailCheck, MessageCircle, Timer } from "lucide-react";
+import { usePublicSettings } from "@/lib/cms/registration-settings";
 import { AnimatedMark } from "@/components/brand/AnimatedMark";
 import { MARK_DOT, MARK_PARTS, MARK_VIEWBOX } from "@/components/brand/CopublikaMark";
 import { MEMBERSHIP, PROGRAMS, formatRupiah } from "@/lib/data/programs";
@@ -82,6 +83,11 @@ export function OrderDone() {
   const items = order?.items ?? [];
   const isMember = !!order?.profile;
   const [busy, setBusy] = useState(false);
+  const settings = usePublicSettings();
+  const [copied, setCopied] = useState<string | null>(null);
+  const copy = (id: string, text: string) => navigator.clipboard?.writeText(text).then(() => { setCopied(id); setTimeout(() => setCopied((c) => (c === id ? null : c)), 1600); }).catch(() => {});
+  const accounts = settings.accounts.filter((a) => a.number);
+  const wa = `https://wa.me/${settings.confirmWhatsapp.replace(/\D/g, '').replace(/^0/, '62')}`;
 
   const rows: ReceiptRow[] = order
     ? [
@@ -115,8 +121,10 @@ export function OrderDone() {
       rows,
       total,
       note: isMember
-        ? `Link aktivasi akun dikirim ke ${order.email} dalam 1×24 jam setelah pendaftaran disetujui.`
-        : "Tim CoPublika menghubungi Anda via WhatsApp untuk konfirmasi jadwal dan instruksi pembayaran.",
+        ? `Link aktivasi akun dikirim ke ${order.email} dalam ${settings.reviewHours} jam setelah pendaftaran disetujui.`
+        : order.total && accounts.length
+          ? `Transfer ${formatRupiah(order.total)} ke ${accounts.map((a) => `${a.bank} ${a.number} a.n. ${a.holder}`).join(" atau ")} dalam ${settings.payDeadlineHours} jam. ${settings.payNote}`
+          : "Tim CoPublika menghubungi Anda via WhatsApp untuk konfirmasi jadwal dan instruksi pembayaran.",
     });
     setBusy(false);
   };
@@ -143,11 +151,11 @@ export function OrderDone() {
             {order ? (
               isMember ? (
                 <p className="cp-done__lead">
-                  Terima kasih, {firstName(order.name)}. Pendaftaran member Anda sudah kami terima. Mohon tunggu <b>1×24 jam</b>: link aktivasi akun akan kami kirim ke <b>{order.email}</b>.
+                  Terima kasih, {firstName(order.name)}. Pendaftaran member Anda sudah kami terima. Mohon tunggu <b>{settings.reviewHours} jam</b>: link aktivasi akun akan kami kirim ke <b>{order.email}</b>.
                 </p>
               ) : (
                 <p className="cp-done__lead">
-                  Terima kasih, {firstName(order.name)}. {order.newAccount ? <>Akun member Anda sudah dibuat. Link aktivasi akun kami kirim ke <b>{order.email}</b> dalam 1×24 jam.</> : program ? "Program ini sudah tercatat di akun member Anda." : "Aktivasi member Anda sudah tercatat."}
+                  Terima kasih, {firstName(order.name)}. {order.newAccount ? <>Akun member Anda sudah dibuat. Link aktivasi akun kami kirim ke <b>{order.email}</b> dalam {settings.reviewHours} jam.</> : program ? "Program ini sudah tercatat di akun member Anda." : "Aktivasi member Anda sudah tercatat."}
                 </p>
               )
             ) : (
@@ -170,12 +178,37 @@ export function OrderDone() {
             </div>
           )}
 
+          {order && order.total > 0 && accounts.length > 0 && (
+            <section className="cp-done__pay" aria-label="Instruksi pembayaran">
+              <header>
+                <span><Landmark size={16} aria-hidden="true" /> Transfer ke</span>
+                <span className="cp-done__deadline"><Timer size={14} aria-hidden="true" /> Dalam {settings.payDeadlineHours} jam</span>
+              </header>
+              <ul>
+                {accounts.map((a) => (
+                  <li key={a.id}>
+                    <span className="cp-done__bank">{a.bank}</span>
+                    <span className="cp-done__acc"><b>{a.number}</b><small>a.n. {a.holder}</small></span>
+                    <button type="button" onClick={() => copy(a.id, a.number)} aria-label={`Salin nomor rekening ${a.bank}`}>{copied === a.id ? <Check size={14} /> : <Copy size={14} />}{copied === a.id ? "Tersalin" : "Salin"}</button>
+                  </li>
+                ))}
+              </ul>
+              <div className="cp-done__amount">
+                <span>Nominal</span>
+                <b>{formatRupiah(order.total)}</b>
+                <button type="button" onClick={() => copy("amount", String(order.total))} aria-label="Salin nominal">{copied === "amount" ? <Check size={14} /> : <Copy size={14} />}</button>
+              </div>
+              <p>{settings.payNote} ID pendaftaran: <b>{order.code}</b>.</p>
+              <a className="cp-done__wa" href={`${wa}?text=${encodeURIComponent(`Halo Tim CoPublika, saya ${order.name} mengirim bukti transfer untuk pendaftaran ${order.code} sebesar ${formatRupiah(order.total)}.`)}`} target="_blank" rel="noopener noreferrer"><MessageCircle size={16} aria-hidden="true" /> Kirim bukti transfer · {settings.confirmWhatsapp}</a>
+            </section>
+          )}
+
           {isMember && order ? (
             <p className="cp-done__mail"><MailCheck size={18} aria-hidden="true" /> Cek juga folder spam atau promosi bila email aktivasi belum masuk.</p>
           ) : (
             order && (
               <ol className="cp-done__next">
-                <li><MessageCircle size={18} aria-hidden="true" /><span><strong>Tim menghubungi via WhatsApp</strong> {order.total ? "untuk konfirmasi jadwal dan instruksi pembayaran." : "jika ada data yang perlu dilengkapi."}</span></li>
+                <li><MessageCircle size={18} aria-hidden="true" /><span><strong>{order.total && accounts.length ? "Konfirmasi dalam 1 hari kerja" : "Tim menghubungi via WhatsApp"}</strong> {order.total ? (accounts.length ? "setelah bukti transfer kami terima." : "untuk konfirmasi jadwal dan instruksi pembayaran.") : "jika ada data yang perlu dilengkapi."}</span></li>
                 {program && <li><CircleDollarSign size={18} aria-hidden="true" /><span><strong>Kursi Anda terkunci</strong> setelah pembayaran dikonfirmasi.</span></li>}
               </ol>
             )

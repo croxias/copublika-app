@@ -212,7 +212,7 @@ export function RecordEditor({
               </>
             )}
             <p className={willShow ? 'cms-confirm-live' : 'cms-muted'}>
-              {willShow ? 'Berstatus Tampil, jadi langsung terlihat di website setelah backend tersambung.' : 'Berstatus ' + (config.statuses.find((s) => s.value === values.status)?.label ?? values.status) + ', jadi belum terlihat di website.'}
+              {willShow ? (config.key === 'events' ? 'Berstatus Tampil, jadi langsung terlihat di Agenda website.' : 'Berstatus Tampil, jadi langsung terlihat di website setelah backend tersambung.') : 'Berstatus ' + (config.statuses.find((s) => s.value === values.status)?.label ?? values.status) + ', jadi belum terlihat di website.'}
             </p>
           </>
         }

@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { createContext, useContext, useRef, useState } from "react";
 import Link from "next/link";
+import { DEFAULT_SETTINGS, memberPlans, monthsText, perUnit, usePublicProgramPrices, usePublicSettings, type RegistrationSettings } from "@/lib/cms/registration-settings";
 import NumberFlow from "@number-flow/react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform, type Variants } from "framer-motion";
 import {
@@ -26,9 +27,7 @@ import {
 } from "lucide-react";
 import {
   BOOTCAMP_BATCHES,
-  MEMBER_PLANS,
   PROGRAMS,
-  PROGRAM_MEMBER_MONTHS,
   STS_MENTORS,
   batchSeatsLeft,
   formatDate,
@@ -40,7 +39,9 @@ import {
 // month, activation renews a year, and both programs include a year of membership free.
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const YEARLY = MEMBER_PLANS.tahunan.price;
+/** Pengaturan pendaftaran for the cards below (defaults until the staged values load). */
+const Settings = createContext<RegistrationSettings>(DEFAULT_SETTINGS);
+const useS = () => useContext(Settings);
 
 /* ---------- Motion ---------- */
 
@@ -122,13 +123,17 @@ function Price({ value, unit, shown }: { value: number; unit: string; shown: boo
   );
 }
 
-function Ctas({ primary, secondary, tone }: { primary: { label: string; href: string }; secondary?: { label: string; href: string }; tone: "accent" | "ink" }) {
+function Ctas({ primary, secondary, tone, closed }: { primary: { label: string; href: string }; secondary?: { label: string; href: string }; tone: "accent" | "ink"; closed?: boolean }) {
   return (
     <Item className="cp-plan__ctas">
-      <Link href={primary.href} className={`cp-plan__btn is-${tone}`}>
-        {primary.label} <ArrowRight size={16} aria-hidden="true" />
-      </Link>
-      {secondary && <Link href={secondary.href} className="cp-plan__btn is-line">{secondary.label}</Link>}
+      {closed ? (
+        <span className="cp-plan__btn is-closed" aria-disabled="true">Ditutup sementara</span>
+      ) : (
+        <Link href={primary.href} className={`cp-plan__btn is-${tone}`}>
+          {primary.label} <ArrowRight size={16} aria-hidden="true" />
+        </Link>
+      )}
+      {secondary && !closed && <Link href={secondary.href} className="cp-plan__btn is-line">{secondary.label}</Link>}
     </Item>
   );
 }
@@ -159,10 +164,12 @@ function Includes({ title, items }: { title: string; items: string[] }) {
 }
 
 function MemberBonus() {
+  const s = useS();
+  if (!s.programBonusMonths) return null;
   return (
     <Item className="cp-plan__bonus">
       <Gift size={15} aria-hidden="true" />
-      <span>Bonus member {PROGRAM_MEMBER_MONTHS / 12} tahun<small><s>{formatRupiah(YEARLY)}</s> <b>Gratis</b></small></span>
+      <span>Bonus member {monthsText(s.programBonusMonths)}<small><s>{formatRupiah(s.yearlyPrice)}</s> <b>Gratis</b></small></span>
     </Item>
   );
 }
@@ -170,7 +177,8 @@ function MemberBonus() {
 /* ---------- Cards ---------- */
 
 function RegisterCard() {
-  const p = MEMBER_PLANS.gratis;
+  const s = useS();
+  const p = memberPlans(s).gratis;
   return (
     <PlanCard className="cp-plan is-member">
       {(shown) => (
@@ -179,11 +187,11 @@ function RegisterCard() {
           <Item><h3>{p.name}</h3><p className="cp-plan__desc">{p.tagline}</p></Item>
           <Item className="cp-plan__proof">
             <span className="cp-plan__proof-ico" aria-hidden="true"><CalendarClock size={18} /></span>
-            <span><strong>1 bulan pertama</strong><small>Tanpa kartu, tanpa biaya</small></span>
+            <span><strong>{monthsText(s.freeMonths)} pertama</strong><small>Tanpa kartu, tanpa biaya</small></span>
           </Item>
           <Price value={p.price} unit={p.unit} shown={shown} />
-          <Item className="cp-plan__note">Lanjut {formatRupiah(YEARLY)}/tahun setelahnya</Item>
-          <Ctas tone="accent" primary={{ label: "Daftar gratis", href: "/daftar?program=member&paket=gratis" }} secondary={{ label: "Sudah punya akun? Masuk", href: "/login?next=%2Fdaftar" }} />
+          <Item className="cp-plan__note">Lanjut {formatRupiah(s.yearlyPrice)} {perUnit(s.yearlyMonths)} setelahnya</Item>
+          <Ctas tone="accent" closed={!s.freeOpen} primary={{ label: "Daftar gratis", href: "/daftar?program=member&paket=gratis" }} secondary={{ label: "Sudah punya akun? Masuk", href: "/login?next=%2Fdaftar" }} />
           <Features items={p.features.map((text, i) => ({ text, icon: [<BadgeCheck key="a" size={18} />, <FlaskConical key="b" size={18} />, <PenLine key="c" size={18} />][i] }))} />
           <Includes title="Juga termasuk:" items={p.includes} />
         </>
@@ -193,20 +201,21 @@ function RegisterCard() {
 }
 
 function ActivateCard() {
-  const p = MEMBER_PLANS.tahunan;
+  const s = useS();
+  const p = memberPlans(s).tahunan;
   return (
     <PlanCard className="cp-plan">
       {(shown) => (
         <>
-          <Head kicker="Perpanjangan" icon={<RefreshCw size={14} aria-hidden="true" />} badge="12 bulan" badgeInk />
+          <Head kicker="Perpanjangan" icon={<RefreshCw size={14} aria-hidden="true" />} badge={`${s.yearlyMonths} bulan`} badgeInk />
           <Item><h3>{p.name}</h3><p className="cp-plan__desc">{p.tagline}</p></Item>
           <Item className="cp-plan__proof">
             <span className="cp-plan__proof-ico" aria-hidden="true"><History size={18} /></span>
-            <span><strong>± {formatRupiah(Math.round(YEARLY / 12 / 100) * 100)}/bulan</strong><small>Sekali bayar setahun</small></span>
+            <span><strong>± {formatRupiah(Math.round(s.yearlyPrice / s.yearlyMonths / 100) * 100)}/bulan</strong><small>{s.yearlyMonths === 12 ? "Sekali bayar setahun" : `Sekali bayar untuk ${monthsText(s.yearlyMonths)}`}</small></span>
           </Item>
           <Price value={p.price} unit={p.unit} shown={shown} />
           <Item className="cp-plan__note">Saat masa aktif Anda habis</Item>
-          <Ctas tone="ink" primary={{ label: "Aktivasi member", href: "/daftar?program=member&paket=tahunan" }} secondary={{ label: "Masuk untuk aktivasi", href: "/login?next=%2Fdaftar%3Fprogram%3Dmember%26paket%3Dtahunan" }} />
+          <Ctas tone="ink" closed={!s.yearlyOpen} primary={{ label: "Aktivasi member", href: "/daftar?program=member&paket=tahunan" }} secondary={{ label: "Masuk untuk aktivasi", href: "/login?next=%2Fdaftar%3Fprogram%3Dmember%26paket%3Dtahunan" }} />
           <Features items={p.features.map((text, i) => ({ text, icon: [<BadgeCheck key="a" size={18} />, <FlaskConical key="b" size={18} />, <PenLine key="c" size={18} />][i] }))} />
           <Includes title="Juga termasuk:" items={p.includes} />
         </>
@@ -216,6 +225,8 @@ function ActivateCard() {
 }
 
 function ScopusCard() {
+  const s = useS();
+  const price = usePublicProgramPrices()["siap-tembus-scopus"].price;
   const p = PROGRAMS["siap-tembus-scopus"];
   const left = STS_MENTORS.reduce((n, m) => n + seatsLeft(m.id, 0), 0);
   return (
@@ -233,11 +244,11 @@ function ScopusCard() {
             </span>
             <span><strong>{STS_MENTORS.length} mentor</strong><small>{left} kursi bulan ini</small></span>
           </Item>
-          <Price value={p.price} unit="sekali bayar" shown={shown} />
+          <Price value={price} unit="sekali bayar" shown={shown} />
           <MemberBonus />
           <Ctas tone="accent" primary={{ label: "Pilih mentor", href: "/daftar?program=siap-tembus-scopus" }} secondary={{ label: "Lihat detail", href: p.href }} />
           <Features items={p.includes.slice(0, 3).map((x, i) => ({ text: x.title, icon: [<Video key="a" size={18} />, <FileSearch key="b" size={18} />, <Users key="c" size={18} />][i] }))} />
-          <Includes title="Juga termasuk:" items={[`Member ${PROGRAM_MEMBER_MONTHS / 12} tahun tanpa biaya`, "Catatan revisi tiap putaran"]} />
+          <Includes title="Juga termasuk:" items={[...(s.programBonusMonths ? [`Member ${monthsText(s.programBonusMonths)} tanpa biaya`] : []), "Catatan revisi tiap putaran"]} />
         </>
       )}
     </PlanCard>
@@ -245,6 +256,8 @@ function ScopusCard() {
 }
 
 function BootcampCard() {
+  const s = useS();
+  const price = usePublicProgramPrices()["bootcamp-menulis"].price;
   const p = PROGRAMS["bootcamp-menulis"];
   const next = BOOTCAMP_BATCHES.find((b) => batchSeatsLeft(b) > 0) ?? BOOTCAMP_BATCHES[0];
   const left = batchSeatsLeft(next);
@@ -265,11 +278,11 @@ function BootcampCard() {
               <i style={{ transform: `scaleX(${shown ? Math.min(1, next.booked / next.seats) : 0})` }} />
             </span>
           </Item>
-          <Price value={p.price} unit="per angkatan" shown={shown} />
+          <Price value={price} unit="per angkatan" shown={shown} />
           <MemberBonus />
           <Ctas tone="ink" primary={{ label: `Ikut ${next.name}`, href: `/daftar?program=bootcamp-menulis&angkatan=${next.id}` }} secondary={{ label: "Lihat detail", href: p.href }} />
           <Features items={p.includes.slice(0, 3).map((x, i) => ({ text: x.title, icon: [<Presentation key="a" size={18} />, <Wrench key="b" size={18} />, <LineChart key="c" size={18} />][i] }))} />
-          <Includes title="Juga termasuk:" items={[`Member ${PROGRAM_MEMBER_MONTHS / 12} tahun tanpa biaya`, ...p.includes.slice(3).map((x) => x.title)]} />
+          <Includes title="Juga termasuk:" items={[...(s.programBonusMonths ? [`Member ${monthsText(s.programBonusMonths)} tanpa biaya`] : []), ...p.includes.slice(3).map((x) => x.title)]} />
         </>
       )}
     </PlanCard>
@@ -280,12 +293,16 @@ function BootcampCard() {
 
 export function RegistrationPlans() {
   const reduce = useReducedMotion();
+  const s = usePublicSettings();
+  const free = s.freeMonths;
+  const bonus = s.programBonusMonths ? ` Peserta program otomatis menjadi member ${monthsText(s.programBonusMonths)} tanpa biaya aktivasi.` : "";
   return (
+    <Settings.Provider value={s}>
     <section className="cp-plans" aria-labelledby="cp-plans-title">
       <div className="cp-ab-wrap">
         <motion.div className="cp-plans__bar" initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: EASE }}>
           <h2 id="cp-plans-title">Mulai dari mana saja</h2>
-          <p>Daftar sebagai member gratis, perpanjang keanggotaan, atau langsung ikut program. Peserta program otomatis menjadi member {PROGRAM_MEMBER_MONTHS / 12} tahun tanpa biaya aktivasi.</p>
+          <p>Daftar sebagai member gratis, perpanjang keanggotaan, atau langsung ikut program.{bonus}</p>
         </motion.div>
 
         <motion.div className="cp-plans__grid" variants={gridV} initial={reduce ? false : "hidden"} whileInView="show" viewport={{ once: true, amount: 0.1 }}>
@@ -304,15 +321,15 @@ export function RegistrationPlans() {
           transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
         >
           <div className="cp-plans-info__timeline" aria-hidden="true">
-            <span className="is-free"><b>Bulan 1</b>Gratis</span>
+            <span className="is-free"><b>{free === 1 ? "Bulan 1" : `Bulan 1–${free}`}</b>Gratis</span>
             <i />
-            <span><b>Bulan 2–13</b>{formatRupiah(YEARLY)}</span>
+            <span><b>Bulan {free + 1}–{free + s.yearlyMonths}</b>{formatRupiah(s.yearlyPrice)}</span>
           </div>
           <div className="cp-plans-info__copy">
             <h3>Masa aktif member</h3>
             <p>
-              Setiap akun baru kami verifikasi sebelum aktif. Bulan pertama gratis; saat masa aktif habis, aktifkan lagi {formatRupiah(YEARLY)} untuk satu tahun penuh.
-              Ikut Siap Tembus Scopus atau Bootcamp? Keanggotaan {PROGRAM_MEMBER_MONTHS / 12} tahun sudah termasuk.
+              Setiap akun baru kami verifikasi sebelum aktif. {free === 1 ? "Bulan pertama" : `${monthsText(free)} pertama`} gratis; saat masa aktif habis, aktifkan lagi {formatRupiah(s.yearlyPrice)} untuk {s.yearlyMonths === 12 ? "satu tahun penuh" : monthsText(s.yearlyMonths)}.
+              {s.programBonusMonths ? ` Ikut Siap Tembus Scopus atau Bootcamp? Keanggotaan ${monthsText(s.programBonusMonths)} sudah termasuk.` : ""}
             </p>
           </div>
           <Link href="/daftar?program=member&paket=tahunan" className="cp-plan__btn is-ink cp-plans-info__cta">
@@ -321,5 +338,6 @@ export function RegistrationPlans() {
         </motion.aside>
       </div>
     </section>
+    </Settings.Provider>
   );
 }

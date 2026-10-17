@@ -175,11 +175,12 @@ export const eventsConfig: CollectionConfig = {
       help: 'Biarkan otomatis kecuali acara ditunda atau dibatalkan.',
     },
 
-    { type: 'heading', key: 'h-access', icon: 'ticket', label: 'Akses & pendaftaran', help: 'Kursi terisi dihitung dari tab Pendaftar; setelah kuota penuh, pendaftar baru masuk daftar tunggu. Event khusus anggota meminta tamu masuk dulu.' },
+    { type: 'heading', key: 'h-access', icon: 'ticket', label: 'Akses & pendaftaran', help: 'Kursi terisi dihitung dari tab Pendaftar (yang menunggu bayar ikut menahan kursi); setelah kuota penuh, pendaftar baru masuk daftar tunggu. Event khusus member didaftarkan lewat dashboard member.' },
     { key: 'capacity', icon: 'users', label: 'Kuota peserta', type: 'number', min: 1, suffix: 'orang', required: true, third: true },
     { key: 'isPaid', icon: 'ticket', label: 'Event berbayar', type: 'toggle', third: true },
-    { key: 'memberOnly', icon: 'shield', label: 'Khusus anggota', type: 'toggle', third: true },
-    { key: 'price', icon: 'ticket', label: 'Harga', type: 'number', min: 0, suffix: 'Rupiah', required: true, visibleIf: (v) => !!v.isPaid, help: 'Tampil sebagai "Rp. 150.000".', third: true },
+    { key: 'memberOnly', icon: 'shield', label: 'Khusus member', type: 'toggle', third: true, help: 'Tidak ada form publik; member mendaftar dari dashboard member.' },
+    { key: 'price', icon: 'ticket', label: 'Harga', type: 'number', min: 0, suffix: 'Rupiah', required: true, visibleIf: (v) => !!v.isPaid, help: 'Event umum: harga untuk peserta umum. Event khusus member: harga yang dibayar member.', third: true },
+    { key: 'memberPrice', icon: 'shield', label: 'Harga member (potongan)', type: 'number', min: 0, suffix: 'Rupiah', visibleIf: (v) => !!v.isPaid && !v.memberOnly, help: 'Opsional. Otomatis dipakai bila email pendaftar adalah member aktif. 0 = gratis untuk member.', third: true },
     { key: 'registrationUrl', icon: 'link', label: 'Link pendaftaran eksternal', type: 'url', wide: true, help: 'Opsional. Kosongkan untuk memakai form CoPublika (disarankan).' },
     { key: 'benefits', icon: 'star', label: 'Fasilitas peserta', type: 'tags', max: 6, help: 'Daftar bercentang di kartu pendaftaran, mis. "Rekaman lengkap".' },
 

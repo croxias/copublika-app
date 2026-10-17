@@ -300,7 +300,7 @@ export const fallbackEvents: Event[] = [
     language: "Indonesia",
     status: "upcoming",
     isPaid: true,
-    memberOnly: true,
+    memberOnly: false,
     capacity: 40,
     registrantsCount: 38,
     type: "workshop",

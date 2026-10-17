@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, CalendarClock, CircleAlert, Inbox, UserCheck, Wallet } from 'lucide-react';
 import { useCms } from '@/lib/cms/store';
-import { EXPIRING_DAYS, memberState } from '@/lib/cms/members';
+import { memberState } from '@/lib/cms/members';
+import { useRegistrationSettings } from './cms/useRegistrationSettings';
 import { OPEN_STATUSES, inQueue, kindOf, normalizeSignup, signupTiming, type SignupStatus } from '@/lib/cms/signups';
 import type { CmsItem } from '@/lib/cms/types';
 import { STREAMS, type Stream } from '@/lib/data/disciplines';
@@ -37,14 +38,15 @@ export function MembershipOverview() {
   const cms = useCms();
   const [now] = useState(() => Date.now());
   const [basis, setBasis] = useState<Basis>('members');
+  const settings = useRegistrationSettings();
   const signups = useMemo(() => (cms.collections.signups ?? []).map(normalizeSignup).filter(inQueue), [cms.collections.signups]);
   const members = useMemo(() => cms.collections.members ?? [], [cms.collections.members]);
 
-  const states = members.map((m) => memberState(m, now).state);
+  const states = members.map((m) => memberState(m, now, settings.expiringDays).state);
   const active = states.filter((s) => s === 'active' || s === 'expiring').length;
   const expiring = states.filter((s) => s === 'expiring').length;
   const fresh = signups.filter((x) => x.status === 'new');
-  const late = fresh.filter((x) => signupTiming(x, now).tone === 'late');
+  const late = fresh.filter((x) => signupTiming(x, now, settings.reviewHours).tone === 'late');
   const waiting = signups.filter((x) => x.status === 'awaiting_payment');
   const queue = signups
     .filter((x) => OPEN_STATUSES.includes(x.status as SignupStatus) || x.status === 'approved')
@@ -71,7 +73,7 @@ export function MembershipOverview() {
           <KpiTile icon={<UserCheck size={17} />} label="Member aktif" value={active} share={active / Math.max(1, members.length)} tone="ok" />
           <KpiTile icon={<Inbox size={17} />} label="Menunggu tinjauan" value={fresh.length} share={fresh.length / Math.max(1, signups.length)} delay={0.05} />
           <KpiTile icon={<Wallet size={17} />} label="Menunggu pembayaran" value={waiting.length} share={waiting.length / Math.max(1, signups.length)} tone="ink" delay={0.1} />
-          <KpiTile icon={<CalendarClock size={17} />} label={`Akan habis (≤${EXPIRING_DAYS} hari)`} value={expiring} share={expiring / Math.max(1, active)} tone="danger" delay={0.15} />
+          <KpiTile icon={<CalendarClock size={17} />} label={`Akan habis (≤${settings.expiringDays} hari)`} value={expiring} share={expiring / Math.max(1, active)} tone="danger" delay={0.15} />
         </div>
       </section>
 
@@ -81,13 +83,13 @@ export function MembershipOverview() {
             <div>
               <span className="analytics-eyebrow">Keanggotaan</span>
               <h2>Antrean pendaftaran</h2>
-              <p>{late.length ? `${late.length} pendaftaran lewat 1×24 jam` : 'Yang paling lama menunggu lebih dulu'}</p>
+              <p>{late.length ? `${late.length} pendaftaran lewat ${settings.reviewHours} jam` : 'Yang paling lama menunggu lebih dulu'}</p>
             </div>
             <Link href="/admin/applicants">Buka detail <ArrowUpRight size={14} /></Link>
           </header>
           <div className="mov-queue">
             {queue.length ? queue.map((x) => {
-              const t = signupTiming(x, now);
+              const t = signupTiming(x, now, settings.reviewHours);
               const k = kindOf(x.kind);
               return (
                 <Link href="/admin/applicants" className="mov-row" key={x.id}>

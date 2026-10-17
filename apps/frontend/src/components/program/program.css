@@ -1047,3 +1047,30 @@
 .cp-mpf__more.is-single { grid-template-columns: minmax(0, 1fr); }
 .cp-mpf__more.is-field .cp-reg__field:nth-child(2) input { font-family: inherit; letter-spacing: 0; }
 @media (max-width: 640px) { .cp-mpf-stream { grid-template-columns: minmax(0, 1fr); } .cp-mpf-stream button { min-height: 64px; } }
+.cp-plan__btn.is-closed { border: 2px dashed #c9c2b6; background: #f6f3ee; color: #8a847b; cursor: not-allowed; }
+
+/* Confirmation: manual transfer instructions (Pengaturan pendaftaran → Pembayaran). */
+.cp-done__pay { display: grid; gap: 12px; width: 100%; padding: 16px; border: 2px solid #0a0a0a; border-radius: 18px; background: #fff; box-shadow: 5px 5px 0 #0a0a0a; text-align: left; }
+.cp-done__pay header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cp-done__pay header > span:first-child { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 800; }
+.cp-done__deadline { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; background: #fff3e6; color: #b4520e; font-size: 12px; font-weight: 700; }
+.cp-done__pay ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cp-done__pay li { display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: #f6f3ee; }
+.cp-done__bank { display: grid; place-items: center; height: 34px; border-radius: 9px; background: #0a0a0a; color: #fff; font-size: 12.5px; font-weight: 800; }
+.cp-done__acc { display: grid; min-width: 0; gap: 1px; }
+.cp-done__acc b { overflow-wrap: anywhere; font: 700 16px var(--mono, ui-monospace); letter-spacing: .06em; }
+.cp-done__acc small { color: #6b665e; font-size: 12px; }
+.cp-done__pay li button, .cp-done__amount button { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 11px; border: 1.5px solid #0a0a0a; border-radius: 9px; background: #fff; color: #0a0a0a; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.cp-done__pay li button:hover, .cp-done__amount button:hover { background: #0a0a0a; color: #fff; }
+.cp-done__amount { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px dashed #e3c7a8; border-radius: 12px; background: #fffaf4; }
+.cp-done__amount span { color: #6b665e; font-size: 12.5px; }
+.cp-done__amount b { margin-left: auto; color: #b4520e; font: 800 18px var(--mono, ui-monospace); }
+.cp-done__amount button { width: 34px; padding: 0; justify-content: center; }
+.cp-done__pay p { margin: 0; color: #5a554d; font-size: 12.5px; line-height: 1.55; }
+.cp-done__wa { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; border-radius: 12px; background: #16a34a; color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; transition: background .2s; }
+.cp-done__wa:hover { background: #15803d; }
+@media (max-width: 480px) { .cp-done__pay li { grid-template-columns: minmax(0, 1fr) auto; } .cp-done__bank { grid-column: 1 / -1; justify-self: start; padding: 0 12px; } }
+
+/* Registration form: plan closed by the admin. */
+.cp-reg__closed { display: flex; gap: 10px; margin: 0 0 16px; padding: 14px 16px; border: 1.5px solid #f3c79f; border-radius: 14px; background: #fff7ef; color: #5a3a1c; font-size: 14px; line-height: 1.5; }
+.cp-reg__closed svg { flex: none; margin-top: 2px; color: var(--scopus); }

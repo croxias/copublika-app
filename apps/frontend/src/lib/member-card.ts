@@ -22,7 +22,7 @@ const RULES = [
   ["Apabila menemukan kartu ini, mohon hubungi pengurus komunitas CoPublika.", "", ""],
 ];
 
-export type CardData = { name: string; number: string; since: string; validThru: string };
+export type CardData = { name: string; number: string; since: string; validThru: string; helpEmail?: string; helpPhone?: string };
 export type CardSide = "front" | "back";
 
 /** Months covered by the active period (activatedAt → expiresAt). */
@@ -34,13 +34,13 @@ export function periodMonths(m: CmsItem) {
 }
 
 /** Whether a member may hold the card today, and why not. */
-export function cardEligibility(m: CmsItem, now: number): { ok: boolean; reason: string } {
-  const s = memberState(m, now);
+export function cardEligibility(m: CmsItem, now: number, minMonths = CARD_MIN_MONTHS, expiringDays?: number): { ok: boolean; reason: string } {
+  const s = memberState(m, now, expiringDays);
   if (s.state === "inactive") return { ok: false, reason: "Member nonaktif." };
   if (s.state === "pending") return { ok: false, reason: "Member belum diaktifkan." };
   if (s.state === "scheduled") return { ok: false, reason: "Masa aktif belum dimulai." };
   if (s.state === "expired") return { ok: false, reason: "Masa aktif sudah habis." };
-  if (periodMonths(m) < CARD_MIN_MONTHS) return { ok: false, reason: `Masa aktif ${Math.max(0, periodMonths(m))} bulan; kartu untuk masa aktif minimal ${CARD_MIN_MONTHS} bulan.` };
+  if (periodMonths(m) < minMonths) return { ok: false, reason: `Masa aktif ${Math.max(0, periodMonths(m))} bulan; kartu untuk masa aktif minimal ${minMonths} bulan.` };
   return { ok: true, reason: "" };
 }
 
@@ -52,7 +52,7 @@ const mmYyyy = (iso: unknown) => {
   const d = new Date(String(iso));
   return Number.isNaN(d.getTime()) ? "--/----" : `${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 };
-export const cardData = (m: CmsItem): CardData => ({ name: String(m.name ?? "").trim(), number: cardNumber(m.cardNo), since: mmYyyy(m.activatedAt), validThru: mmYyyy(m.expiresAt) });
+export const cardData = (m: CmsItem, help?: { email: string; phone: string }): CardData => ({ name: String(m.name ?? "").trim(), number: cardNumber(m.cardNo), since: mmYyyy(m.activatedAt), validThru: mmYyyy(m.expiresAt), helpEmail: help?.email, helpPhone: help?.phone });
 
 // ---------- fonts and images ----------
 
@@ -466,8 +466,8 @@ function back(ctx: CanvasRenderingContext2D, d: CardData, f: ReturnType<typeof f
   ctx.restore();
   ctx.fillStyle = "#0a0a0a";
   ctx.font = `500 17px ${f.sans}`;
-  ctx.fillText(HELP.email, px + 34, 559);
-  ctx.fillText(HELP.phone, px + 34, 593);
+  ctx.fillText(d.helpEmail || HELP.email, px + 34, 559);
+  ctx.fillText(d.helpPhone || HELP.phone, px + 34, 593);
 
   // The CoPublika icon, bottom right.
   const ih = 62;

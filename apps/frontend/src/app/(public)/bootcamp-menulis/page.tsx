@@ -7,7 +7,8 @@ import { BtmPlan } from "@/components/program/bootcamp/BtmPlan";
 import { FitFaq } from "@/components/program/FitFaq";
 import { SectionHead } from "@/components/program/shared";
 import { BTM_COPY } from "@/lib/content/programs";
-import { BOOTCAMP_BATCHES, PROGRAMS, batchSeatsLeft, formatDate, formatRupiah, webinarDates } from "@/lib/data/programs";
+import { BOOTCAMP_BATCHES, PROGRAMS, batchSeatsLeft, formatDate, webinarDates } from "@/lib/data/programs";
+import { ProgramPrice } from "@/components/program/ProgramPrice";
 
 const program = PROGRAMS["bootcamp-menulis"];
 
@@ -69,7 +70,7 @@ export default function BootcampMenulisPage() {
                   <i aria-hidden="true"><b style={{ width: `${(left / Math.max(1, b.seats)) * 100}%` }} /></i>
                 </div>
                 <div className="cp-btm-batch__foot">
-                  <strong>{formatRupiah(program.price)}</strong>
+                  <strong><ProgramPrice program="bootcamp-menulis" /></strong>
                   {full ? (
                     <span className="cp-btm-batch__btn is-disabled">Kursi penuh</span>
                   ) : (
@@ -101,7 +102,7 @@ export default function BootcampMenulisPage() {
           </Reveal>
           <Reveal className="cp-sts-final__buy" delay={0.1}>
             <span>{program.name}</span>
-            <strong>{formatRupiah(program.price)}</strong>
+            <strong><ProgramPrice program="bootcamp-menulis" /></strong>
             <small>{BTM_COPY.final.includes}</small>
             <Link href={register(next.id)} className="cp-sts-final__btn">
               Daftar {next.name} <ArrowRight size={16} aria-hidden="true" />

@@ -10,11 +10,12 @@ import type { Event } from "@/types";
 import { CopublikaMark, MARK_DOT, MARK_RING_PATH, MARK_VIEWBOX } from "@/components/brand/CopublikaMark";
 import { formatRupiah } from "@/lib/data/programs";
 import { EVENT_COPY } from "@/lib/content/event";
-import { addRegistration } from "@/lib/cms/registrations";
+import { addRegistration, ticketCode } from "@/lib/cms/registrations";
+import { existingTicket, isActiveMember, useEventOffer, type EventOffer } from "@/lib/cms/public-staging";
+import { usePublicSettings } from "@/lib/cms/registration-settings";
 import { categoryOf, downloadIcs, seatsLeft, when } from "./eventMeta";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const NON_MEMBER_PRICE = EVENT_COPY.detail.nonMemberPrice;
 
 const initials = (name = "") => name.replace(/^(dr|prof)\.?\s+/i, "").split(/[\s,]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
@@ -51,6 +52,7 @@ export function EventDetail({ event, related }: { event: Event; related: Event[]
   const share = event.capacity ? Math.min(1, event.registrantsCount / event.capacity) : 0;
   const cd = useCountdown(event.date);
   const [registering, setRegistering] = useState(false);
+  const offer = useEventOffer(event);
 
   const about = (event.blocks ?? []).filter((b) => b.paragraphs?.length);
   const gains = (event.blocks ?? []).flatMap((b) => b.checkmarks ?? []);
@@ -77,7 +79,7 @@ export function EventDetail({ event, related }: { event: Event; related: Event[]
             <motion.div className="cp-evd-hero__copy" initial={reduce ? false : { opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: EASE }}>
               <div className="cp-evd-pills">
                 <span className="cp-evp-pill"><c.Icon size={13} aria-hidden="true" /> {c.label}</span>
-                <span className="cp-evd-pill">{event.memberOnly ? "Khusus anggota" : event.isPaid ? "Berbayar" : "Gratis untuk anggota"}</span>
+                <span className="cp-evd-pill">{offer.memberOnly ? "Khusus member" : offer.isPaid ? "Berbayar" : "Gratis"}</span>
                 {event.duration && <span className="cp-evd-pill"><Clock3 size={13} aria-hidden="true" /> {event.duration}</span>}
                 <span className="cp-evd-pill"><Sparkles size={13} aria-hidden="true" /> Sertifikat</span>
               </div>
@@ -91,7 +93,7 @@ export function EventDetail({ event, related }: { event: Event; related: Event[]
                 </div>
               )}
               <div className="cp-evd-ctas">
-                <PrimaryCta event={event} full={full} onRegister={register} />
+                <PrimaryCta event={event} offer={offer} full={full} onRegister={register} />
                 <button type="button" className="cp-evp-btn-ghost" onClick={addToCalendar}><CalendarPlus size={16} aria-hidden="true" /> Tambah ke kalender</button>
               </div>
             </motion.div>
@@ -218,8 +220,16 @@ export function EventDetail({ event, related }: { event: Event; related: Event[]
           <div className="cp-evd-reg">
             <div className="cp-evd-reg__head">
               <span className="cp-evd-reg__k"><Ticket size={14} aria-hidden="true" /> Biaya</span>
-              <strong>{event.isPaid ? formatRupiah(NON_MEMBER_PRICE) : "Gratis"}</strong>
-              <small>{event.memberOnly ? "Khusus anggota CoPublika" : event.isPaid ? "Per peserta · anggota mendapat potongan" : `Untuk anggota · umum ${formatRupiah(NON_MEMBER_PRICE)}`}</small>
+              <strong>{offer.memberOnly ? (offer.isPaid ? formatRupiah(offer.price) : "Khusus member") : offer.isPaid ? formatRupiah(offer.price) : "Gratis"}</strong>
+              <small>
+                {offer.memberOnly
+                  ? "Didaftarkan lewat dashboard member"
+                  : offer.isPaid
+                    ? offer.memberPrice !== null
+                      ? <>Umum · <b className="cp-evd-reg__member">Member {offer.memberPrice ? formatRupiah(offer.memberPrice) : "gratis"}</b></>
+                      : "Per peserta"
+                    : "Untuk umum dan member"}
+              </small>
             </div>
             <div className="cp-evd-reg__seats">
               <svg viewBox="0 0 44 44" aria-hidden="true">
@@ -231,10 +241,10 @@ export function EventDetail({ event, related }: { event: Event; related: Event[]
                 <small>{event.registrantsCount} dari {event.capacity} terisi</small>
               </div>
             </div>
-            <PrimaryCta event={event} full={full} onRegister={register} className="cp-evd-reg__cta" />
+            <PrimaryCta event={event} offer={offer} full={full} onRegister={register} className="cp-evd-reg__cta" />
             <button type="button" className="cp-evd-reg__cal" onClick={addToCalendar}><CalendarPlus size={15} aria-hidden="true" /> Simpan ke kalender</button>
-            {event.memberOnly && (
-              <p className="cp-evd-reg__note">Belum menjadi anggota? <Link href="/join-batch">Gabung batch</Link> untuk mengikuti acara khusus anggota.</p>
+            {offer.memberOnly && (
+              <p className="cp-evd-reg__note">Acara ini khusus member: masuk lalu daftar dari dashboard member. Belum menjadi member? <Link href="/daftar?program=member&paket=gratis">Daftar member gratis</Link>.</p>
             )}
             {event.benefits && event.benefits.length > 0 && (
               <ul className="cp-evd-reg__list">
@@ -283,17 +293,17 @@ export function EventDetail({ event, related }: { event: Event; related: Event[]
       {/* Phone: registration stays one tap away. */}
       <div className="cp-evd-dock">
         <span><strong>{w.day} {w.monthShort} · {event.time ? event.time.split(/\s*[—-]\s*/)[0] : w.time}</strong><small>{full ? "Kuota penuh" : `${left} kursi tersisa`}</small></span>
-        <PrimaryCta event={event} full={full} onRegister={register} className="cp-evd-dock__cta" />
+        <PrimaryCta event={event} offer={offer} full={full} onRegister={register} className="cp-evd-dock__cta" />
       </div>
 
-      <AnimatePresence>{registering && <RegisterDialog event={event} onClose={() => setRegistering(false)} onCalendar={addToCalendar} />}</AnimatePresence>
+      <AnimatePresence>{registering && <RegisterDialog event={event} offer={offer} full={full} onClose={() => setRegistering(false)} onCalendar={addToCalendar} />}</AnimatePresence>
     </main>
   );
 }
 
 /** Register button, or a sign-in link for member-only events. */
-function PrimaryCta({ event, full, onRegister, className = "" }: { event: Event; full: boolean; onRegister: () => void; className?: string }) {
-  if (event.memberOnly) {
+function PrimaryCta({ event, offer, full, onRegister, className = "" }: { event: Event; offer: EventOffer; full: boolean; onRegister: () => void; className?: string }) {
+  if (offer.memberOnly) {
     return (
       <Link href={`/login?next=${encodeURIComponent(`/event/${event.slug}`)}`} className={`cp-ab-btn cp-ab-btn--primary ${className}`}>
         <Lock size={16} aria-hidden="true" /> Masuk untuk daftar
@@ -301,8 +311,8 @@ function PrimaryCta({ event, full, onRegister, className = "" }: { event: Event;
     );
   }
   return (
-    <button type="button" className={`cp-ab-btn cp-ab-btn--primary ${className}`} onClick={onRegister} disabled={full}>
-      {full ? "Kuota penuh" : event.isPaid ? "Daftar sekarang" : "Daftar gratis"} {!full && <ArrowRight size={16} aria-hidden="true" />}
+    <button type="button" className={`cp-ab-btn cp-ab-btn--primary ${className}`} onClick={onRegister}>
+      {full ? "Kuota penuh · daftar tunggu" : offer.isPaid ? "Daftar sekarang" : "Daftar gratis"} <ArrowRight size={16} aria-hidden="true" />
     </button>
   );
 }
@@ -345,10 +355,21 @@ function ShareRow({ title }: { title: string }) {
   );
 }
 
-function RegisterDialog({ event, onClose, onCalendar }: { event: Event; onClose: () => void; onCalendar: () => void }) {
-  const [form, setForm] = useState({ name: "", email: "", org: "", question: "" });
+function RegisterDialog({ event, offer, full, onClose, onCalendar }: { event: Event; offer: EventOffer; full: boolean; onClose: () => void; onCalendar: () => void }) {
+  const [form, setForm] = useState({ name: "", email: "", whatsapp: "", org: "", question: "" });
+  const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState<{ code: string; amount: number; member: boolean; waitlist: boolean } | null>(null);
+  const [now] = useState(() => Date.now());
+  const [member, setMember] = useState(false);
+  const settings = usePublicSettings();
+  const accounts = settings.accounts.filter((a) => a.number);
+  const [copied, setCopied] = useState<string | null>(null);
+  const copy = (id: string, text: string) => navigator.clipboard?.writeText(text).then(() => { setCopied(id); window.setTimeout(() => setCopied((c) => (c === id ? null : c)), 1600); }).catch(() => {});
+  // The member price applies when the email belongs to an active member.
+  const memberRate = member && offer.memberPrice !== null;
+  const amount = offer.isPaid ? (memberRate ? (offer.memberPrice as number) : offer.price) : 0;
+  const checkMember = () => setMember(isActiveMember(form.email, now));
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -366,11 +387,17 @@ function RegisterDialog({ event, onClose, onCalendar }: { event: Event; onClose:
     if (form.name.trim().length < 3) errs.name = "Isi nama lengkap Anda.";
     if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) errs.email = "Email belum valid.";
     if (!form.org.trim()) errs.org = "Isi institusi atau kampus Anda.";
+    if (form.whatsapp.trim() && form.whatsapp.replace(/\D/g, "").length < 9) errs.whatsapp = "Nomor WhatsApp belum lengkap.";
+    const dup = !errs.email && existingTicket(event.id, form.email);
+    if (dup) errs.email = `Email ini sudah terdaftar untuk acara ini${dup !== "terdaftar" ? ` (tiket ${dup})` : ""}. Cek email Anda untuk detailnya.`;
     setErrors(errs);
     if (Object.keys(errs).length) return;
+    const isMember = isActiveMember(form.email, now);
+    const due = offer.isPaid ? (isMember && offer.memberPrice !== null ? offer.memberPrice : offer.price) : 0;
+    const code = ticketCode();
     // Staging: the admin's Agenda Event → Pendaftar tab reads it from this browser.
-    addRegistration({ eventId: event.id, eventTitle: event.title, name: form.name.trim(), email: form.email.trim(), org: form.org.trim(), question: form.question.trim(), paid: event.isPaid });
-    setDone(true);
+    addRegistration({ eventId: event.id, eventTitle: event.title, code, name: form.name.trim(), email: form.email.trim(), whatsapp: form.whatsapp.trim(), org: form.org.trim(), question: form.question.trim(), consent, paid: due > 0, amount: due, memberPrice: isMember && offer.memberPrice !== null, status: full ? "waitlist" : "registered" });
+    setDone({ code, amount: due, member: isMember && offer.memberPrice !== null, waitlist: full });
   };
   const field = (key: keyof typeof form, label: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
     <label className={`cp-evd-field ${errors[key] ? "has-error" : ""}`}>
@@ -388,8 +415,33 @@ function RegisterDialog({ event, onClose, onCalendar }: { event: Event; onClose:
         {done ? (
           <div className="cp-evd-done">
             <span className="cp-evd-done__ico" aria-hidden="true"><CheckCircle2 size={34} /></span>
-            <h3>{EVENT_COPY.detail.doneTitle}</h3>
-            <p>Terima kasih, {form.name.split(" ")[0]}. Tautan dan materi dikirim ke <b>{form.email}</b> 24 jam sebelum acara.</p>
+            <h3>{done.waitlist ? "Anda masuk daftar tunggu" : EVENT_COPY.detail.doneTitle}</h3>
+            <div className="cp-evd-tix">
+              <span>Kode tiket</span>
+              <strong>{done.code}</strong>
+              <small>{done.amount ? `${formatRupiah(done.amount)}${done.member ? " · harga member" : ""}` : "Gratis"}</small>
+            </div>
+            {done.waitlist ? (
+              <p>Kuota sedang penuh. Kami kabari lewat <b>{form.email}</b> bila ada kursi yang terbuka{done.amount ? ", lalu instruksi pembayaran menyusul" : ""}.</p>
+            ) : done.amount && accounts.length ? (
+              <div className="cp-evd-pay">
+                <p>Selesaikan pembayaran dalam <b>{settings.payDeadlineHours} jam</b> agar kursi Anda tidak dilepas.</p>
+                <ul>
+                  {accounts.map((a) => (
+                    <li key={a.id}>
+                      <span className="cp-evd-pay__bank">{a.bank}</span>
+                      <span className="cp-evd-pay__acc"><b>{a.number}</b><small>a.n. {a.holder}</small></span>
+                      <button type="button" onClick={() => copy(a.id, a.number)} aria-label={`Salin nomor rekening ${a.bank}`}>{copied === a.id ? <Check size={14} /> : <Copy size={14} />}</button>
+                    </li>
+                  ))}
+                </ul>
+                <a className="cp-evd-pay__wa" href={`https://wa.me/${settings.confirmWhatsapp.replace(/\D/g, "").replace(/^0/, "62")}?text=${encodeURIComponent(`Halo Tim CoPublika, saya ${form.name.trim()} mengirim bukti transfer ${formatRupiah(done.amount)} untuk ${event.title} (tiket ${done.code}).`)}`} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} aria-hidden="true" /> Kirim bukti transfer</a>
+              </div>
+            ) : done.amount ? (
+              <p>Tim CoPublika menghubungi Anda untuk instruksi pembayaran {formatRupiah(done.amount)}.</p>
+            ) : (
+              <p>Terima kasih, {form.name.split(" ")[0]}. Tautan dan materi dikirim ke <b>{form.email}</b> 24 jam sebelum acara.</p>
+            )}
             <div className="cp-evd-done__ctas">
               <button type="button" className="cp-ab-btn cp-ab-btn--primary" onClick={onCalendar}><CalendarPlus size={16} aria-hidden="true" /> Simpan ke kalender</button>
               <button type="button" className="cp-evp-btn-ghost" onClick={onClose}>Selesai</button>
@@ -399,15 +451,27 @@ function RegisterDialog({ event, onClose, onCalendar }: { event: Event; onClose:
           <form onSubmit={submit} noValidate>
             <span className="cp-evd-sec__k">Daftar acara</span>
             <h3>{event.title}</h3>
-            <p className="cp-evd-modal__sub"><Users size={14} aria-hidden="true" /> {seatsLeft(event)} kursi tersisa · {when(event.date).day} {when(event.date).month}</p>
+            <p className="cp-evd-modal__sub"><Users size={14} aria-hidden="true" /> {full ? "Kuota penuh · Anda masuk daftar tunggu" : `${seatsLeft(event)} kursi tersisa`} · {when(event.date).day} {when(event.date).month}</p>
+            {offer.isPaid && (
+              <div className={`cp-evd-price ${memberRate ? "is-member" : ""}`}>
+                <span>Biaya</span>
+                <strong>{amount ? formatRupiah(amount) : "Gratis"}</strong>
+                <small>{memberRate ? "Harga member diterapkan" : offer.memberPrice !== null ? `Member ${offer.memberPrice ? formatRupiah(offer.memberPrice) : "gratis"}, gunakan email member Anda` : "Per peserta"}</small>
+              </div>
+            )}
             {field("name", "Nama lengkap", { autoComplete: "name", placeholder: "Nama sesuai sertifikat", autoFocus: true })}
-            {field("email", "Email", { type: "email", autoComplete: "email", placeholder: "nama@kampus.ac.id" })}
+            {field("email", "Email", { type: "email", autoComplete: "email", placeholder: "nama@kampus.ac.id", onBlur: checkMember })}
+            {field("whatsapp", "WhatsApp (opsional)", { type: "tel", autoComplete: "tel", inputMode: "tel", placeholder: "0812 3456 7890" })}
             {field("org", "Institusi", { autoComplete: "organization", placeholder: "Universitas / lembaga" })}
             <label className="cp-evd-field">
               <span>Pertanyaan untuk pembicara <em>(opsional)</em></span>
               <textarea rows={3} value={form.question} onChange={(e) => setForm({ ...form, question: e.target.value })} placeholder="Pertanyaan yang dikirim lebih awal akan diprioritaskan." />
             </label>
-            <button type="submit" className="cp-ab-btn cp-ab-btn--primary cp-evd-modal__submit">Kirim pendaftaran <ArrowRight size={16} aria-hidden="true" /></button>
+            <label className="cp-evd-consent">
+              <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
+              <span>Saya bersedia menerima info kegiatan dan program CoPublika lewat email atau WhatsApp.</span>
+            </label>
+            <button type="submit" className="cp-ab-btn cp-ab-btn--primary cp-evd-modal__submit">{full ? "Masuk daftar tunggu" : amount ? `Daftar · ${formatRupiah(amount)}` : "Kirim pendaftaran"} <ArrowRight size={16} aria-hidden="true" /></button>
           </form>
         )}
       </motion.div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePublicProgramPrices } from "@/lib/cms/registration-settings";
 import Link from "next/link";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { ArrowRight, BadgeCheck, ChartNoAxesColumn, MonitorPlay, Users } from "lucide-react";
@@ -26,6 +27,7 @@ function batchDays(batch: BootcampBatch) {
 }
 
 export function BtmHero({ batch, registerHref }: { batch: BootcampBatch; registerHref: string }) {
+  const price = usePublicProgramPrices()["bootcamp-menulis"].price;
   const reduce = useReducedMotion();
 
   return (
@@ -65,7 +67,7 @@ export function BtmHero({ batch, registerHref }: { batch: BootcampBatch; registe
           <motion.div className="cp-sts-buy" variants={fade}>
             <div className="cp-sts-buy__price">
               <span>{BTM_COPY.hero.priceLabel}</span>
-              <strong>Rp. <Counter value="450.000" /></strong>
+              <strong>Rp. <Counter key={price} value={price.toLocaleString("id-ID")} /></strong>
             </div>
             <div className="cp-sts-buy__seats">
               <span>{BTM_COPY.hero.seatsLabel} · {batch.name}</span>

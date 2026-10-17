@@ -1,7 +1,6 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getEventBySlug, getEvents } from "@/lib/data/events";
-import { EventDetail } from "@/components/event/EventDetail";
+import { EventDetailRoute } from "@/components/event/EventDetailRoute";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -11,14 +10,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  // Staging: an event made in the admin is not in the built-in data; the client route finds it.
   const event = await getEventBySlug(slug);
-  if (!event) notFound();
 
   // Other events, nearest date first; the client drops any that have already passed.
   const related = (await getEvents())
-    .filter((e) => e.slug !== event.slug && e.status !== "ended")
+    .filter((e) => e.slug !== slug && e.status !== "ended")
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 3);
 
-  return <EventDetail event={event} related={related} />;
+  return <EventDetailRoute slug={slug} event={event} related={related} />;
 }

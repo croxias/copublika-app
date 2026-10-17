@@ -36,7 +36,7 @@ export const addMonths = (iso: string, months: number) => {
  * (set by the admin) is "scheduled": not counted as active until its start date; startsIn is the
  * number of days until then.
  */
-export function memberState(m: CmsItem, now: number): { state: MemberState; label: string; tone: StatusTone; daysLeft: number | null; share: number; startsIn: number | null } {
+export function memberState(m: CmsItem, now: number, expiringDays = EXPIRING_DAYS): { state: MemberState; label: string; tone: StatusTone; daysLeft: number | null; share: number; startsIn: number | null } {
   const pick = (state: MemberState) => MEMBER_STATES.find((s) => s.value === state)!;
   if (m.status === 'inactive') return { ...pick('inactive'), state: 'inactive', daysLeft: null, share: 0, startsIn: null };
   if (m.status === 'pending' || !m.expiresAt) return { ...pick('pending'), state: 'pending', daysLeft: null, share: 0, startsIn: null };
@@ -48,7 +48,7 @@ export function memberState(m: CmsItem, now: number): { state: MemberState; labe
   const startDay = new Date(start).setHours(0, 0, 0, 0);
   if (startDay > today) return { ...pick('scheduled'), state: 'scheduled', daysLeft, share: 1, startsIn: Math.round((startDay - today) / DAY) };
   const share = Math.min(1, Math.max(0, (end - now) / Math.max(DAY, end - start)));
-  const state: MemberState = daysLeft <= 0 ? 'expired' : daysLeft <= EXPIRING_DAYS ? 'expiring' : 'active';
+  const state: MemberState = daysLeft <= 0 ? 'expired' : daysLeft <= expiringDays ? 'expiring' : 'active';
   return { ...pick(state), state, daysLeft, share, startsIn: null };
 }
 
@@ -61,11 +61,15 @@ export const withMemberEvent = (m: CmsItem, e: Omit<MemberEvent, 'at'>, patch: P
   return { ...m, ...patch, events: [...memberEvents(m), { ...e, at }], updatedAt: at };
 };
 
+/** Months a registration gives: free period, yearly activation, or the program bonus. */
+export type MemberMonths = { free: number; yearly: number; program: number };
+export const DEFAULT_MONTHS: MemberMonths = { free: 1, yearly: 12, program: 12 };
+
 /** A member record from a registration; `active` when it is paid, pending when only approved. */
-export function memberFromSignup(s: CmsItem, active: boolean, by: string): CmsItem {
+export function memberFromSignup(s: CmsItem, active: boolean, by: string, period: MemberMonths = DEFAULT_MONTHS): CmsItem {
   const now = new Date().toISOString();
   const source: MemberSource = s.kind === 'gratis' ? 'gratis' : s.kind === 'tahunan' ? 'tahunan' : 'program';
-  const months = source === 'gratis' ? 1 : 12;
+  const months = source === 'gratis' ? period.free : source === 'tahunan' ? period.yearly : period.program;
   return {
     id: `mbr-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`,
     code: String(s.code).replace(/^CP-(MBR|STS|BTM)-/, 'MB-'),

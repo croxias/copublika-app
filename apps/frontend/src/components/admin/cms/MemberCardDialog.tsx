@@ -11,6 +11,7 @@ import type { CmsItem } from '@/lib/cms/types';
 import { cardData, downloadCard, periodMonths, renderCard, type CardSide } from '@/lib/member-card';
 import { useCms } from '@/lib/cms/store';
 import { Drawer, formatDate } from './ui';
+import { useRegistrationSettings } from './useRegistrationSettings';
 
 type Pick = CardSide | 'both';
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -31,9 +32,10 @@ export function MemberCardDialog({ item, now, onClose, onDownloaded }: { item: C
   const [pick, setPick] = useState<Pick>('both');
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<Pick | null>(null);
-  const data = cardData(item);
-  const key = `${data.name}|${data.number}|${data.since}|${data.validThru}`;
-  const s = memberState(item, now);
+  const settings = useRegistrationSettings();
+  const data = cardData(item, { email: settings.helpEmail, phone: settings.helpPhone });
+  const key = `${data.name}|${data.number}|${data.since}|${data.validThru}|${data.helpEmail}|${data.helpPhone}`;
+  const s = memberState(item, now, settings.expiringDays);
   const months = periodMonths(item);
 
   useEffect(() => {

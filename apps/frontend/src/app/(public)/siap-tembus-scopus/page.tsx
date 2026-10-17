@@ -8,7 +8,8 @@ import { FitFaq } from "@/components/program/FitFaq";
 import { StsFlow } from "@/components/program/sts/StsFlow";
 import { StsHero } from "@/components/program/sts/StsHero";
 import { STS_COPY } from "@/lib/content/programs";
-import { PROGRAMS, SEATS_PER_MENTOR, STS_MENTORS, formatRupiah, seatMonths, seatsLeft } from "@/lib/data/programs";
+import { PROGRAMS, SEATS_PER_MENTOR, STS_MENTORS, seatMonths, seatsLeft } from "@/lib/data/programs";
+import { ProgramPrice } from "@/components/program/ProgramPrice";
 
 const program = PROGRAMS["siap-tembus-scopus"];
 
@@ -65,7 +66,7 @@ export default function SiapTembusScopusPage() {
           </Reveal>
           <Reveal className="cp-sts-final__buy" delay={0.1}>
             <span>{program.name}</span>
-            <strong>{formatRupiah(program.price)}</strong>
+            <strong><ProgramPrice program="siap-tembus-scopus" /></strong>
             <small>{STS_COPY.final.includes}</small>
             <Link href="#mentor" className="cp-sts-final__btn">
               {STS_COPY.final.cta} <ArrowRight size={16} aria-hidden="true" />

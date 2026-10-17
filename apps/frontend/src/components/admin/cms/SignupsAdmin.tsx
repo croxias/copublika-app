@@ -11,7 +11,6 @@ import { addMonths, memberFromSignup, withMemberEvent } from '@/lib/cms/members'
 import {
   ID_TYPES,
   OPEN_STATUSES,
-  REVIEW_HOURS,
   ROLE_LABEL,
   SIGNUP_KINDS,
   autoChecks,
@@ -32,6 +31,8 @@ import { disciplineLabel, streamLabel } from '@/lib/data/disciplines';
 import { DisciplineEditor, STREAM_FILTER, StreamBadge, matchStream } from './Discipline';
 import { CmsSelect } from './CmsSelect';
 import { DateField } from './DateField';
+import { useRegistrationSettings } from './useRegistrationSettings';
+import { accountText, fillTemplate, primaryAccount } from '@/lib/cms/registration-settings';
 import { KpiTile, PAGE_SIZE, Pager } from './TableKit';
 import { ConfirmDialog, Drawer, PageHeader, StagingNote, formatDate } from './ui';
 
@@ -103,6 +104,8 @@ export function SignupsAdmin() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<CmsItem | null>(null);
   const [kpiOpen, setKpiOpen] = useState(true);
+  const settings = useRegistrationSettings();
+  const period = { free: settings.freeMonths, yearly: settings.yearlyMonths, program: settings.programBonusMonths };
 
   const shown = all
     .filter((x) => (tab === 'all' ? true : tab === 'open' ? OPEN_STATUSES.includes(x.status as SignupStatus) : x.status === tab))
@@ -119,7 +122,7 @@ export function SignupsAdmin() {
   };
 
   const fresh = all.filter((x) => x.status === 'new');
-  const late = fresh.filter((x) => signupTiming(x, now).tone === 'late');
+  const late = fresh.filter((x) => signupTiming(x, now, settings.reviewHours).tone === 'late');
   const waiting = all.filter((x) => x.status === 'awaiting_payment');
   const pending = all.filter((x) => x.status === 'approved');
   const total = Math.max(1, all.length);
@@ -137,23 +140,28 @@ export function SignupsAdmin() {
   const approve = (s: CmsItem, note?: string) => {
     patchOne(s, { by: RESPONDER, action: 'approved', detail: 'Link aktivasi dikirim ke email' }, { status: 'approved', ...(note === undefined ? {} : { note }) });
     const members = cms.collections.members ?? [];
-    if (!members.some((m) => m.signupId === s.id)) cms.setCollection('members', [memberFromSignup(s, false, RESPONDER), ...members]);
+    if (!members.some((m) => m.signupId === s.id)) cms.setCollection('members', [memberFromSignup(s, false, RESPONDER, period), ...members]);
     cms.toast('Disetujui dan tercatat di Anggota sebagai menunggu aktivasi.');
   };
 
   /** Payment confirmed: the member is active at once (a yearly activation extends an existing one). */
   const markPaid = (s: CmsItem, ref: string, date: string, note: string) => {
     patchOne(s, { by: RESPONDER, action: 'paid', detail: ref }, { status: 'activated', paidAt: new Date(date).toISOString(), paymentRef: ref, note });
+    const months = s.kind === 'tahunan' ? period.yearly : period.program;
+    if (!months) {
+      cms.toast('Lunas. Program ini tidak menyertakan bonus member.');
+      return;
+    }
     const members = cms.collections.members ?? [];
     const existing = members.find((m) => String(m.email).toLowerCase() === String(s.email).toLowerCase() && m.status !== 'inactive');
     if (existing) {
       const base = existing.expiresAt && new Date(String(existing.expiresAt)).getTime() > Date.now() ? String(existing.expiresAt) : new Date().toISOString();
-      const next = withMemberEvent(existing, { by: RESPONDER, action: 'extended', detail: `${kindOf(s.kind).label} · 12 bulan` }, { status: 'active', activatedAt: existing.activatedAt || new Date().toISOString(), expiresAt: addMonths(base, 12), source: s.kind === 'tahunan' ? 'tahunan' : 'program' });
+      const next = withMemberEvent(existing, { by: RESPONDER, action: 'extended', detail: `${kindOf(s.kind).label} · ${months} bulan` }, { status: 'active', activatedAt: existing.activatedAt || new Date().toISOString(), expiresAt: addMonths(base, months), source: s.kind === 'tahunan' ? 'tahunan' : 'program' });
       cms.setCollection('members', members.map((m) => (m.id === existing.id ? next : m)));
     } else {
-      cms.setCollection('members', [memberFromSignup(s, true, RESPONDER), ...members]);
+      cms.setCollection('members', [memberFromSignup(s, true, RESPONDER, period), ...members]);
     }
-    cms.toast('Lunas. Member aktif 12 bulan dan tercatat di Anggota.');
+    cms.toast(`Lunas. Member aktif ${months} bulan dan tercatat di Anggota.`);
   };
 
   const remove = (r: CmsItem) => {
@@ -170,7 +178,7 @@ export function SignupsAdmin() {
         crumb={['Keanggotaan', 'Pendaftaran']}
         title="Pendaftaran"
         accent="Member & Program"
-        description="Registrasi member gratis ditinjau Tim Admin dalam 1×24 jam. Aktivasi dan program langsung aktif setelah pembayaran lunas."
+        description={`Registrasi member gratis ditinjau Tim Admin dalam ${settings.reviewHours} jam. Aktivasi dan program langsung aktif setelah pembayaran lunas.`}
         publicHref="/daftar"
         actions={<Link href="/admin/members" className="cms-btn cms-btn--ghost">Anggota <ArrowUpRight size={15} /></Link>}
       />
@@ -190,7 +198,7 @@ export function SignupsAdmin() {
             <motion.div className="pov-body" initial={reduce ? false : { height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.32, ease: EASE }}>
               <div className="pov-kpis bov-kpis evt-kpis">
                 <KpiTile icon={<Inbox size={17} />} label="Menunggu tinjauan" value={fresh.length} share={fresh.length / total} />
-                <KpiTile icon={<CircleAlert size={17} />} label="Lewat 1×24 jam" value={late.length} share={late.length / Math.max(1, fresh.length)} tone="danger" delay={0.05} />
+                <KpiTile icon={<CircleAlert size={17} />} label={`Lewat ${settings.reviewHours} jam`} value={late.length} share={late.length / Math.max(1, fresh.length)} tone="danger" delay={0.05} />
                 <KpiTile icon={<Wallet size={17} />} label="Menunggu pembayaran" value={waiting.length} share={waiting.length / total} tone="ink" delay={0.1} />
                 <KpiTile icon={<MailCheck size={17} />} label="Menunggu aktivasi" value={pending.length} share={pending.length / total} tone="ok" delay={0.15} />
               </div>
@@ -242,7 +250,7 @@ export function SignupsAdmin() {
               {rows.map((x, i) => {
                 const st = signupStatusOf(x.status);
                 const k = kindOf(x.kind);
-                const t = signupTiming(x, now);
+                const t = signupTiming(x, now, settings.reviewHours);
                 return (
                   <motion.tr key={x.id} className={`cms-row msg-row ${x.status === 'new' ? 'is-unread' : ''}`} onClick={() => openRow(x)} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25, delay: Math.min(i, 10) * 0.025 }}>
                     <td className="cms-col-meta" data-label="ID"><span className="msg-code">{String(x.code)}</span></td>
@@ -302,6 +310,7 @@ export function SignupsAdmin() {
           item={open}
           all={all}
           now={now}
+          settings={settings}
           onClose={() => setOpenId(null)}
           onPatch={(e, p) => patchOne(open, e, p)}
           onApprove={(note) => { approve(open, note); setOpenId(null); }}
@@ -324,6 +333,7 @@ export function SignupsAdmin() {
 }
 
 type DialogProps = {
+  settings: ReturnType<typeof useRegistrationSettings>;
   item: CmsItem;
   all: CmsItem[];
   now: number;
@@ -334,11 +344,11 @@ type DialogProps = {
   onDelete: () => void;
 };
 
-function SignupDialog({ item, all, now, onClose, onPatch, onApprove, onPaid, onDelete }: DialogProps) {
+function SignupDialog({ item, all, now, settings, onClose, onPatch, onApprove, onPaid, onDelete }: DialogProps) {
   const cms = useCms();
   const k = kindOf(item.kind as SignupKind);
   const st = signupStatusOf(item.status);
-  const t = signupTiming(item, now);
+  const t = signupTiming(item, now, settings.reviewHours);
   const checks = autoChecks(item, all);
   const idRule = ID_TYPES[String(item.role)];
   const [note, setNote] = useState(String(item.note ?? ''));
@@ -449,7 +459,7 @@ function SignupDialog({ item, all, now, onClose, onPatch, onApprove, onPaid, onD
                   <CmsSelect aria-label="Alasan penolakan" value={reason} onChange={setReason} options={REJECT_REASONS.map((r) => ({ value: r, label: r }))} />
                   <div className="sgn-panel__row">
                     <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setRejecting(false)}>Batal</button>
-                    <a className="cms-btn cms-btn--ghost" href={mail('Pendaftaran member CoPublika', `Halo ${firstName(String(item.name))},\n\nTerima kasih sudah mendaftar. Mohon maaf, pendaftaran Anda belum dapat kami setujui: ${reason}.\n\nSalam,\n${RESPONDER}`)}><Mail size={14} /> Email</a>
+                    <a className="cms-btn cms-btn--ghost" href={mail('Pendaftaran CoPublika', fillTemplate(settings.templates.rejection, { nama: firstName(String(item.name)), kode: String(item.code), alasan: reason.charAt(0).toLowerCase() + reason.slice(1) }))}><Mail size={14} /> Email</a>
                     <button type="button" className="cms-btn cms-btn--solid is-danger-solid" onClick={reject}><XCircle size={14} /> Tolak pendaftaran</button>
                   </div>
                 </div>
@@ -475,14 +485,14 @@ function SignupDialog({ item, all, now, onClose, onPatch, onApprove, onPaid, onD
           {payable && (
             <section className="msg-compose" aria-label="Konfirmasi pembayaran">
               <header><span className="rvd-k"><Wallet size={13} aria-hidden="true" /> Konfirmasi transfer manual</span><span className="sgn-due">{formatRupiah(Number(item.total || 0))}</span></header>
-              <p className="cms-muted sgn-note">Cocokkan mutasi rekening dengan nama dan nominal di atas. Setelah lunas, member langsung aktif 12 bulan dan tercatat di Anggota.</p>
+              <p className="cms-muted sgn-note">Cocokkan mutasi rekening dengan nama dan nominal di atas. Setelah lunas, {item.kind === 'tahunan' ? `member langsung aktif ${settings.yearlyMonths} bulan` : settings.programBonusMonths ? `peserta mendapat member ${settings.programBonusMonths} bulan` : 'pendaftaran selesai'} dan tercatat di Anggota.</p>
               <div className="sgn-pay">
                 <div className="sgn-pay__date"><label htmlFor="sgn-pay-date"><span>Tanggal transfer</span></label><DateField id="sgn-pay-date" value={payDate} onChange={setPayDate} max={new Date(now).toISOString().slice(0, 10)} /></div>
                 <label><span>Referensi</span><input value={payRef} onChange={(e) => setPayRef(e.target.value)} placeholder="BCA · a.n. pengirim · 4 digit akhir" /></label>
               </div>
               <footer className="sgn-actions">
                 <button type="button" className="cms-btn cms-btn--solid" onClick={paid}><Wallet size={15} /> Tandai lunas & aktifkan</button>
-                <a className="cms-btn cms-btn--ghost" href={`https://wa.me/${waNumber(item.whatsapp)}?text=${encodeURIComponent(`Halo ${firstName(String(item.name))}, pendaftaran ${String(item.code)} (${k.label}) menunggu pembayaran ${formatRupiah(Number(item.total || 0))}. Silakan transfer dan kirim bukti ke nomor ini. — ${RESPONDER}`)}`} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} /> Ingatkan via WhatsApp</a>
+                <a className="cms-btn cms-btn--ghost" href={`https://wa.me/${waNumber(item.whatsapp)}?text=${encodeURIComponent(fillTemplate(settings.templates.payReminder, { nama: firstName(String(item.name)), kode: String(item.code), jenis: k.label, nominal: formatRupiah(Number(item.total || 0)), rekening: accountText(primaryAccount(settings)) }))}`} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} /> Ingatkan via WhatsApp</a>
                 <button type="button" className="cms-btn cms-btn--ghost is-danger" onClick={() => { onPatch({ by: RESPONDER, action: 'cancelled' }, { status: 'cancelled', note }); cms.toast('Pendaftaran dibatalkan.'); onClose(); }}><Ban size={15} /> Batalkan</button>
               </footer>
             </section>
@@ -495,7 +505,7 @@ function SignupDialog({ item, all, now, onClose, onPatch, onApprove, onPaid, onD
             <span className={`msg-sla is-${t.tone}`}>
               <span className="msg-sla__label">{t.label}</span>
               {t.bar && <span className="msg-sla__bar" aria-hidden="true"><i style={{ transform: `scaleX(${t.share})` }} /></span>}
-              <small>{reviewable ? `Target ${REVIEW_HOURS} jam sejak masuk` : st.hint}</small>
+              <small>{reviewable ? `Target ${settings.reviewHours} jam sejak masuk` : st.hint}</small>
             </span>
           </section>
           <section className="rvd-card">

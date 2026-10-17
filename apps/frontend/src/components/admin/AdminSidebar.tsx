@@ -84,9 +84,11 @@ const getNav = (reviewCount = 0, newMessages = 0, newSignups = 0, pendingMembers
   {
     section: 'Keanggotaan',
     items: [
-      { id: 'batches', name: 'Manajemen Batch', href: '/admin/batches', icon: 'clock' },
       { id: 'applicants', name: 'Pendaftaran', href: '/admin/applicants', icon: 'user-check', ...(newSignups ? { badge: String(newSignups) } : {}) },
-      { id: 'members', name: 'Anggota', href: '/admin/members', icon: 'users', ...(pendingMembers ? { badge: String(pendingMembers) } : {}) }
+      { id: 'members', name: 'Data Anggota', href: '/admin/members', icon: 'users', ...(pendingMembers ? { badge: String(pendingMembers) } : {}) },
+      { id: 'participants', name: 'Data Peserta Event', href: '/admin/participants', icon: 'users' },
+      { id: 'capacity', name: 'Kuota & Kapasitas', href: '/admin/capacity', icon: 'clock' },
+      { id: 'registration-settings', name: 'Pengaturan Membership', href: '/admin/registration-settings', icon: 'sliders' }
     ]
   },
   {

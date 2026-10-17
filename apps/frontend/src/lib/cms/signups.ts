@@ -178,11 +178,11 @@ export const SIGNUP_SEED: CmsItem[] = [
 const HOUR = 3_600_000;
 
 /** Review clock for a registration: 1×24 jam for new ones, waiting time for payment or activation. */
-export function signupTiming(s: CmsItem, now: number): { tone: 'ok' | 'soon' | 'late' | 'done'; label: string; share: number; bar: boolean } {
+export function signupTiming(s: CmsItem, now: number, reviewHours = REVIEW_HOURS): { tone: 'ok' | 'soon' | 'late' | 'done'; label: string; share: number; bar: boolean } {
   const age = (now - new Date(String(s.createdAt)).getTime()) / HOUR;
   if (s.status === 'new') {
-    const left = REVIEW_HOURS - age;
-    const share = Math.min(1, Math.max(0, age / REVIEW_HOURS));
+    const left = reviewHours - age;
+    const share = Math.min(1, Math.max(0, age / reviewHours));
     if (left <= 0) return { tone: 'late', label: `Lewat ${Math.max(1, Math.round(-left))} jam`, share: 1, bar: true };
     return { tone: share >= 0.6 ? 'soon' : 'ok', label: `${Math.max(1, Math.round(left))} jam lagi`, share, bar: true };
   }

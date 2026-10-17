@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePublicProgramPrices } from "@/lib/cms/registration-settings";
 import Link from "next/link";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { ArrowRight, BadgeCheck, CalendarClock, FileCheck2, MessagesSquare, Sparkles } from "lucide-react";
@@ -18,6 +19,7 @@ type Props = { seatsOpen: number; seatsTotal: number; monthLabel: string };
  * whose four review rounds light up one after another.
  */
 export function StsHero({ seatsOpen, seatsTotal, monthLabel }: Props) {
+  const price = usePublicProgramPrices()["siap-tembus-scopus"].price;
   const reduce = useReducedMotion();
 
   return (
@@ -56,7 +58,7 @@ export function StsHero({ seatsOpen, seatsTotal, monthLabel }: Props) {
           <motion.div className="cp-sts-buy" variants={fade}>
             <div className="cp-sts-buy__price">
               <span>{STS_COPY.hero.priceLabel}</span>
-              <strong>Rp. <Counter value="600.000" /></strong>
+              <strong>Rp. <Counter key={price} value={price.toLocaleString("id-ID")} /></strong>
             </div>
             <div className="cp-sts-buy__seats">
               <span>{monthLabel}</span>
